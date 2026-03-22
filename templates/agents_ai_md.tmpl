@@ -1,0 +1,269 @@
+AGENTS.md
+=========
+
+AI Agent Engineering Guidelines
+===============================
+
+This repository supports AI-assisted development.
+
+All AI coding agents (Codex, Claude, etc.) must follow the rules
+defined in this document when implementing features or modifying code.
+
+
+--------------------------------------------------
+1. Read Documentation First
+--------------------------------------------------
+
+Before writing any code, agents must read:
+
+docs/prd.md
+docs/spec.md
+docs/architecture.md
+docs/api.md
+docs/deployment.md
+
+These documents define requirements, architecture,
+and system constraints.
+
+
+--------------------------------------------------
+2. Repository Structure
+--------------------------------------------------
+
+Agents must follow the repository structure strictly.
+
+docs/
+  prd.md
+  spec.md
+  architecture.md
+  api.md
+  deployment.md
+
+frontend/
+backend/
+
+ai/
+  prompts/
+  models/
+  evaluation/
+  embeddings/
+  retrieval/
+  ingestion/
+
+agent/
+  planner/
+  tools/
+  memory/
+  workflows/
+
+data/
+  documents/
+
+scripts/
+
+tests/
+
+
+--------------------------------------------------
+3. Prompt Management
+--------------------------------------------------
+
+Prompts must NOT be hardcoded inside application code.
+
+All prompts must be stored in:
+
+ai/prompts/
+
+Example:
+
+ai/prompts/system_prompt.md
+ai/prompts/task_prompt.md
+
+
+--------------------------------------------------
+4. Model Configuration
+--------------------------------------------------
+
+Model configuration must be stored in:
+
+ai/models/
+
+Example:
+
+ai/models/model_config.yaml
+
+
+--------------------------------------------------
+5. Evaluation
+--------------------------------------------------
+
+All AI systems must include evaluation cases.
+
+Evaluation files must be stored in:
+
+ai/evaluation/
+
+Example:
+
+ai/evaluation/eval_cases.yaml
+
+
+--------------------------------------------------
+6. RAG Systems
+--------------------------------------------------
+
+If the project includes Retrieval Augmented Generation (RAG):
+
+Embeddings must be implemented in:
+
+ai/embeddings/
+
+Retrieval pipelines must be implemented in:
+
+ai/retrieval/
+
+Document ingestion must be implemented in:
+
+ai/ingestion/
+
+Documents must be stored in:
+
+data/documents/
+
+
+--------------------------------------------------
+7. Agent Systems
+--------------------------------------------------
+
+If the project includes an AI agent system:
+
+Task planning logic must be placed in:
+
+agent/planner/
+
+External tools must be placed in:
+
+agent/tools/
+
+Agent memory implementations must be placed in:
+
+agent/memory/
+
+Agent workflows must be placed in:
+
+agent/workflows/
+
+
+--------------------------------------------------
+8. Feature Development Workflow (TDD)
+--------------------------------------------------
+
+All features must be implemented using Test-Driven Development.
+Writing implementation code before tests is not allowed.
+
+Step 1: Clarify requirements and acceptance criteria
+Step 2: Update technical specification if necessary
+Step 3: Write failing tests first (RED)
+  - Write tests based on acceptance criteria
+  - Run tests and confirm they FAIL
+  - A passing test before implementation means the test is invalid
+Step 4: Write minimal implementation (GREEN)
+  - Write only enough code to make the tests pass
+  - Run tests and confirm they PASS
+Step 5: Refactor (REFACTOR)
+  - Clean up code structure and readability
+  - Do not change behavior
+  - Run tests and confirm they still PASS
+Step 6: Update documentation
+
+Repeat steps 3-5 for each unit of functionality.
+Target test coverage: >= 80%
+
+
+--------------------------------------------------
+9. Testing
+--------------------------------------------------
+
+All code must have tests written BEFORE implementation (TDD).
+
+Tests must be placed in:
+
+tests/
+
+Examples:
+
+tests/api_tests/
+tests/ai_tests/
+
+Bug fixes must also follow TDD:
+1. Write a failing test that reproduces the bug (RED)
+2. Fix the bug with minimal changes (GREEN)
+3. Refactor if needed, keep tests green
+
+
+--------------------------------------------------
+10. Scripts
+--------------------------------------------------
+
+Automation scripts must be stored in:
+
+scripts/
+
+Examples:
+
+scripts/run_eval.sh
+scripts/build_index.sh
+
+
+--------------------------------------------------
+11. AI Capability Levels
+--------------------------------------------------
+
+Projects may include the following AI capability levels:
+
+none
+prompt-workflow
+rag
+agent-system
+
+Agents must generate the appropriate architecture
+based on the selected capability.
+
+
+--------------------------------------------------
+12. Code Quality
+--------------------------------------------------
+
+Agents must follow these rules:
+
+- Write modular code
+- Avoid large monolithic files
+- Prefer clear function boundaries
+- Use descriptive variable names
+- Include comments when logic is complex
+
+
+--------------------------------------------------
+13. Documentation Updates
+--------------------------------------------------
+
+When a feature is added or changed:
+
+Agents must update the relevant documentation:
+
+docs/spec.md
+docs/api.md
+docs/architecture.md
+
+
+--------------------------------------------------
+14. Final Goal
+--------------------------------------------------
+
+This repository structure exists to:
+
+- enable AI-assisted development
+- support prompt engineering workflows
+- support RAG systems
+- support agent-based architectures
+- maintain clear project structure

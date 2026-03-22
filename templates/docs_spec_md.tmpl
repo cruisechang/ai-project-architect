@@ -1,0 +1,23 @@
+# SPEC
+
+## Technical Overview
+- Project: `{{ .ProjectName }}`
+- Backend: `{{ .BackendType }}`
+- Frontend: `{{ .FrontendType }}`
+- Architecture: `{{ .Architecture }}`
+- Stack: `{{ .TechStack }}`
+
+## Functional Requirements
+{{- range .Requirements }}
+- {{ . }}
+{{- end }}
+
+## Testing Strategy
+- Follow `AGENTS.md` to decide required test scope by feature risk and impact.
+- Cover necessary unit/integration/e2e/regression/security/performance tests as needed.
+
+## Deployment
+- Docker Compose Integration: {{ .DockerCompose }}
+
+## Non-Functional Requirements
+- Reliability, observability, and maintainability targets.

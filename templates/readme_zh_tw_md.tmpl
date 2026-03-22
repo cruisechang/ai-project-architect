@@ -1,0 +1,78 @@
+# {{ .ProjectName }}
+
+## 🌐 Languages
+
+| | Language | README | Description |
+|---|---|---|---|
+| 🇺🇸 | English | [README.md](README.md) | Project scaffold & development guide |
+| 🇨🇳 | 简体中文 | [README.zh-CN.md](README.zh-CN.md) | 项目脚手架与开发指南 |
+| 🇹🇼 | 繁體中文 | [README.zh-TW.md](README.zh-TW.md) | 專案骨架與開發指南 |
+| 🇩🇪 | Deutsch | [README.de.md](README.de.md) | Projektgerüst und Entwicklungshandbuch |
+| 🇫🇷 | Français | [README.fr.md](README.fr.md) | Échafaudage de projet et guide de développement |
+| 🇪🇸 | Español | [README.es.md](README.es.md) | Andamiaje del proyecto y guía de desarrollo |
+| 🇯🇵 | 日本語 | [README.ja.md](README.ja.md) | プロジェクトの雛形と開発ガイド |
+| 🇰🇷 | 한국어 | [README.ko.md](README.ko.md) | 프로젝트 스캐폴드 및 개발 가이드 |
+
+---
+
+## 📋 專案資訊
+
+| 欄位 | 值 |
+|---|---|
+| 類型 | `{{ .ProjectType }}` |
+| Agent | `{{ .AIAgent }}` |
+| 後端 | `{{ .BackendType }}` |
+| 前端 | `{{ .FrontendType }}` |
+| 文件 | `{{ .DocsType }}` |
+
+## 📝 描述
+
+{{ .ProjectDescription }}
+
+## 📂 結構
+
+{{- if eq .AIAgent "codex" }}
+- `AGENTS.md` — Codex agent 設定
+- `PROMPT.md` — Prompt 工程指南
+- `PLANS.md` — 實作計畫
+- `docs/` — PRD, SPEC, API, ARCHITECTURE, DEPLOYMENT
+- `src/` — 原始碼
+- `tests/` — 測試套件（單元 + 整合）
+- `tasks/queue/` — 每日任務佇列
+- `scripts/` — 工具腳本
+- `agents/` — planner, coder, reviewer, test agents
+- `skills/` — repo-local skills，用於指導 agent 工作
+- `.codex/` — config.json, memory.md, cache/
+{{- else }}
+- `CLAUDE.md` — Claude Code 設定
+- `AGENTS.md` — Agent 設定
+- `docs/` — PRD, SPEC, API, ARCHITECTURE, DEPLOYMENT
+- `src/` — 原始碼
+- `tests/` — 測試套件（單元 + 整合）
+- `tasks/queue/` — 每日任務佇列
+- `agents/` — planner, coder, reviewer, test agents
+- `skills/` — repo-local skills，用於指導 agent 工作
+- `.claude/` — settings.json, memory.md, agents/
+{{- end }}
+
+## 🚀 快速開始
+
+1. 在 `docs/PRD.md` 中精煉產品範圍
+2. 從 `skills/` 挑選適合的 skill 指導 agent 工作
+3. 在 `src/` 中建立原始碼，在 `tests/` 中建立測試
+4. 執行 `make test` 驗證（TDD：紅燈 → 綠燈 → 重構）
+5. 重複以上循環
+
+## ⚙️ 開發指令
+
+```bash
+make test    # 執行所有測試
+make lint    # 執行 linter
+make build   # 建置專案
+```
+
+## 🛠️ 開發原則
+
+- 每次變更都必須更新此 README 和相關的 `--help` 文字。
+- README 和 `--help` 必須描述每個指令或功能產生的產物（輸出）。
+- 優先使用 `make test` 而非手動執行測試。

@@ -1,0 +1,269 @@
+PROMPT.md
+=========
+
+AI Prompt Engineering Guidelines
+================================
+
+This repository follows a structured prompt engineering approach.
+
+All prompts used by the system must follow the guidelines
+defined in this document.
+
+
+--------------------------------------------------
+1. Prompt Storage Rules
+--------------------------------------------------
+
+Prompts must NOT be embedded directly in application code.
+
+All prompts must be stored in:
+
+ai/prompts/
+
+Example structure:
+
+ai/prompts/
+  system_prompt.md
+  task_prompt.md
+  summarization_prompt.md
+  coding_prompt.md
+
+
+--------------------------------------------------
+2. Prompt Types
+--------------------------------------------------
+
+The system uses three main prompt types:
+
+1. System Prompt
+2. Task Prompt
+3. User Prompt
+
+
+System Prompt
+-------------
+
+Defines the behavior of the AI system.
+
+Example:
+
+"You are an expert software engineer.
+Always provide structured and precise answers."
+
+
+Task Prompt
+-----------
+
+Defines the task the model must perform.
+
+Example:
+
+"Summarize the following document and extract key insights."
+
+
+User Prompt
+-----------
+
+User input passed to the model.
+
+
+--------------------------------------------------
+3. Prompt Structure
+--------------------------------------------------
+
+All prompts should follow this structure:
+
+ROLE
+CONTEXT
+TASK
+OUTPUT FORMAT
+CONSTRAINTS
+
+
+Example template:
+
+ROLE:
+You are a senior backend engineer.
+
+CONTEXT:
+The project uses Go and PostgreSQL.
+
+TASK:
+Design an API endpoint for user authentication.
+
+OUTPUT FORMAT:
+Provide Go code and API specification.
+
+
+--------------------------------------------------
+4. Prompt Versioning
+--------------------------------------------------
+
+Prompts must be versioned.
+
+Example:
+
+ai/prompts/
+  coding_prompt_v1.md
+  coding_prompt_v2.md
+
+This allows prompt evaluation and rollback.
+
+
+--------------------------------------------------
+5. Prompt Evaluation
+--------------------------------------------------
+
+All prompts must be evaluated before production usage.
+
+Evaluation cases must be stored in:
+
+ai/evaluation/
+
+
+Example:
+
+ai/evaluation/eval_cases.yaml
+
+
+Example evaluation case:
+
+input: "Explain how RAG works"
+expected_behavior: "Clear explanation of retrieval augmented generation"
+
+
+--------------------------------------------------
+6. Model Configuration
+--------------------------------------------------
+
+Model configuration must be stored in:
+
+ai/models/model_config.yaml
+
+
+Example:
+
+model: gpt-4
+temperature: 0.2
+max_tokens: 2000
+
+
+--------------------------------------------------
+7. Prompt Design Principles
+--------------------------------------------------
+
+All prompts should follow these principles:
+
+- Be explicit
+- Provide context
+- Define expected output format
+- Avoid ambiguity
+- Prefer structured instructions
+
+
+Example good prompt:
+
+"Generate a REST API endpoint in Go for creating a user.
+Return code and explanation."
+
+
+Example poor prompt:
+
+"Write API."
+
+
+--------------------------------------------------
+8. Prompt Safety
+--------------------------------------------------
+
+Prompts must avoid instructions that:
+
+- expose secrets
+- access sensitive data
+- execute unsafe operations
+
+
+--------------------------------------------------
+9. Prompt Testing Workflow
+--------------------------------------------------
+
+Prompt development workflow:
+
+1. Create prompt template
+2. Add evaluation cases
+3. Run evaluation
+4. Improve prompt
+5. Deploy to production
+
+
+--------------------------------------------------
+10. AI Capability Modes
+--------------------------------------------------
+
+The system supports multiple AI capability levels.
+
+none
+prompt-workflow
+rag
+agent-system
+
+
+Prompt design must adapt to the selected capability.
+
+
+--------------------------------------------------
+11. RAG Prompt Guidelines
+--------------------------------------------------
+
+For RAG systems:
+
+Prompts must include retrieved context.
+
+Example structure:
+
+CONTEXT:
+<retrieved documents>
+
+TASK:
+Answer the user question using the context.
+
+
+--------------------------------------------------
+12. Agent Prompt Guidelines
+--------------------------------------------------
+
+For AI agents:
+
+Prompts must include:
+
+- task description
+- available tools
+- reasoning instructions
+
+
+Example:
+
+"You are an AI agent that can use tools to complete tasks.
+Choose the appropriate tool and execute the plan."
+
+
+--------------------------------------------------
+13. Prompt File Naming
+--------------------------------------------------
+
+Use clear names:
+
+summarization_prompt.md
+coding_prompt.md
+analysis_prompt.md
+
+
+--------------------------------------------------
+14. Goal
+--------------------------------------------------
+
+The goal of this document is to ensure:
+
+- consistent prompt design
+- reproducible AI behavior
+- safe and maintainable AI systems

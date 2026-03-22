@@ -1,0 +1,41 @@
+import io
+from http.server import HTTPServer
+from unittest.mock import patch
+
+from main import Handler
+
+
+def _make_request(method: str, path: str) -> tuple[int, str]:
+    """Helper: send a request to Handler and return (status, body)."""
+    import http.server
+    handler = None
+
+    class Capture(Handler):
+        def log_message(self, format, *args):
+            pass  # suppress logs during tests
+
+    rfile = io.BytesIO(b"")
+    wfile = io.BytesIO()
+
+    environ = {
+        "REQUEST_METHOD": method,
+        "PATH_INFO": path,
+        "SERVER_NAME": "localhost",
+        "SERVER_PORT": "8080",
+    }
+    request_line = f"{method} {path} HTTP/1.1\r\n"
+    headers = "Host: localhost\r\n\r\n"
+    rfile = io.BytesIO((request_line + headers).encode())
+    handler = Capture(rfile, ("127.0.0.1", 0), HTTPServer(("", 0), Capture))
+    wfile_data = rfile.getvalue()
+    return handler.responses  # type: ignore
+
+
+def test_healthz_returns_ok():
+    """GET /healthz should return 200."""
+    assert True, "TODO: implement with integration test or TestClient"
+
+
+def test_root_returns_project_name():
+    """GET / should return project name."""
+    assert True, "TODO: implement with integration test or TestClient"

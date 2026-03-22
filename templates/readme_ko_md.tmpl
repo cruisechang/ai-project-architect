@@ -1,0 +1,78 @@
+# {{ .ProjectName }}
+
+## 🌐 언어
+
+| | 언어 | README | 설명 |
+|---|---|---|---|
+| 🇺🇸 | English | [README.md](README.md) | Project scaffold & development guide |
+| 🇨🇳 | 简体中文 | [README.zh-CN.md](README.zh-CN.md) | 项目脚手架与开发指南 |
+| 🇹🇼 | 繁體中文 | [README.zh-TW.md](README.zh-TW.md) | 專案骨架與開發指南 |
+| 🇩🇪 | Deutsch | [README.de.md](README.de.md) | Projektgerüst und Entwicklungshandbuch |
+| 🇫🇷 | Français | [README.fr.md](README.fr.md) | Échafaudage de projet et guide de développement |
+| 🇪🇸 | Español | [README.es.md](README.es.md) | Andamiaje del proyecto y guía de desarrollo |
+| 🇯🇵 | 日本語 | [README.ja.md](README.ja.md) | プロジェクトの雛形と開発ガイド |
+| 🇰🇷 | 한국어 | [README.ko.md](README.ko.md) | 프로젝트 스캐폴드 및 개발 가이드 |
+
+---
+
+## 📋 프로젝트 프로필
+
+| 필드 | 값 |
+|---|---|
+| 타입 | `{{ .ProjectType }}` |
+| Agent | `{{ .AIAgent }}` |
+| 백엔드 | `{{ .BackendType }}` |
+| 프론트엔드 | `{{ .FrontendType }}` |
+| Docs | `{{ .DocsType }}` |
+
+## 📝 설명
+
+{{ .ProjectDescription }}
+
+## 📂 구조
+
+{{- if eq .AIAgent "codex" }}
+- `AGENTS.md` — Codex 에이전트 설정
+- `PROMPT.md` — 프롬프트 엔지니어링 가이드
+- `PLANS.md` — 구현 계획
+- `docs/` — PRD, SPEC, API, ARCHITECTURE, DEPLOYMENT
+- `src/` — 소스 코드
+- `tests/` — 테스트 스위트 (단위 + 통합)
+- `tasks/queue/` — 일일 작업 큐
+- `scripts/` — 유틸리티 스크립트
+- `agents/` — planner, coder, reviewer, test agents
+- `skills/` — agent를 안내하는 repo 로컬 skills
+- `.codex/` — config.json, memory.md, cache/
+{{- else }}
+- `CLAUDE.md` — Claude Code 설정
+- `AGENTS.md` — 에이전트 설정
+- `docs/` — PRD, SPEC, API, ARCHITECTURE, DEPLOYMENT
+- `src/` — 소스 코드
+- `tests/` — 테스트 스위트 (단위 + 통합)
+- `tasks/queue/` — 일일 작업 큐
+- `agents/` — planner, coder, reviewer, test agents
+- `skills/` — agent를 안내하는 repo 로컬 skills
+- `.claude/` — settings.json, memory.md, agents/
+{{- end }}
+
+## 🚀 빠른 시작
+
+1. `docs/PRD.md`에서 제품 범위 정제
+2. `skills/`에서 적합한 skill을 선택하여 agent를 안내
+3. `src/`에서 소스 코드, `tests/`에서 테스트 구축
+4. `make test`로 검증 (TDD: 빨간불 → 초록불 → 리팩토링)
+5. 반복
+
+## ⚙️ 개발 명령어
+
+```bash
+make test    # 모든 테스트 실행
+make lint    # 린터 실행
+make build   # 프로젝트 빌드
+```
+
+## 🛠️ 개발 원칙
+
+- 모든 변경은 이 README와 관련 `--help` 텍스트를 최신 상태로 유지해야 합니다.
+- README와 `--help`는 각 명령어나 기능이 생성하는 것(출력 아티팩트)을 설명해야 합니다.
+- 수동 테스트 실행보다 `make test`를 선호합니다.

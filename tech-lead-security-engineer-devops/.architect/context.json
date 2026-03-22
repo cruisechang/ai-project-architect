@@ -1,0 +1,12 @@
+{
+  "project_name": "tech-lead-security-engineer-devops",
+  "project_idea": "你是資深 Tech Lead + Security Engineer。我要做一個 DevOps 平台，長期包含：",
+  "project_type": "fullstack",
+  "frontend_framework": "react",
+  "backend_language": "go",
+  "backend_framework": "gin",
+  "database": "postgresql",
+  "authentication": "jwt",
+  "deployment": "docker-compose",
+  "generated_at": "2026-03-21T07:53:35Z"
+}

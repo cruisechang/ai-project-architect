@@ -1,0 +1,53 @@
+.PHONY: help test lint build
+
+help:
+	@echo "Development commands:"
+{{- if eq .BackendType "go" }}
+	@echo "  make test   →  go test -race ./..."
+	@echo "  make lint   →  go vet ./..."
+	@echo "  make build  →  go build ./..."
+{{- else if eq .BackendType "python" }}
+	@echo "  make test   →  pytest -v --tb=short"
+	@echo "  make lint   →  python3 -m py_compile"
+{{- else if eq .BackendType "node" }}
+	@echo "  make test   →  npx vitest run"
+	@echo "  make lint   →  npx eslint ."
+{{- else }}
+	@echo "  Configure test/lint/build for your backend (edit Makefile)"
+{{- end }}
+
+.PHONY: test
+test:
+{{- if eq .BackendType "go" }}
+	cd backend && go test -race ./...
+{{- else if eq .BackendType "python" }}
+	cd backend && python3 -m pytest -v --tb=short
+{{- else if eq .BackendType "node" }}
+	cd backend && npx vitest run
+{{- else }}
+	@echo "Configure test command for your backend (edit Makefile)"
+{{- end }}
+
+.PHONY: lint
+lint:
+{{- if eq .BackendType "go" }}
+	cd backend && go vet ./...
+{{- else if eq .BackendType "python" }}
+	cd backend && python3 -m py_compile main.py
+{{- else if eq .BackendType "node" }}
+	cd backend && npx eslint .
+{{- else }}
+	@echo "Configure lint command for your backend (edit Makefile)"
+{{- end }}
+
+.PHONY: build
+build:
+{{- if eq .BackendType "go" }}
+	cd backend && go build ./...
+{{- else if eq .BackendType "python" }}
+	@echo "No build step needed for Python"
+{{- else if eq .BackendType "node" }}
+	cd backend && npm run build
+{{- else }}
+	@echo "Configure build command for your backend (edit Makefile)"
+{{- end }}

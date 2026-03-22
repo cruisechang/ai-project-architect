@@ -1,0 +1,372 @@
+# AGENTS.md
+
+本文件定義 AI coding agents 在此 repository 中的工作方式。
+
+所有 AI agents 在修改程式碼時，必須遵循此文件中的規則與流程。
+
+---
+
+# 專案結構
+project/
+│
+├─ AGENTS.md
+├─ PROMPT.md
+├─ README.md
+│
+├─ docs/
+│   ├─ PRD.md
+│   ├─ SPEC.md
+│   ├─ API.md
+│   ├─ ARCHITECTURE.md
+│   ├─ DB_SCHEMA.md
+│   └─ IMPLEMENTATION_PLAN.md
+│
+├─ backend/
+├─ frontend/
+│
+├─ tests/
+└─ scripts/
+├─ skills/
+│   ├─ apa-feature/
+│   ├─ apa-docs/
+│   ├─ apa-debug/
+│   └─ apa-devops/
+│
+├─ agents/
+│   ├─ planner-agent/
+│   ├─ coder-agent/
+│   ├─ reviewer-agent/
+│   └─ test-agent/
+│
+├─ memory/
+│   ├─ project-memory.md
+│   └─ decisions.md
+
+---
+
+# 文件說明
+
+AI agents 在實作功能前，應閱讀相關文件：
+
+| 文件 | 說明 |
+|-----|------|
+| `docs/PRD.md` | 產品需求 |
+| `docs/SPEC.md` | 技術規格 |
+| `docs/API.md` | API 設計 |
+| `docs/ARCHITECTURE.md` | 系統架構 |
+| `docs/DB_SCHEMA.md` | 資料庫 Schema |
+| `docs/IMPLEMENTATION_PLAN.md` | 實作計畫 |
+
+若功能涉及相關領域，必須同步更新文件。
+
+---
+
+# AI Agent 工作原則
+
+AI agents 必須：
+
+- 遵循既有架構
+- 儘量維持最小變更
+- 優先重用既有程式碼
+- 為新功能撰寫測試
+- 保持向下相容
+- 更新相關文件
+
+AI agents 不應：
+
+- 無必要修改不相關程式碼
+- 引入未說明的 breaking change
+- 刪除重要測試
+- 新增不必要依賴
+
+---
+
+# Feature Development Workflow
+
+當收到新的 feature request 時，必須依照以下流程執行。
+
+---
+
+## 1. Requirement Clarification
+
+釐清需求：
+
+- 功能目標
+- 使用者情境
+- 輸入與輸出
+- 成功條件
+
+若需求不清楚，應提出問題。
+
+---
+
+## 2. Acceptance Criteria
+
+定義功能完成的標準。
+
+例如：
+
+- 預期輸出
+- 行為結果
+- 效能限制
+- 使用者可見結果
+
+Acceptance criteria 必須可驗證。
+
+---
+
+## 3. Edge Cases
+
+列出邊界情況，例如：
+
+- invalid inputs
+- empty inputs
+- boundary values
+- permission errors
+- network failure
+- partial failures
+- concurrency issues
+
+系統必須安全處理這些情況。
+
+---
+
+## 4. Impact Analysis
+
+分析影響範圍：
+
+- backend modules
+- frontend modules
+- APIs
+- database schema
+- configuration
+- monitoring
+- logging
+- tests
+- documentation
+
+避免產生未預期副作用。
+
+---
+
+## 5. Solution Design
+
+在實作前：
+
+- 設計方案
+- 確保符合架構
+- 儘量採用簡單可維護方案
+
+重大設計變更應記錄。
+
+---
+
+## 6. Task Breakdown
+
+將 feature 拆解為可執行任務，例如：
+
+- data model updates
+- API implementation
+- service logic
+- UI changes
+- tests
+- documentation updates
+
+---
+
+## 7. Implementation
+
+實作原則：
+
+- 遵循 coding style
+- 重用既有模組
+- 避免重複邏輯
+- 保持程式碼可讀性
+- 限制變更範圍
+
+---
+
+## 8. Testing
+
+必須新增測試：
+
+- 由 AI 根據需求、風險與影響範圍判斷需要哪些測試並實作。
+
+### Unit Tests
+驗證單一模組。
+
+### Integration Tests
+驗證模組互動。
+
+### Regression Tests
+確保舊功能不被破壞。
+
+---
+
+## 9. Run Tests
+
+在提交前必須：
+
+- 執行全部測試
+- 確認 build 成功
+- 確認 lint / formatting 正常
+
+---
+
+## 10. Documentation Update
+
+若功能改變，需更新：
+
+- `docs/PRD.md`
+- `docs/SPEC.md`
+- `docs/API.md`
+- `docs/ARCHITECTURE.md`
+- `docs/DB_SCHEMA.md`
+- `docs/IMPLEMENTATION_PLAN.md`
+
+文件需與實作一致。
+
+---
+
+## 11. Release / Rollback Considerations
+
+在 merge 前確認：
+
+- backward compatibility
+- migration requirements
+- configuration changes
+- feature flags
+- rollback strategy
+
+部署必須安全。
+
+---
+
+# Bug Fix Workflow
+
+當修復 bug 時：
+
+1. 重現問題
+2. 找出 root cause
+3. 實作最小修正
+4. 新增 regression test
+5. 確認沒有副作用
+
+---
+
+# Refactoring Rules
+
+重構必須：
+
+- 保持行為不變
+- 改善可讀性
+- 必要時更新測試
+
+大型重構應與 feature 分開。
+
+---
+
+# Security Considerations
+
+AI agents 必須注意：
+
+- input validation
+- authentication
+- authorization
+- secrets handling
+- logging sensitive data
+
+避免安全風險。
+
+---
+
+# Performance Considerations
+
+避免：
+
+- 不必要 DB queries
+- inefficient loops
+- blocking operations
+
+考慮高併發情況。
+
+---
+
+# AI Task Planning Loop
+
+AI agent 在執行任務時應遵循：
+PLAN
+→ ANALYZE
+→ IMPLEMENT
+→ TEST
+→ VERIFY
+→ DOCUMENT
+每個步驟都應確認結果。
+
+---
+
+# AI Self Verification
+
+在提交修改前，AI agent 必須自我檢查：
+
+- 是否符合 acceptance criteria
+- edge cases 是否處理
+- 是否影響既有功能
+- tests 是否完整
+- 文件是否更新
+
+---
+
+# Pull Request Checklist
+
+提交 PR 前確認：
+
+- build 成功
+- tests 全部通過
+- 無 lint error
+- 文件已更新
+- commit message 清楚
+
+---
+
+# Skills 使用規則
+
+`skills/` 目錄包含 AI 可重用能力。
+
+AI agent 可以在以下情況使用 skill：
+
+- 重複性任務
+- 標準化流程
+- 自動化操作
+
+例如：
+skills/
+├─ apa-feature/
+├─ apa-docs/
+├─ apa-debug/
+└─ apa-devops/
+使用 skill 時應：
+
+- 遵循 skill 定義
+- 不偏離專案架構
+
+---
+
+# Multi-Agent Collaboration
+
+若有多個 AI agents：
+
+- 需明確任務分工
+- 避免同時修改同一模組
+- 使用文件與 PR 溝通
+
+---
+
+# 最重要原則
+
+AI agents 應優先考量：
+
+1. correctness
+2. maintainability
+3. minimal risk
+4. documentation consistency

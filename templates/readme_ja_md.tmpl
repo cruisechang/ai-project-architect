@@ -1,0 +1,78 @@
+# {{ .ProjectName }}
+
+## 🌐 言語
+
+| | 言語 | README | 説明 |
+|---|---|---|---|
+| 🇺🇸 | English | [README.md](README.md) | Project scaffold & development guide |
+| 🇨🇳 | 简体中文 | [README.zh-CN.md](README.zh-CN.md) | 项目脚手架与开发指南 |
+| 🇹🇼 | 繁體中文 | [README.zh-TW.md](README.zh-TW.md) | 專案骨架與開發指南 |
+| 🇩🇪 | Deutsch | [README.de.md](README.de.md) | Projektgerüst und Entwicklungshandbuch |
+| 🇫🇷 | Français | [README.fr.md](README.fr.md) | Échafaudage de projet et guide de développement |
+| 🇪🇸 | Español | [README.es.md](README.es.md) | Andamiaje del proyecto y guía de desarrollo |
+| 🇯🇵 | 日本語 | [README.ja.md](README.ja.md) | プロジェクトの雛形と開発ガイド |
+| 🇰🇷 | 한국어 | [README.ko.md](README.ko.md) | 프로젝트 스캐폴드 및 개발 가이드 |
+
+---
+
+## 📋 プロジェクト情報
+
+| フィールド | 値 |
+|---|---|
+| タイプ | `{{ .ProjectType }}` |
+| Agent | `{{ .AIAgent }}` |
+| バックエンド | `{{ .BackendType }}` |
+| フロントエンド | `{{ .FrontendType }}` |
+| Docs | `{{ .DocsType }}` |
+
+## 📝 説明
+
+{{ .ProjectDescription }}
+
+## 📂 構造
+
+{{- if eq .AIAgent "codex" }}
+- `AGENTS.md` — Codex エージェント設定
+- `PROMPT.md` — プロンプトエンジニアリングガイド
+- `PLANS.md` — 実装計画
+- `docs/` — PRD, SPEC, API, ARCHITECTURE, DEPLOYMENT
+- `src/` — ソースコード
+- `tests/` — テストスイート（ユニット + 統合）
+- `tasks/queue/` — 日次タスクキュー
+- `scripts/` — ユーティリティスクリプト
+- `agents/` — planner, coder, reviewer, test agents
+- `skills/` — agent を導くための repo ローカル skills
+- `.codex/` — config.json, memory.md, cache/
+{{- else }}
+- `CLAUDE.md` — Claude Code 設定
+- `AGENTS.md` — エージェント設定
+- `docs/` — PRD, SPEC, API, ARCHITECTURE, DEPLOYMENT
+- `src/` — ソースコード
+- `tests/` — テストスイート（ユニット + 統合）
+- `tasks/queue/` — 日次タスクキュー
+- `agents/` — planner, coder, reviewer, test agents
+- `skills/` — agent を導くための repo ローカル skills
+- `.claude/` — settings.json, memory.md, agents/
+{{- end }}
+
+## 🚀 クイックスタート
+
+1. `docs/PRD.md` でプロダクトのスコープを精緻化する
+2. `skills/` から適切な skill を選んで agent を導く
+3. `src/` でソースコードを、`tests/` でテストを構築する
+4. `make test` で検証する（TDD：赤 → 緑 → リファクタリング）
+5. 繰り返す
+
+## ⚙️ 開発コマンド
+
+```bash
+make test    # 全テスト実行
+make lint    # リンター実行
+make build   # プロジェクトをビルド
+```
+
+## 🛠️ 開発原則
+
+- すべての変更はこの README と関連する `--help` テキストを最新の状態に保つ必要があります。
+- README と `--help` は各コマンドや機能が生成するもの（出力アーティファクト）を説明する必要があります。
+- 手動テストよりも `make test` を優先する。

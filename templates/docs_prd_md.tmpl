@@ -1,0 +1,26 @@
+# PRD
+
+## Product Overview
+- Project: `{{ .ProjectName }}`
+- Type: `{{ .ProjectType }}`
+- Description: {{ .ProjectDescription }}
+
+## Target Users
+- Define primary and secondary users.
+
+## Goals
+{{- range .Goals }}
+- {{ . }}
+{{- end }}
+
+## Scope
+- In Scope:
+  - Define must-have features for the first release.
+- Out of Scope:
+  - Define excluded items to control delivery risk.
+
+## Success Metrics
+- Define measurable product and delivery KPIs.
+
+## Release Plan
+- MVP milestone and rollout strategy.

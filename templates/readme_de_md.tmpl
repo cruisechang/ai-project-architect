@@ -1,0 +1,78 @@
+# {{ .ProjectName }}
+
+## 🌐 Sprachen
+
+| | Sprache | README | Beschreibung |
+|---|---|---|---|
+| 🇺🇸 | English | [README.md](README.md) | Project scaffold & development guide |
+| 🇨🇳 | 简体中文 | [README.zh-CN.md](README.zh-CN.md) | 项目脚手架与开发指南 |
+| 🇹🇼 | 繁體中文 | [README.zh-TW.md](README.zh-TW.md) | 專案骨架與開發指南 |
+| 🇩🇪 | Deutsch | [README.de.md](README.de.md) | Projektgerüst und Entwicklungshandbuch |
+| 🇫🇷 | Français | [README.fr.md](README.fr.md) | Échafaudage de projet et guide de développement |
+| 🇪🇸 | Español | [README.es.md](README.es.md) | Andamiaje del proyecto y guía de desarrollo |
+| 🇯🇵 | 日本語 | [README.ja.md](README.ja.md) | プロジェクトの雛形と開発ガイド |
+| 🇰🇷 | 한국어 | [README.ko.md](README.ko.md) | 프로젝트 스캐폴드 및 개발 가이드 |
+
+---
+
+## 📋 Projektprofil
+
+| Feld | Wert |
+|---|---|
+| Typ | `{{ .ProjectType }}` |
+| Agent | `{{ .AIAgent }}` |
+| Backend | `{{ .BackendType }}` |
+| Frontend | `{{ .FrontendType }}` |
+| Docs | `{{ .DocsType }}` |
+
+## 📝 Beschreibung
+
+{{ .ProjectDescription }}
+
+## 📂 Struktur
+
+{{- if eq .AIAgent "codex" }}
+- `AGENTS.md` — Codex-Agent-Konfiguration
+- `PROMPT.md` — Prompt-Engineering-Leitfaden
+- `PLANS.md` — Implementierungspläne
+- `docs/` — PRD, SPEC, API, ARCHITECTURE, DEPLOYMENT
+- `src/` — Quellcode
+- `tests/` — Testsuiten (Unit + Integration)
+- `tasks/queue/` — Tägliche Aufgabenwarteschlange
+- `scripts/` — Hilfsskripte
+- `agents/` — planner, coder, reviewer, test agents
+- `skills/` — repo-lokale Skills zur Agent-Führung
+- `.codex/` — config.json, memory.md, cache/
+{{- else }}
+- `CLAUDE.md` — Claude Code-Konfiguration
+- `AGENTS.md` — Agent-Konfiguration
+- `docs/` — PRD, SPEC, API, ARCHITECTURE, DEPLOYMENT
+- `src/` — Quellcode
+- `tests/` — Testsuiten (Unit + Integration)
+- `tasks/queue/` — Tägliche Aufgabenwarteschlange
+- `agents/` — planner, coder, reviewer, test agents
+- `skills/` — repo-lokale Skills zur Agent-Führung
+- `.claude/` — settings.json, memory.md, agents/
+{{- end }}
+
+## 🚀 Schnellstart
+
+1. Produktumfang in `docs/PRD.md` verfeinern
+2. Einen passenden Skill aus `skills/` zur Agent-Führung auswählen
+3. Quellcode in `src/` mit Tests in `tests/` erstellen
+4. `make test` zur Verifikation ausführen (TDD: rot → grün → refaktorieren)
+5. Wiederholen
+
+## ⚙️ Entwicklungsbefehle
+
+```bash
+make test    # Alle Tests ausführen
+make lint    # Linter ausführen
+make build   # Projekt bauen
+```
+
+## 🛠️ Entwicklungsprinzipien
+
+- Jede Änderung muss dieses README und den relevanten `--help`-Text aktuell halten.
+- README und `--help` müssen beschreiben, was jeder Befehl oder jedes Feature produziert (Ausgabe-Artefakte).
+- `make test` gegenüber manueller Testausführung bevorzugen.

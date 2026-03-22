@@ -1,0 +1,25 @@
+import { describe, test, expect } from "vitest";
+import http from "node:http";
+
+function request(path) {
+  return new Promise((resolve, reject) => {
+    const port = process.env.APP_PORT || 8080;
+    const req = http.get(`http://localhost:${port}${path}`, (res) => {
+      let data = "";
+      res.on("data", (chunk) => (data += chunk));
+      res.on("end", () => resolve({ status: res.statusCode, body: data }));
+    });
+    req.on("error", reject);
+  });
+}
+
+describe("backend server", () => {
+  test("placeholder: server module loads", () => {
+    expect(true).toBe(true);
+  });
+
+  test("placeholder: health endpoint contract", () => {
+    // TODO: start server, call /healthz, assert 200 + "ok"
+    expect(true).toBe(true);
+  });
+});

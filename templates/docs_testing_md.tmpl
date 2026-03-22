@@ -1,0 +1,64 @@
+# Testing
+
+## TDD Workflow
+
+This project follows Test-Driven Development (TDD):
+
+1. **RED** — Write a failing test first
+2. **GREEN** — Write minimal code to pass the test
+3. **REFACTOR** — Clean up while keeping tests green
+
+## Test Types
+
+| Type | Purpose | Location |
+|------|---------|----------|
+| Unit | Individual functions and modules | `tests/unit/` + colocated `*_test.*` |
+| Integration | Cross-module and API flows | `tests/integration/` |
+| E2E | Critical user journeys | `tests/e2e/` |
+
+## Running Tests
+
+```bash
+# Run all tests
+make test
+
+# Watch mode (re-run on changes)
+make test-watch
+```
+{{- if eq .BackendType "go" }}
+
+### Backend (Go)
+```bash
+cd backend && go test -race -cover ./...
+```
+{{- else if eq .BackendType "python" }}
+
+### Backend (Python)
+```bash
+cd backend && pytest -v --cov=. --cov-report=term-missing
+```
+{{- else if eq .BackendType "node" }}
+
+### Backend (Node)
+```bash
+cd backend && npx vitest run --coverage
+```
+{{- end }}
+{{- if and (ne .FrontendType "none") (ne .FrontendType "") }}
+
+### Frontend ({{ .FrontendType }})
+```bash
+cd frontend && npm test
+cd frontend && npm run test:watch
+```
+{{- end }}
+
+## Coverage Target
+
+Minimum **80%** statement coverage for all packages.
+
+## CI Expectations
+
+- All tests must pass before merge
+- Coverage must not decrease
+- New features require tests

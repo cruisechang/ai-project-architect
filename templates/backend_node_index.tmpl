@@ -1,0 +1,18 @@
+import http from "node:http";
+
+const port = process.env.APP_PORT || 8080;
+
+const server = http.createServer((req, res) => {
+  if (req.url === "/healthz") {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("ok");
+    return;
+  }
+
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("{{ .ProjectName }} backend is running");
+});
+
+server.listen(port, () => {
+  console.log(`server listening on :${port}`);
+});

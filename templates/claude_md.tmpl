@@ -1,0 +1,28 @@
+# CLAUDE
+
+## Project
+- Name: `{{ .ProjectName }}`
+- Type: `{{ .ProjectType }}`
+- Description: {{ .ProjectDescription }}
+
+## Engineering Focus
+- Architecture: `{{ .Architecture }}`
+- Stack: `{{ .TechStack }}`
+- Testing: decide required tests according to `AGENTS.md` workflow and impact analysis.
+
+## Development Method: TDD
+
+所有新功能與 bug fix 必須遵循 TDD 流程，不得跳過：
+
+1. **RED** — 先寫測試，確認測試失敗
+2. **GREEN** — 寫最少程式碼讓測試通過
+3. **REFACTOR** — 整理程式碼，保持測試綠燈
+
+禁止在沒有對應測試的情況下實作功能。
+測試覆蓋率目標：≥ 80%
+
+## Working Agreement
+- Keep docs and implementation synchronized.
+- Prefer small, verifiable changes.
+- Any change must also update README and relevant `--help` text.
+- README and `--help` must describe what each command or feature produces (output artifacts).
