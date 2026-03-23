@@ -1,5 +1,18 @@
 # apa - AI Project Architect
 
+## 언어
+
+| 언어 | README |
+|---|---|
+| English | [README.md](README.md) |
+| 简体中文 | [README.zh-CN.md](README.zh-CN.md) |
+| 繁體中文 | [README.zh-TW.md](README.zh-TW.md) |
+| Deutsch | [README.de.md](README.de.md) |
+| Français | [README.fr.md](README.fr.md) |
+| Español | [README.es.md](README.es.md) |
+| 日本語 | [README.ja.md](README.ja.md) |
+| 한국어 | [README.ko.md](README.ko.md) |
+
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev/)
 [![CLI](https://img.shields.io/badge/Type-CLI-111111)](#명령어)
 [![Skills](https://img.shields.io/badge/Repo%20Skills-apa--*-2f855a)](#commands--skills)
@@ -40,19 +53,6 @@ idea
   -> make test
   -> repeat
 ```
-
-## 언어
-
-| 언어 | README |
-|---|---|
-| English | [README.md](README.md) |
-| 简体中文 | [README.zh-CN.md](README.zh-CN.md) |
-| 繁體中文 | [README.zh-TW.md](README.zh-TW.md) |
-| Deutsch | [README.de.md](README.de.md) |
-| Français | [README.fr.md](README.fr.md) |
-| Español | [README.es.md](README.es.md) |
-| 日本語 | [README.ja.md](README.ja.md) |
-| 한국어 | [README.ko.md](README.ko.md) |
 
 ## `apa`가 하는 일
 
