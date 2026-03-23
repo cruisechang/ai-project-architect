@@ -1,6 +1,8 @@
 # Testing
 
-## TDD Workflow
+## Phase 0
+
+### TDD Workflow
 
 This project follows Test-Driven Development (TDD):
 
@@ -8,7 +10,7 @@ This project follows Test-Driven Development (TDD):
 2. **GREEN** — Write minimal code to pass the test
 3. **REFACTOR** — Clean up while keeping tests green
 
-## Test Types
+### Test Types
 
 | Type | Purpose | Location |
 |------|---------|----------|
@@ -16,7 +18,7 @@ This project follows Test-Driven Development (TDD):
 | Integration | Cross-module and API flows | `tests/integration/` |
 | E2E | Critical user journeys | `tests/e2e/` |
 
-## Running Tests
+### Running Tests
 
 ```bash
 # Run all tests
@@ -53,12 +55,45 @@ cd frontend && npm run test:watch
 ```
 {{- end }}
 
-## Coverage Target
+### Coverage Target
 
 Minimum **80%** statement coverage for all packages.
 
-## CI Expectations
+### Inspection Checklist
+- Confirm every committed Phase 0 feature has matching tests.
+- Confirm the selected test suite matches the Phase 0 risk profile.
+
+### CI Expectations
 
 - All tests must pass before merge
 - Coverage must not decrease
 - New features require tests
+
+### Completion Criteria
+- All required Phase 0 tests pass locally and in CI.
+
+### Next-Phase Gate
+- Phase 1 can start only after the full Phase 0 test suite passes, coverage expectations are met, and open quality gaps are explicitly documented.
+
+### Phase Completion Report
+- Phase: `Phase 0`
+- Goal:
+  - Define and verify the test scope needed for the highest-priority delivery phase.
+- Delivered Scope:
+  - Record the test scope completed in Phase 0.
+- Tests Executed:
+  - Record the unit, integration, E2E, regression, and CI test runs completed for Phase 0.
+- Checks Performed:
+  - Record coverage review, CI inspection, and quality-gap checks completed.
+- Completion Result:
+  - `PASS`, `PARTIAL`, or `BLOCKED`
+- Open Issues / Risks:
+  - None
+- Assumptions:
+  - None
+- Handoff Notes:
+  - Record testing gaps, known flakes, or suite constraints the next phase must consider.
+- Next-Phase Gate:
+  - Phase 1 can start only after the full Phase 0 test suite passes, coverage expectations are met, and open quality gaps are explicitly documented.
+- Next Phase:
+  - `Phase 1` or `None`

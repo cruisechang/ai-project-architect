@@ -1,9 +1,47 @@
 # Deployment
 
-## Environments
+## Phase 0
+
+### Environments
 - dev
 - staging
 - production
 
-## Release Process
-Document deployment steps, rollback plan, and verification checklist.
+### Release Process
+Document Phase 0 deployment steps, rollback plan, and verification checklist.
+
+### Required Tests
+- Define deployment smoke checks, rollback rehearsal, and environment validation for Phase 0.
+
+### Inspection Checklist
+- Confirm deployment steps support the actual Phase 0 runtime topology.
+- Confirm rollback and verification steps are documented and executable.
+
+### Completion Criteria
+- Phase 0 can be deployed and verified using the documented process.
+
+### Next-Phase Gate
+- Phase 1 can start only after deployment smoke checks, rollback rehearsal, and environment verification all pass and the release checklist is current.
+
+### Phase Completion Report
+- Phase: `Phase 0`
+- Goal:
+  - Define the deployment path required for the highest-priority release scope.
+- Delivered Scope:
+  - Record deployment assets and environments prepared for Phase 0.
+- Tests Executed:
+  - Record deployment smoke checks, rollback rehearsal, and environment validation run for Phase 0.
+- Checks Performed:
+  - Record release checklist review, deploy verification, and rollback inspection completed.
+- Completion Result:
+  - `PASS`, `PARTIAL`, or `BLOCKED`
+- Open Issues / Risks:
+  - None
+- Assumptions:
+  - None
+- Handoff Notes:
+  - Record deployment caveats or environment constraints the next phase must respect.
+- Next-Phase Gate:
+  - Phase 1 can start only after deployment smoke checks, rollback rehearsal, and environment verification all pass and the release checklist is current.
+- Next Phase:
+  - `Phase 1` or `None`

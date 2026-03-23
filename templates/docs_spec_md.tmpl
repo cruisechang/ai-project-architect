@@ -7,17 +7,56 @@
 - Architecture: `{{ .Architecture }}`
 - Stack: `{{ .TechStack }}`
 
-## Functional Requirements
+## Phase 0
+
+### Functional Requirements
 {{- range .Requirements }}
 - {{ . }}
 {{- end }}
 
-## Testing Strategy
-- Follow `AGENTS.md` to decide required test scope by feature risk and impact.
-- Cover necessary unit/integration/e2e/regression/security/performance tests as needed.
+### Technical Design
+- Define Phase 0 modules, interfaces, data flow, and constraints.
 
-## Deployment
+### Required Tests
+- Follow `AGENTS.md` to decide required test scope by feature risk and impact.
+- Cover necessary unit/integration/e2e/regression/security/performance tests for Phase 0.
+
+### Inspection Checklist
+- Verify all Phase 0 technical decisions are reflected in implementation.
+- Verify the SPEC matches `PRD Phase 0` and `API Phase 0`.
+
+### Deployment
 - Docker Compose Integration: {{ .DockerCompose }}
 
-## Non-Functional Requirements
+### Non-Functional Requirements
 - Reliability, observability, and maintainability targets.
+
+### Completion Criteria
+- Phase 0 technical scope is implemented and all required checks pass.
+- Known risks are documented with mitigation or explicit deferral.
+
+### Next-Phase Gate
+- Phase 1 can start only after all required Phase 0 tests pass, the SPEC remains aligned with `PRD Phase 0` and `API Phase 0`, and deferred risks are explicitly recorded.
+
+### Phase Completion Report
+- Phase: `Phase 0`
+- Goal:
+  - Define the technical scope and constraints for the highest-priority implementation phase.
+- Delivered Scope:
+  - Record completed technical scope for Phase 0.
+- Tests Executed:
+  - Record the generator, integration, and other verification tests run for Phase 0.
+- Checks Performed:
+  - Record technical review, traceability checks, and inspection findings.
+- Completion Result:
+  - `PASS`, `PARTIAL`, or `BLOCKED`
+- Open Issues / Risks:
+  - None
+- Assumptions:
+  - None
+- Handoff Notes:
+  - Record the technical decisions the next phase must preserve.
+- Next-Phase Gate:
+  - Phase 1 can start only after all required Phase 0 tests pass, the SPEC remains aligned with `PRD Phase 0` and `API Phase 0`, and deferred risks are explicitly recorded.
+- Next Phase:
+  - `Phase 1` or `None`

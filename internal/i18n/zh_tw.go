@@ -17,6 +17,9 @@ func init() {
   cd ~/projects/food-platform
   apa list-skills              # 查看可用 skills
   apa iterate                  # 產出「持續迭代直到完成」AI 提示詞
+                              # 搭配 apa-loop + apa-implement 強制執行每輪交付循環
+                              # /apa-loop --max-iterations 30
+                              # /cancel-apa-loop
   make test                    # 執行測試（repo 原生 Makefile）
 
 ` + iterSep + `
@@ -66,7 +69,7 @@ apa init — 首次 bootstrap（核心指令）
 
 使用場景：
   專案外首次建立  →  apa init
-  進入 repo 後    →  apa iterate → skill 指導 agent 實作 → make test（循環）
+  進入 repo 後    →  apa iterate → apa-loop + apa-implement 指導 agent 實作 → make test（循環）
 
 產物：
   .architect/context.json          推論出的技術棧
@@ -102,7 +105,8 @@ apa init — 首次 bootstrap（核心指令）
 		"iterate.short": "輸出「持續迭代直到完成」AI 提示詞（任何時段皆可執行）",
 		"iterate.long": `讀取當前 repo 狀態，輸出給 AI 的「持續迭代直到完成」指令。
 
-將輸出複製並貼到 AI（如 Claude Code）後，AI 會自動：
+將輸出複製並貼到 AI（如 Claude Code）後，建議搭配 ` + "`apa-loop`" + ` 使用，以強制進入交付循環。
+AI 會自動：
   1. 盤點現況（docs、tasks、測試、CI 狀態）
   2. 循環實作 → 測試 → 修復 → 更新文件
   3. 直到所有核心需求完成、測試通過
@@ -116,19 +120,22 @@ apa init — 首次 bootstrap（核心指令）
 		"iterate.flag.root": "專案根目錄路徑（預設為當前目錄）",
 
 		// iterate prompt output
-		"iterate.prompt.intro":        "你現在是本 repo 的主責實作 AI，請進入「持續迭代直到完成」模式，直接執行，不要只給建議。",
-		"iterate.prompt.project-info": "專案資訊",
-		"iterate.prompt.root-label":   "專案根目錄：",
-		"iterate.prompt.name-label":   "名稱：",
-		"iterate.prompt.idea-label":   "Idea：",
-		"iterate.prompt.stack-label":  "技術棧：",
-		"iterate.prompt.no-context":   "（尚未執行 apa init，未找到 .architect/context.json）",
-		"iterate.prompt.docs-status":  "設計文件狀態",
-		"iterate.prompt.exists":       "存在",
-		"iterate.prompt.missing":      "缺少",
-		"iterate.prompt.no-docs":      "（執行 apa init 可建立含設計文件的完整專案）",
-		"iterate.prompt.tasks":        "任務清單",
-		"iterate.prompt.workflow":     "工作方式（循環執行，直到 DONE）",
+		"iterate.prompt.intro":                "你現在是本 repo 的主責實作 AI，請進入「持續迭代直到完成」模式，直接執行，不要只給建議。",
+		"iterate.prompt.project-info":         "專案資訊",
+		"iterate.prompt.root-label":           "專案根目錄：",
+		"iterate.prompt.name-label":           "名稱：",
+		"iterate.prompt.idea-label":           "Idea：",
+		"iterate.prompt.stack-label":          "技術棧：",
+		"iterate.prompt.no-context":           "（尚未執行 apa init，未找到 .architect/context.json）",
+		"iterate.prompt.docs-status":          "設計文件狀態",
+		"iterate.prompt.exists":               "存在",
+		"iterate.prompt.missing":              "缺少",
+		"iterate.prompt.no-docs":              "（執行 apa init 可建立含設計文件的完整專案）",
+		"iterate.prompt.phase-warning":        "需要先重寫階段式文件",
+		"iterate.prompt.phase-warning-items":  "以下既有文件不是以優先度排序的 `Phase 0`、`Phase 1`... 階段式寫法：",
+		"iterate.prompt.phase-warning-action": "請先呼叫 `apa-docs` skill，將這些文件重寫成對齊的階段式內容，再繼續實作。",
+		"iterate.prompt.tasks":                "任務清單",
+		"iterate.prompt.workflow":             "工作方式（循環執行，直到 DONE）",
 		"iterate.prompt.workflow-steps": `  1. 先盤點現況：讀取 docs、tasks、測試、CI 狀態，列出未完成項目與風險。
   2. 每輪只做 1~3 個最高優先任務（以可驗證結果為準）。
   3. 實作後必須執行必要檢查（至少含測試；有 lint 就跑 lint）。
@@ -145,8 +152,9 @@ apa init — 首次 bootstrap（核心指令）
 		"iterate.prompt.constraints-items": `  - 不要刪除或回滾我未要求刪除的內容。
   - 每輪先小步提交可運行結果，再擴展下一輪。
   - 若需要重大取捨，先提出「選項 + 建議 + 影響」，其餘情況直接做。`,
-		"iterate.prompt.start":       "開始執行，先輸出：",
-		"iterate.prompt.start-items": "  A. 現況盤點\n  B. 第一輪要做的 1~3 個任務\n然後直接進入實作循環，直到 DONE。",
+		"iterate.prompt.start":             "開始執行，先輸出：",
+		"iterate.prompt.start-items":       "  A. 現況盤點\n  B. 第一輪要做的 1~3 個任務\n然後直接進入實作循環，直到 DONE。",
+		"iterate.prompt.start-items.phase": "  A. 使用 `apa-docs` skill，將這些文件重寫成對齊的階段式內容：%s\n  B. 文件重寫後的現況盤點\n  C. 第一輪要做的 1~3 個任務\n然後直接進入實作循環，直到 DONE。",
 
 		// list-skills
 		"list-skills.short": "列出指定目錄下可用的 skills",

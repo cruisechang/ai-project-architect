@@ -10,6 +10,7 @@ import (
 
 	architectruntime "project-generator/internal/architect/runtime"
 	"project-generator/internal/config"
+	"project-generator/internal/docphase"
 	"project-generator/internal/i18n"
 )
 
@@ -77,10 +78,19 @@ func printIteratePrompt(rootAbs string) {
 		"docs/IMPLEMENTATION_PLAN.md",
 	}
 	anyDoc := false
+	var nonPhaseDocs []string
 	for _, rel := range docFiles {
-		if _, err := os.Stat(filepath.Join(rootAbs, rel)); err == nil {
+		status, err := docphase.Check(rootAbs, rel)
+		if err != nil {
+			fmt.Printf("  [%s] %s (%v)\n", i18n.T("iterate.prompt.missing"), rel, err)
+			continue
+		}
+		if status.Exists {
 			fmt.Printf("  [%s] %s\n", i18n.T("iterate.prompt.exists"), rel)
 			anyDoc = true
+			if !status.PhaseBased {
+				nonPhaseDocs = append(nonPhaseDocs, rel)
+			}
 		} else {
 			fmt.Printf("  [%s] %s\n", i18n.T("iterate.prompt.missing"), rel)
 		}
@@ -89,6 +99,18 @@ func printIteratePrompt(rootAbs string) {
 		fmt.Println(i18n.T("iterate.prompt.no-docs"))
 	}
 	fmt.Println()
+
+	if len(nonPhaseDocs) > 0 {
+		fmt.Println(iterateSep)
+		fmt.Println(i18n.T("iterate.prompt.phase-warning"))
+		fmt.Println(iterateSep)
+		fmt.Println(i18n.T("iterate.prompt.phase-warning-items"))
+		for _, rel := range nonPhaseDocs {
+			fmt.Printf("  - %s\n", rel)
+		}
+		fmt.Println(i18n.T("iterate.prompt.phase-warning-action"))
+		fmt.Println()
+	}
 
 	tasksDir := filepath.Join(rootAbs, "tasks", "queue")
 	if info, err := os.Stat(tasksDir); err == nil && info.IsDir() {
@@ -124,7 +146,12 @@ func printIteratePrompt(rootAbs string) {
 
 	fmt.Println(iterateSep)
 	fmt.Println(i18n.T("iterate.prompt.start"))
-	fmt.Println(i18n.T("iterate.prompt.start-items"))
+	if len(nonPhaseDocs) > 0 {
+		fmt.Printf(i18n.T("iterate.prompt.start-items.phase"), strings.Join(nonPhaseDocs, ", "))
+		fmt.Println()
+	} else {
+		fmt.Println(i18n.T("iterate.prompt.start-items"))
+	}
 	fmt.Println(iterateSep)
 }
 

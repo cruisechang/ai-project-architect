@@ -21,8 +21,16 @@ Use this skill when implementing a new feature end-to-end.
 9. **Update documentation** — Inline comments where logic is non-obvious, update relevant docs/
 10. **Verify release safety** — No breaking API changes, all tests green, no debug prints
 
+## Rules
+
+- Write tests before implementation (TDD: red → green → refactor)
+- Never implement more than the acceptance criteria require
+- One PR per feature; no unrelated changes in the diff
+- No debug prints or commented-out code in the final diff
+- If a breaking API change is unavoidable, document it explicitly
+
 ## Output
 
-- Passing tests (`make test` or equivalent)
+- Passing tests (`make test` or `go test ./...`)
 - Updated docs if public API changed
 - Clean diff with no unrelated changes

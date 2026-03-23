@@ -35,23 +35,45 @@
 - `AGENTS.md` — Codex 에이전트 설정
 - `PROMPT.md` — 프롬프트 엔지니어링 가이드
 - `PLANS.md` — 구현 계획
-- `docs/` — PRD, SPEC, API, ARCHITECTURE, DEPLOYMENT
+- `docs/` — `Phase 0`부터 시작하는 단계형 PRD, SPEC, API, ARCHITECTURE, DEPLOYMENT
 - `src/` — 소스 코드
 - `tests/` — 테스트 스위트 (단위 + 통합)
 - `tasks/queue/` — 일일 작업 큐
 - `scripts/` — 유틸리티 스크립트
 - `agents/` — planner, coder, reviewer, test agents
-- `skills/` — agent를 안내하는 repo 로컬 skills
+- `skills/` — agent를 안내하는 repo 로컬 `apa-*` skills
+  - `apa-catalog` — 사용 가능한 모든 skills 목록 및 설명
+  - `apa-debug` — 버그 진단 및 수정
+  - `apa-devops` — 배포, CI/CD, 컨테이너화
+  - `apa-docs` — Phase 0부터 시작하는 우선순위 기반 단계형 문서를 생성 또는 업데이트하며, 정렬된 PRD/API/SPEC, 테스트, 점검, 다음 단계 gate, 완료 보고서를 포함
+  - `apa-feature` — 새 기능 엔드투엔드 구현
+  - `apa-implement` — 기존 문서를 읽고 테스트 우선으로 구현을 추진
+  - `apa-integration` — 외부 서비스 또는 API 통합
+  - `apa-loop` — 라운드 기반 전달 루프: 상태 읽기, 1-3개 작업 선택, 테스트 → 구현 → 수정 → 상태 업데이트 → 완료까지 반복
+    사용 방법: `/apa-loop --max-iterations 30`, `/cancel-apa-loop`
+  - `apa-review` — pull request 또는 diff 검토
+  - `apa-tdd` — TDD 준수 여부, 테스트 공백, 추가 권장 테스트를 점검
 - `.codex/` — config.json, memory.md, cache/
 {{- else }}
 - `CLAUDE.md` — Claude Code 설정
 - `AGENTS.md` — 에이전트 설정
-- `docs/` — PRD, SPEC, API, ARCHITECTURE, DEPLOYMENT
+- `docs/` — `Phase 0`부터 시작하는 단계형 PRD, SPEC, API, ARCHITECTURE, DEPLOYMENT
 - `src/` — 소스 코드
 - `tests/` — 테스트 스위트 (단위 + 통합)
 - `tasks/queue/` — 일일 작업 큐
 - `agents/` — planner, coder, reviewer, test agents
-- `skills/` — agent를 안내하는 repo 로컬 skills
+- `skills/` — agent를 안내하는 repo 로컬 `apa-*` skills
+  - `apa-catalog` — 사용 가능한 모든 skills 목록 및 설명
+  - `apa-debug` — 버그 진단 및 수정
+  - `apa-devops` — 배포, CI/CD, 컨테이너화
+  - `apa-docs` — Phase 0부터 시작하는 우선순위 기반 단계형 문서를 생성 또는 업데이트하며, 정렬된 PRD/API/SPEC, 테스트, 점검, 다음 단계 gate, 완료 보고서를 포함
+  - `apa-feature` — 새 기능 엔드투엔드 구현
+  - `apa-implement` — 기존 문서를 읽고 테스트 우선으로 구현을 추진
+  - `apa-integration` — 외부 서비스 또는 API 통합
+  - `apa-loop` — 라운드 기반 전달 루프: 상태 읽기, 1-3개 작업 선택, 테스트 → 구현 → 수정 → 상태 업데이트 → 완료까지 반복
+    사용 방법: `/apa-loop --max-iterations 30`, `/cancel-apa-loop`
+  - `apa-review` — pull request 또는 diff 검토
+  - `apa-tdd` — TDD 준수 여부, 테스트 공백, 추가 권장 테스트를 점검
 - `.claude/` — settings.json, memory.md, agents/
 {{- end }}
 

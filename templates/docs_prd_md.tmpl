@@ -5,22 +5,58 @@
 - Type: `{{ .ProjectType }}`
 - Description: {{ .ProjectDescription }}
 
-## Target Users
-- Define primary and secondary users.
+## Phase 0
 
-## Goals
+### Objective
+- Establish the first shippable phase with clearly bounded scope.
+
+### Target Users
+- Define primary and secondary users for Phase 0.
+
+### Goals
 {{- range .Goals }}
 - {{ . }}
 {{- end }}
 
-## Scope
+### Scope
 - In Scope:
-  - Define must-have features for the first release.
+  - Define must-have features for Phase 0.
 - Out of Scope:
-  - Define excluded items to control delivery risk.
+  - Define excluded items to control Phase 0 delivery risk.
 
-## Success Metrics
-- Define measurable product and delivery KPIs.
+### Required Tests
+- List the acceptance, integration, and regression tests required for Phase 0.
 
-## Release Plan
-- MVP milestone and rollout strategy.
+### Inspection Checklist
+- Confirm the implemented scope matches Phase 0 commitments.
+- Confirm PRD, SPEC, and API stay aligned on the same Phase 0 boundaries.
+
+### Completion Criteria
+- Phase 0 scope is implemented, tested, and documented.
+- No blocking issues remain for the Phase 0 release target.
+
+### Next-Phase Gate
+- Phase 1 can start only after the committed Phase 0 scope is delivered, required tests pass, and PRD alignment with SPEC and API is rechecked.
+
+### Phase Completion Report
+- Phase: `Phase 0`
+- Goal:
+  - Establish the first shippable phase with clearly bounded scope.
+- Delivered Scope:
+  - Record what was delivered in Phase 0.
+- Tests Executed:
+  - Record the acceptance, integration, and regression tests run for Phase 0.
+- Checks Performed:
+  - Record scope alignment, document review, and manual verification completed for Phase 0.
+- Completion Result:
+  - `PASS`, `PARTIAL`, or `BLOCKED`
+- Open Issues / Risks:
+  - None
+- Assumptions:
+  - None
+- Handoff Notes:
+  - Record the key context the next phase must inherit.
+- Next-Phase Gate:
+  - Phase 1 can start only after the committed Phase 0 scope is delivered, required tests pass, and PRD alignment with SPEC and API is rechecked.
+- Next Phase:
+  - `Phase 1` or `None`

@@ -35,23 +35,45 @@
 - `AGENTS.md` — Codex agent configuration
 - `PROMPT.md` — Prompt engineering guide
 - `PLANS.md` — Implementation plans
-- `docs/` — PRD, SPEC, API, ARCHITECTURE, DEPLOYMENT
+- `docs/` — phase-based PRD, SPEC, API, ARCHITECTURE, DEPLOYMENT
 - `src/` — Source code
 - `tests/` — Test suites (unit + integration)
 - `tasks/queue/` — Daily task queue
 - `scripts/` — Utility scripts
 - `agents/` — planner, coder, reviewer, test agents
-- `skills/` — repo-local skills for agent guidance
+- `skills/` — repo-local `apa-*` skills for agent guidance
+  - `apa-catalog` — list and explain all available skills
+  - `apa-debug` — diagnose and fix bugs
+  - `apa-devops` — deployment, CI/CD, containerization
+  - `apa-docs` — generate priority-based phased project documentation starting from Phase 0, with aligned PRD/API/SPEC, tests, checks, next-phase gates, and completion reports
+  - `apa-feature` — implement a new feature end-to-end
+  - `apa-implement` — read existing docs and drive concrete implementation with test-first changes
+  - `apa-integration` — integrate with external services or APIs
+  - `apa-loop` — round-based delivery loop: read status, pick 1-3 tasks, test → implement → fix → update status → repeat until done
+    Usage: `/apa-loop --max-iterations 30`, `/cancel-apa-loop`
+  - `apa-review` — review a pull request or diff
+  - `apa-tdd` — audit TDD discipline, test gaps, and recommended next tests
 - `.codex/` — config.json, memory.md, cache/
 {{- else }}
 - `CLAUDE.md` — Claude Code configuration
 - `AGENTS.md` — Agent configuration
-- `docs/` — PRD, SPEC, API, ARCHITECTURE, DEPLOYMENT
+- `docs/` — phase-based PRD, SPEC, API, ARCHITECTURE, DEPLOYMENT
 - `src/` — Source code
 - `tests/` — Test suites (unit + integration)
 - `tasks/queue/` — Daily task queue
 - `agents/` — planner, coder, reviewer, test agents
-- `skills/` — repo-local skills for agent guidance
+- `skills/` — repo-local `apa-*` skills for agent guidance
+  - `apa-catalog` — list and explain all available skills
+  - `apa-debug` — diagnose and fix bugs
+  - `apa-devops` — deployment, CI/CD, containerization
+  - `apa-docs` — generate priority-based phased project documentation starting from Phase 0, with aligned PRD/API/SPEC, tests, checks, next-phase gates, and completion reports
+  - `apa-feature` — implement a new feature end-to-end
+  - `apa-implement` — read existing docs and drive concrete implementation with test-first changes
+  - `apa-integration` — integrate with external services or APIs
+  - `apa-loop` — round-based delivery loop: read status, pick 1-3 tasks, test → implement → fix → update status → repeat until done
+    Usage: `/apa-loop --max-iterations 30`, `/cancel-apa-loop`
+  - `apa-review` — review a pull request or diff
+  - `apa-tdd` — audit TDD discipline, test gaps, and recommended next tests
 - `.claude/` — settings.json, memory.md, agents/
 {{- end }}
 

@@ -58,9 +58,10 @@ idea
 
 - 자연어 제품 idea로 새 프로젝트를 bootstrap
 - 현실적인 기술 스택을 추론하고 flags로 덮어쓸 수 있음
-- PRD, SPEC, ARCHITECTURE, API, DB Schema, 구현 계획 생성
+- `Phase 0`부터 시작하는 단계형 문서로 PRD, SPEC, ARCHITECTURE, API, DB Schema, 구현 계획 생성
 - 실행 가능한 시작 코드, 테스트 구조, Makefile, agent 설정 생성
 - `apa iterate`로 AI agent가 계속 작업할 수 있는 구조화된 프롬프트 출력
+- `apa-loop`와 자연스럽게 결합되어 상태 읽기, 1-3개 작업 선택, 검증, 상태 업데이트, 반복의 라운드 기반 전달을 진행할 수 있음
 
 ## 권장 워크플로
 
@@ -81,9 +82,19 @@ make test
 기본 반복 루프:
 
 1. `apa init`으로 첫 프로젝트를 만든다.
-2. repo-local `apa-*` skills로 구현 작업을 진행한다.
-3. `apa iterate`를 실행하고 agent가 작업한 뒤 `make test`로 검증한다.
-4. 배포 가능한 상태가 될 때까지 반복한다.
+2. `Phase 0`부터 시작하는 단계형 문서를 유지해 PRD/API/SPEC의 범위, 테스트, gate, 보고서를 정렬한다.
+3. 기본 전달 루프로 `apa-loop`와 `apa-implement`를 사용한다.
+4. `apa iterate`를 실행하고 agent가 작업한 뒤 `make test`로 검증한다.
+5. 배포 가능한 상태가 될 때까지 반복한다.
+
+## 전달 루프 상태
+
+생성된 repo는 `docs/IMPLEMENTATION_STATUS.md` 또는 `TASKS.md`를 계속 업데이트해야 합니다.
+`apa-loop`와 `apa-implement`를 함께 사용해서 agent가 구현, 테스트, 수정, 문서 업데이트를 계속 순환하고 완료 gate가 충족될 때까지 진행하도록 합니다.
+`apa-loop`는 상태 파일을 읽고, 검증 가능한 작업 1-3개를 고르고, 테스트/체크를 실행하고, 상태를 갱신한 뒤 완료 gate가 충족될 때까지 반복하도록 강제하는 repo-local skill입니다.
+사용 방법:
+`/apa-loop --max-iterations 30`
+`/cancel-apa-loop`
 
 ## 빠른 예시
 
@@ -131,7 +142,9 @@ make test
 - `apa-devops`
 - `apa-docs`
 - `apa-feature`
+- `apa-implement`
 - `apa-integration`
+- `apa-loop`
 - `apa-review`
 - `apa-tdd`
 
@@ -193,6 +206,8 @@ agents/ skills/
 
 구현 전, 개발 중, 회귀 수정 이후에도 사용할 수 있으며, 기존 문서, 작업, 제약사항에 맞춰 agent가 계속 일하도록 돕습니다.
 
+또한 기존 문서가 우선순위 기준으로 정렬된 `Phase 0`, `Phase 1`, ... 구성을 따르는지 검사합니다. 그렇지 않으면 `apa iterate`가 경고를 출력하고, 구현 전에 `apa-docs`로 다시 쓰라고 agent에 지시합니다.
+
 ```bash
 ./apa iterate
 ./apa iterate --root ~/projects/report-platform
@@ -210,9 +225,13 @@ agents/ skills/
 - `apa-devops`
 - `apa-docs`
 - `apa-feature`
+- `apa-implement`
 - `apa-integration`
+- `apa-loop`
 - `apa-review`
 - `apa-tdd`
+
+`apa-docs`는 문서를 우선순위 기반 단계(`Phase 0`, `Phase 1`, ...)로 작성합니다. `Phase 0`는 항상 가장 높은 우선순위 단계입니다. 각 단계에는 범위, 정렬된 PRD/API/SPEC 내용, 필요한 테스트, 점검 항목, 완료 기준, 명확한 다음 단계 gate, 단계 완료 보고서가 반드시 포함되어야 합니다.
 
 목록 확인:
 

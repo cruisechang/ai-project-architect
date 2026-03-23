@@ -58,9 +58,10 @@ idea
 
 - 从自然语言产品想法 bootstrap 新项目
 - 先自动推断技术栈，再允许你通过 flags 覆盖
-- 生成 PRD、SPEC、ARCHITECTURE、API、DB Schema、实现计划等文档
+- 生成从 `Phase 0` 开始的分阶段文档，包括 PRD、SPEC、ARCHITECTURE、API、DB Schema、实现计划
 - 创建可运行的起始代码、测试结构、Makefile 和 agent 配置
 - 通过 `apa iterate` 输出结构化提示词，让 AI agent 在可控流程里持续推进
+- 可自然搭配 `apa-loop`，以分轮交付方式推进：读取状态、选 1-3 项任务、验证、更新状态、再重复
 
 ## 推荐工作流
 
@@ -81,9 +82,19 @@ make test
 核心循环：
 
 1. 用 `apa init` 创建第一版项目。
-2. 用 repo-local 的 `apa-*` skills 引导实现工作。
-3. 执行 `apa iterate`，让 agent 实现，再用 `make test` 验证。
-4. 重复直到项目可交付。
+2. 维持从 `Phase 0` 开始的分阶段文档，让 PRD/API/SPEC 的范围、测试、gate 和报告保持对齐。
+3. 默认用 `apa-loop` 搭配 `apa-implement` 推进每一轮交付。
+4. 执行 `apa iterate`，让 agent 实现，再用 `make test` 验证。
+5. 重复直到项目可交付。
+
+## 交付循环状态
+
+生成出的 repo 应持续更新 `docs/IMPLEMENTATION_STATUS.md` 或 `TASKS.md`。
+搭配 `apa-loop` 和 `apa-implement` 使用，让 agent 持续在实现、测试、修复与文档更新之间循环，直到完成 gate 被满足。
+`apa-loop` 是用来强制执行每轮交付循环的 repo-local skill：先读状态文件、选 1-3 个可验证工作项、跑测试或检查、更新状态，再持续重复直到完成 gate 被满足。
+使用方式：
+`/apa-loop --max-iterations 30`
+`/cancel-apa-loop`
 
 ## 快速示例
 
@@ -131,7 +142,9 @@ make test
 - `apa-devops`
 - `apa-docs`
 - `apa-feature`
+- `apa-implement`
 - `apa-integration`
+- `apa-loop`
 - `apa-review`
 - `apa-tdd`
 
@@ -193,6 +206,8 @@ agents/ skills/
 
 它可以在实现前、开发中，或回归修复后使用，帮助 agent 按照现有文档、任务和约束持续推进到交付。
 
+它也会检查现有文档是否采用按优先级对齐的 `Phase 0`、`Phase 1`... 段落；如果不是，`apa iterate` 会提醒用户，并要求 agent 先用 `apa-docs` 重写文档，再继续实现。
+
 ```bash
 ./apa iterate
 ./apa iterate --root ~/projects/report-platform
@@ -210,9 +225,13 @@ agents/ skills/
 - `apa-devops`
 - `apa-docs`
 - `apa-feature`
+- `apa-implement`
 - `apa-integration`
+- `apa-loop`
 - `apa-review`
 - `apa-tdd`
+
+`apa-docs` 会用按优先级对齐的阶段方式来写文档（`Phase 0`、`Phase 1`...），其中 `Phase 0` 永远是最高优先。每个阶段都必须写清范围、对应的 PRD/API/SPEC 内容、所需测试、检查项、完成标准、明确的下一阶段 gate，以及阶段完成报告。
 
 可以用下面命令查看：
 

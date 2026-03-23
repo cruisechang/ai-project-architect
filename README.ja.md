@@ -58,9 +58,10 @@ idea
 
 - 自然言語のプロダクト idea から新しいプロジェクトを bootstrap
 - 実用的な技術スタックを推論し、必要なら flags で上書き可能
-- PRD、SPEC、ARCHITECTURE、API、DB Schema、実装計画を生成
+- `Phase 0` から始まるフェーズ型ドキュメントとして、PRD、SPEC、ARCHITECTURE、API、DB Schema、実装計画を生成
 - 実行可能なスターターコード、テスト構成、Makefile、agent 設定を作成
 - `apa iterate` で、AI agent が継続実装しやすい構造化プロンプトを出力
+- `apa-loop` と自然に組み合わせられ、状態を読み、1-3 個の作業を選び、検証し、状態更新して繰り返すラウンド型デリバリーを進められる
 
 ## 推奨ワークフロー
 
@@ -81,9 +82,19 @@ make test
 基本ループ:
 
 1. `apa init` を 1 回実行して初期プロジェクトを作る。
-2. repo-local の `apa-*` skills で実装方針を進める。
-3. `apa iterate` を実行して agent に作業させ、`make test` で確認する。
-4. 出荷可能になるまで繰り返す。
+2. `Phase 0` から始まるフェーズ型ドキュメントを維持し、PRD/API/SPEC の範囲、テスト、ゲート、レポートを揃える。
+3. 標準のデリバリーループとして `apa-loop` と `apa-implement` を使う。
+4. `apa iterate` を実行して agent に作業させ、`make test` で確認する。
+5. 出荷可能になるまで繰り返す。
+
+## デリバリーループの状態
+
+生成された repo では `docs/IMPLEMENTATION_STATUS.md` または `TASKS.md` を継続的に更新するべきです。
+`apa-loop` と `apa-implement` を組み合わせて、agent が実装、テスト、修正、ドキュメント更新を繰り返し、完了ゲートを満たすまで進み続けるようにします。
+`apa-loop` は、状態ファイルを読み、検証可能な 1-3 個の作業項目を選び、テストやチェックを実行し、状態を更新して、完了ゲートを満たすまで繰り返す repo-local skill です。
+使い方:
+`/apa-loop --max-iterations 30`
+`/cancel-apa-loop`
 
 ## クイック例
 
@@ -131,7 +142,9 @@ make test
 - `apa-devops`
 - `apa-docs`
 - `apa-feature`
+- `apa-implement`
 - `apa-integration`
+- `apa-loop`
 - `apa-review`
 - `apa-tdd`
 
@@ -193,6 +206,8 @@ agents/ skills/
 
 実装前、開発中、回帰修正後のいずれでも使え、既存ドキュメント、タスク、制約に沿って agent が継続作業しやすくなります。
 
+さらに `apa iterate` は既存ドキュメントが優先度順に揃った `Phase 0`, `Phase 1`, ... の段階構成になっているか確認します。そうでない場合は警告を出し、実装前に `apa-docs` で書き直すよう agent に指示します。
+
 ```bash
 ./apa iterate
 ./apa iterate --root ~/projects/report-platform
@@ -210,9 +225,13 @@ agents/ skills/
 - `apa-devops`
 - `apa-docs`
 - `apa-feature`
+- `apa-implement`
 - `apa-integration`
+- `apa-loop`
 - `apa-review`
 - `apa-tdd`
+
+`apa-docs` は文書を優先度順の段階（`Phase 0`, `Phase 1`, ...）で作成します。`Phase 0` は常に最優先フェーズです。各フェーズには、範囲、対応する PRD/API/SPEC 内容、必要なテスト、確認項目、完了条件、明確な次フェーズ移行ゲート、フェーズ完了レポートを必ず含めます。
 
 一覧表示:
 

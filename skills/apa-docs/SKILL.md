@@ -6,6 +6,8 @@ This skill supports two modes:
 - full-doc mode: generate or update the complete documentation set
 - targeted-doc mode: generate or update only the specified document
 
+All documentation must be written phase-by-phase, ordered by priority. Start from `Phase 0` for the highest-priority work. Even if the work has only one phase, write it as `Phase 0`.
+
 ## Inputs
 
 - Requested mode: `all-docs` or `single-doc`
@@ -15,21 +17,38 @@ This skill supports two modes:
 - Current repository structure and code
 - Existing files under `docs/`
 - Any product or technical constraints from the user
+- Any known delivery order, milestones, or rollout constraints
 
 ## Steps
 
 1. **Read existing docs first** — Inspect `docs/` and avoid overwriting useful decisions blindly
 2. **Read the code and structure** — Use the actual repository layout, entrypoints, tests, and config as evidence
 3. **Identify gaps** — Separate what is explicitly supported by code from what is still planned or assumed
-4. **Pick the target docs**
+4. **Define phases first**
+   - Split the work into `Phase 0`, `Phase 1`, `Phase 2`, and so on
+   - Order phases by priority, with `Phase 0` as the highest-priority phase
+   - Keep phases sequential and scoped so each phase has a clear delivery goal
+   - If there is only one phase, still title it `Phase 0`
+5. **Pick the target docs**
    - In `all-docs` mode, update the full documentation set under `docs/`
-   - In `single-doc` mode, update only the requested document
-5. **Write concrete content** — Prefer specific modules, flows, interfaces, and constraints over vague architecture prose
-6. **Mark uncertainty clearly** — If a detail is inferred rather than implemented, label it as an assumption
-7. **Keep docs aligned**
-   - In `all-docs` mode, normalize terminology and system boundaries across all docs
-   - In `single-doc` mode, keep neighboring docs in mind but do not rewrite them unless the user asks
-8. **Verify after writing** — Re-read the changed docs and confirm they match the current repo state
+   - In `single-doc` mode, update only the requested document, but preserve the same phase numbering used by related docs when available
+6. **Write each phase completely**
+   - For every phase, describe the end-to-end process, not just a feature list
+   - PRD, API, SPEC, and other relevant docs must all use matching phase sections
+   - `PRD Phase 0` must align with `API Phase 0`, `SPEC Phase 0`, and the same numbered phase in other docs
+7. **Document phase validation**
+   - State the tests required in that phase
+   - State the inspection or verification items for that phase
+   - State the exact completion criteria for that phase
+   - State the explicit next-phase gate for that phase
+8. **Add a phase completion report**
+   - After each phase, include a report section using the exact report format defined below
+   - If another phase exists, continue directly into the next phase
+9. **Mark uncertainty clearly** — If a detail is inferred rather than implemented, label it as an assumption
+10. **Keep docs aligned**
+   - In `all-docs` mode, normalize terminology, system boundaries, and phase numbering across all docs
+   - In `single-doc` mode, keep neighboring docs in mind and do not introduce conflicting phase scopes
+11. **Verify after writing** — Re-read the changed docs and confirm they match the current repo state
 
 ## Rules
 
@@ -37,6 +56,54 @@ This skill supports two modes:
 - Do not rewrite every doc if only one document needs updating
 - Prefer concise, operational documentation over generic template text
 - Use current file paths, module names, and commands from the repo
+- Do not write non-phased docs for PRD, SPEC, API, DB, ARCHITECTURE, or implementation planning
+- Every phase must include:
+  - scope and target outcomes
+  - required tests
+  - required inspection items
+  - explicit completion criteria
+  - explicit next-phase gate
+  - a completion report section
+- Do not use an ad hoc report structure; use the exact phase report format in this skill
+- When a doc is not relevant to a phase, say so explicitly instead of leaving the phase misaligned
+
+## Phase Report Format
+
+Use this exact structure after every phase:
+
+```md
+### Phase Completion Report
+- Phase: `Phase N`
+- Goal:
+  - What this phase was intended to achieve
+- Delivered Scope:
+  - What was completed in this phase
+- Tests Executed:
+  - Tests run for this phase
+- Checks Performed:
+  - Validation, inspection, lint, build, review, or manual verification completed
+- Completion Result:
+  - `PASS`, `PARTIAL`, or `BLOCKED`
+- Open Issues / Risks:
+  - Remaining issues, risks, or deferred items
+- Assumptions:
+  - Assumptions used in this phase, or `None`
+- Handoff Notes:
+  - Notes the next phase or implementer must know
+- Next-Phase Gate:
+  - Exact condition that must be satisfied before the next phase starts
+- Next Phase:
+  - `Phase N+1` or `None`
+```
+
+Report field rules:
+
+- `Phase` must match the current phase number exactly
+- `Goal`, `Delivered Scope`, `Tests Executed`, `Checks Performed`, `Open Issues / Risks`, and `Handoff Notes` must be written as concrete bullets
+- `Completion Result` must be one of `PASS`, `PARTIAL`, or `BLOCKED`
+- `Assumptions` must say `None` if there were no assumptions
+- `Next Phase` must be the next numbered phase or `None` if the current phase is the last phase
+- If a section has nothing to report, write `None` instead of omitting it
 
 ## Document Targets
 
@@ -52,6 +119,9 @@ This skill supports two modes:
 - If the user says "update docs" without narrowing scope, default to `all-docs`
 - If the user names one document, treat it as `single-doc`
 - If the requested document does not exist yet, create it in `docs/`
+- When creating PRD, SPEC, API, DB, ARCHITECTURE, or implementation planning docs, use phase headings consistently from the start
+- Prefer a small number of realistic phases over an overly granular rollout
+- Phase numbering must be stable across docs after you choose it
 
 ## Output
 
@@ -59,5 +129,14 @@ This skill supports two modes:
 - Either:
   - the full set of docs, or
   - only the requested target doc
+- Phase-based sections such as `Phase 0`, `Phase 1`, and so on across the relevant docs
+- For each phase:
+  - required functionality
+  - matching PRD / API / SPEC content
+  - required tests
+  - inspection checklist items
+  - completion criteria
+  - next-phase gate
+  - phase completion report using the exact report format above
 - Assumptions called out explicitly where code evidence is missing
 - Terminology and structure consistent with the current repository

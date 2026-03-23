@@ -58,9 +58,10 @@ idea
 
 - Inicializa un proyecto nuevo a partir de una idea de producto en lenguaje natural
 - Infiere una stack técnica razonable y permite sobrescribirla con flags
-- Genera PRD, SPEC, ARCHITECTURE, API, DB Schema y plan de implementación
+- Genera documentación por fases desde `Phase 0`, incluyendo PRD, SPEC, ARCHITECTURE, API, DB Schema y plan de implementación
 - Crea código inicial ejecutable, estructura de tests, objetivos de Makefile y configuración de agente
 - Produce con `apa iterate` un prompt estructurado para que un agente de IA siga entregando trabajo
+- Se combina de forma natural con `apa-loop` para una entrega por rondas: leer estado, elegir 1-3 tareas, verificar, actualizar estado y repetir
 
 ## Flujo recomendado
 
@@ -81,9 +82,19 @@ make test
 Bucle principal:
 
 1. Ejecutar `apa init` una vez para crear la primera versión del proyecto.
-2. Usar skills repo-local `apa-*` para guiar la implementación.
-3. Ejecutar `apa iterate`, dejar trabajar al agente y validar con `make test`.
-4. Repetir hasta que el repo esté listo para entregar.
+2. Mantener documentación por fases desde `Phase 0` para alinear alcance, pruebas, gates e informes entre PRD/API/SPEC.
+3. Usar `apa-loop` con `apa-implement` como bucle de entrega por defecto.
+4. Ejecutar `apa iterate`, dejar trabajar al agente y validar con `make test`.
+5. Repetir hasta que el repo esté listo para entregar.
+
+## Estado del ciclo de entrega
+
+Los repos generados deben mantener `docs/IMPLEMENTATION_STATUS.md` o `TASKS.md` actualizados.
+Usa `apa-loop` con `apa-implement` para que el agente siga rotando entre implementación, pruebas, correcciones y actualizaciones de documentación hasta que se cumpla el gate de finalización.
+`apa-loop` es el skill repo-local que fuerza el bucle de entrega por rondas: leer el archivo de estado, elegir 1-3 tareas verificables, ejecutar pruebas o checks, actualizar el estado y repetir hasta cumplir el gate de finalización.
+Uso:
+`/apa-loop --max-iterations 30`
+`/cancel-apa-loop`
 
 ## Ejemplo rápido
 
@@ -131,7 +142,9 @@ Skills repo-local actuales:
 - `apa-devops`
 - `apa-docs`
 - `apa-feature`
+- `apa-implement`
 - `apa-integration`
+- `apa-loop`
 - `apa-review`
 - `apa-tdd`
 
@@ -193,6 +206,8 @@ agents/ skills/
 
 Es útil antes de implementar, durante el desarrollo o después de una regresión, para que el agente siga trabajando alineado con los documentos, tareas y restricciones del repo.
 
+También comprueba si los documentos existentes usan secciones alineadas por prioridad `Phase 0`, `Phase 1`, ... Si no es así, `apa iterate` avisa al usuario y le indica al agente que los reescriba con `apa-docs` antes de continuar.
+
 ```bash
 ./apa iterate
 ./apa iterate --root ~/projects/report-platform
@@ -210,9 +225,13 @@ Ejemplos actuales:
 - `apa-devops`
 - `apa-docs`
 - `apa-feature`
+- `apa-implement`
 - `apa-integration`
+- `apa-loop`
 - `apa-review`
 - `apa-tdd`
+
+`apa-docs` redacta la documentación por fases alineadas por prioridad (`Phase 0`, `Phase 1`, ...). `Phase 0` siempre es la fase de mayor prioridad. Cada fase debe definir alcance, contenido alineado de PRD/API/SPEC, pruebas requeridas, puntos de verificación, criterios de finalización, un gate explícito para la siguiente fase e informe de cierre de fase.
 
 Listarlos con:
 

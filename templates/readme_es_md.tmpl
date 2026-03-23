@@ -35,23 +35,45 @@
 - `AGENTS.md` — Configuración del agente Codex
 - `PROMPT.md` — Guía de ingeniería de prompts
 - `PLANS.md` — Planes de implementación
-- `docs/` — PRD, SPEC, API, ARCHITECTURE, DEPLOYMENT
+- `docs/` — PRD, SPEC, API, ARCHITECTURE y DEPLOYMENT por fases desde `Phase 0`
 - `src/` — Código fuente
 - `tests/` — Suites de pruebas (unitarias + integración)
 - `tasks/queue/` — Cola de tareas diarias
 - `scripts/` — Scripts de utilidad
 - `agents/` — planner, coder, reviewer, test agents
-- `skills/` — skills locales del repo para guiar al agente
+- `skills/` — skills locales `apa-*` del repo para guiar al agente
+  - `apa-catalog` — listar y explicar todos los skills disponibles
+  - `apa-debug` — diagnosticar y corregir bugs
+  - `apa-devops` — despliegue, CI/CD, contenedores
+  - `apa-docs` — generar o actualizar documentación por prioridad desde Phase 0, con PRD/API/SPEC alineados, pruebas, verificaciones, gates de siguiente fase e informes de cierre
+  - `apa-feature` — implementar una nueva funcionalidad de extremo a extremo
+  - `apa-implement` — leer documentación existente y avanzar en la implementación con test-first
+  - `apa-integration` — integrar servicios externos o APIs
+  - `apa-loop` — bucle de entrega por rondas: leer estado, elegir 1-3 tareas, probar → implementar → corregir → actualizar estado → repetir hasta terminar
+    Uso: `/apa-loop --max-iterations 30`, `/cancel-apa-loop`
+  - `apa-review` — revisar un pull request o diff
+  - `apa-tdd` — auditar disciplina TDD, huecos de prueba y siguientes tests recomendados
 - `.codex/` — config.json, memory.md, cache/
 {{- else }}
 - `CLAUDE.md` — Configuración de Claude Code
 - `AGENTS.md` — Configuración de agentes
-- `docs/` — PRD, SPEC, API, ARCHITECTURE, DEPLOYMENT
+- `docs/` — PRD, SPEC, API, ARCHITECTURE y DEPLOYMENT por fases desde `Phase 0`
 - `src/` — Código fuente
 - `tests/` — Suites de pruebas (unitarias + integración)
 - `tasks/queue/` — Cola de tareas diarias
 - `agents/` — planner, coder, reviewer, test agents
-- `skills/` — skills locales del repo para guiar al agente
+- `skills/` — skills locales `apa-*` del repo para guiar al agente
+  - `apa-catalog` — listar y explicar todos los skills disponibles
+  - `apa-debug` — diagnosticar y corregir bugs
+  - `apa-devops` — despliegue, CI/CD, contenedores
+  - `apa-docs` — generar o actualizar documentación por prioridad desde Phase 0, con PRD/API/SPEC alineados, pruebas, verificaciones, gates de siguiente fase e informes de cierre
+  - `apa-feature` — implementar una nueva funcionalidad de extremo a extremo
+  - `apa-implement` — leer documentación existente y avanzar en la implementación con test-first
+  - `apa-integration` — integrar servicios externos o APIs
+  - `apa-loop` — bucle de entrega por rondas: leer estado, elegir 1-3 tareas, probar → implementar → corregir → actualizar estado → repetir hasta terminar
+    Uso: `/apa-loop --max-iterations 30`, `/cancel-apa-loop`
+  - `apa-review` — revisar un pull request o diff
+  - `apa-tdd` — auditar disciplina TDD, huecos de prueba y siguientes tests recomendados
 - `.claude/` — settings.json, memory.md, agents/
 {{- end }}
 

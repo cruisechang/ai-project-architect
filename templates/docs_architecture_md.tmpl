@@ -6,11 +6,49 @@
 - Backend: `{{ .BackendType }}`
 - Frontend: `{{ .FrontendType }}`
 
-## Components
+## Phase 0
+
+### Components
 - `backend/`: backend services and business logic
 - `frontend/`: frontend UI template
 - `infra/`: infrastructure and automation definitions
 - `skills/`: reusable skills copied from global source
 
-## Notes
+### Required Tests
+- Define architectural smoke tests, integration checks, and deployment verification needed for Phase 0.
+
+### Inspection Checklist
+- Confirm component boundaries support the committed Phase 0 scope.
+- Confirm architecture decisions align with `PRD Phase 0`, `SPEC Phase 0`, and `API Phase 0`.
+
+### Completion Criteria
+- Phase 0 architecture is implemented well enough to support the committed release scope.
+
+### Next-Phase Gate
+- Phase 1 can start only after architecture smoke checks pass, component boundaries still match `PRD Phase 0`, `SPEC Phase 0`, and `API Phase 0`, and operational constraints are documented.
+
+### Phase Completion Report
+- Phase: `Phase 0`
+- Goal:
+  - Define the architecture needed to support the highest-priority delivery scope.
+- Delivered Scope:
+  - Record architecture decisions delivered in Phase 0.
+- Tests Executed:
+  - Record architecture smoke tests, integration checks, and deployment-related verification run for Phase 0.
+- Checks Performed:
+  - Record boundary review, dependency inspection, and operational verification completed.
+- Completion Result:
+  - `PASS`, `PARTIAL`, or `BLOCKED`
+- Open Issues / Risks:
+  - None
+- Assumptions:
+  - None
+- Handoff Notes:
+  - Record architecture constraints and invariants the next phase must preserve.
+- Next-Phase Gate:
+  - Phase 1 can start only after architecture smoke checks pass, component boundaries still match `PRD Phase 0`, `SPEC Phase 0`, and `API Phase 0`, and operational constraints are documented.
+- Next Phase:
+  - `Phase 1` or `None`
+
+### Notes
 - Keep architecture decisions in `docs/decisions.md` when docs mode is full.

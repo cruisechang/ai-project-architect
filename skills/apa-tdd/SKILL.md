@@ -1,44 +1,58 @@
 # APA TDD Skill
 
-Use this skill when adding any non-trivial functionality. Tests come first — always.
+## Goal
 
-## The Cycle
+檢查目前專案是否符合 TDD 規範，評估現有測試是否足夠，並提出具體的補測建議與風險報告。
 
-```
-RED → GREEN → REFACTOR
-```
+## Inputs
 
-1. **RED** — Write a failing test that describes the desired behavior
-2. **GREEN** — Write the minimal code to make the test pass (no more, no less)
-3. **REFACTOR** — Clean up without changing behavior; run tests again
+- 現有程式碼
+- 現有單元測試、整合測試、E2E 測試
+- `README*.md`
+- `docs/`
+- `SPEC.md`
+- `PRD.md`
+- `API_ROUTES.md`
+- `DB_SCHEMA.md`
+- `make test`、`go test ./...` 或其他 repo-native 驗證指令
 
 ## Steps
 
-1. **Identify the behavior** — State in one sentence what the function/method must do
-2. **Write the test first** — Name it `Test<What>_<When>_<Expected>` or equivalent
-3. **Run it** — Confirm it fails (`RED`); if it passes, the test is wrong
-4. **Implement minimally** — No speculative code, no "while I'm here" additions
-5. **Run it again** — Confirm it passes (`GREEN`)
-6. **Refactor** — Remove duplication, improve naming, simplify logic
-7. **Run again** — All tests still green
-8. **Repeat** for the next behavior
+1. 盤點目前功能、模組與對應測試。
+2. 檢查重要行為是否有測試覆蓋，尤其是核心流程、邊界條件、錯誤路徑。
+3. 檢查專案是否符合 TDD 精神：
+   - 是否存在明顯先寫 production code、後補測試的跡象
+   - 測試是否真正描述行為，而不是只覆蓋表面路徑
+   - 測試失敗時是否能明確指出需求或行為回歸
+4. 執行現有測試與驗證指令。
+5. 找出缺少測試的高風險區域。
+6. 依優先級提出建議新增的測試清單。
+7. 產出 TDD 稽核報告。
 
-## Coverage Targets
+## Review Focus
 
-- Unit tests: all pure logic functions
-- Integration tests: service/DB/API boundaries
-- E2E tests: critical user journeys only
-- Minimum: 80% line coverage; focus on branch coverage for business logic
+- 核心主流程是否有測試
+- 邊界條件與錯誤處理是否有測試
+- 商業規則是否有分支測試
+- 整合點是否有整合測試
+- 關鍵使用流程是否需要 E2E 測試
+- 測試是否 deterministic
+- mocks 是否只用在系統邊界
+- 測試命名、可讀性與失敗訊息是否足夠清楚
 
 ## Rules
 
-- Never write implementation before the test
-- One assertion per logical concept (can be multiple lines)
-- Tests must be deterministic — no random, no clock dependencies without injection
-- Mocks only at system boundaries (DB, HTTP, filesystem); not between internal modules
+- 主要工作是檢查、評估、報告，不是直接大量改碼。
+- 可以在報告中指出缺少的測試類型與建議案例，但不要把「應補哪些測試」說得很空泛。
+- 建議必須具體到可實作層級，例如要測哪個模組、哪個行為、哪個錯誤路徑。
+- 若 coverage 工具不可用，仍需根據程式碼路徑、分支與風險做定性評估。
+- 若發現測試存在但價值很低，應直接指出，例如只測 happy path、過度 mock、沒有驗證輸出行為。
 
 ## Output
 
-- Tests pass: `make test`
-- Coverage at or above 80%: `make coverage`
-- No production code without a corresponding test
+- TDD 符合度評估
+- 現有測試覆蓋摘要
+- 高風險未覆蓋區域
+- 建議新增的測試清單
+- 建議優先順序
+- 執行過的測試 / 驗證結果

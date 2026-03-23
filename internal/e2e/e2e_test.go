@@ -168,6 +168,9 @@ func TestInitCommandCodexStack(t *testing.T) {
 	assertPathExists(t, filepath.Join(projectRoot, "docs", "API.md"))
 	assertPathExists(t, filepath.Join(projectRoot, "docs", "DB_SCHEMA.md"))
 	assertPathExists(t, filepath.Join(projectRoot, "docs", "IMPLEMENTATION_PLAN.md"))
+	assertFileContains(t, filepath.Join(projectRoot, "docs", "PRD.md"), "Phase 0")
+	assertFileContains(t, filepath.Join(projectRoot, "docs", "SPEC.md"), "Phase 0")
+	assertFileContains(t, filepath.Join(projectRoot, "docs", "API.md"), "Phase 0")
 
 	// Context for apa iterate
 	assertPathExists(t, filepath.Join(projectRoot, ".architect", "context.json"))
@@ -353,6 +356,32 @@ func TestIterateCommandWithContext(t *testing.T) {
 	assertContains(t, out, "Workflow")
 	assertContains(t, out, "Definition of Done")
 	assertContains(t, out, projectName)
+}
+
+func TestIterateWarnsWhenDocsAreNotPhaseBased(t *testing.T) {
+	dir := t.TempDir()
+	mustMkdirAll(t, filepath.Join(dir, "docs"))
+	mustWriteFile(t, filepath.Join(dir, "docs", "PRD.md"), "# PRD\n\n## Goals\n- old format\n")
+
+	out, err := runProjgen(t, nil, "iterate", "--root", dir)
+	if err != nil {
+		t.Fatalf("iterate command failed: %v\noutput:\n%s", err, out)
+	}
+	assertContains(t, out, "Phase Rewrite Required")
+	assertContains(t, out, "docs/PRD.md")
+	assertContains(t, out, "apa-docs")
+}
+
+func TestIterateSkipsPhaseWarningWhenDocsArePhaseBased(t *testing.T) {
+	dir := t.TempDir()
+	mustMkdirAll(t, filepath.Join(dir, "docs"))
+	mustWriteFile(t, filepath.Join(dir, "docs", "PRD.md"), "# PRD\n\n## Phase 0\n\n### Objective\n- first phase\n")
+
+	out, err := runProjgen(t, nil, "iterate", "--root", dir)
+	if err != nil {
+		t.Fatalf("iterate command failed: %v\noutput:\n%s", err, out)
+	}
+	assertNotContains(t, out, "Phase Rewrite Required")
 }
 
 func runProjgen(t *testing.T, env []string, args ...string) (string, error) {

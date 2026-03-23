@@ -17,6 +17,9 @@ Recommended workflow
   cd ~/projects/food-platform
   apa list-skills              # list available skills
   apa iterate                  # output 'keep iterating until done' AI prompt
+                              # use apa-loop + apa-implement to enforce the round-based delivery loop
+                              # /apa-loop --max-iterations 30
+                              # /cancel-apa-loop
   make test                    # run tests (repo-native Makefile)
 
 ` + iterSep + `
@@ -66,7 +69,7 @@ Steps:
 
 Usage:
   First time (outside repo)  →  apa init
-  Inside repo                →  apa iterate → skill guides agent → make test (repeat)
+  Inside repo                →  apa iterate → apa-loop + apa-implement guide agent → make test (repeat)
 
 Output:
   .architect/context.json          inferred tech stack
@@ -102,7 +105,8 @@ Output:
 		"iterate.short": "Output a 'keep iterating until done' AI prompt (can be run at any stage)",
 		"iterate.long": `Reads current repo state and outputs a 'keep iterating until done' prompt for AI.
 
-Paste the output into an AI (e.g. Claude Code) and the AI will:
+Paste the output into an AI (e.g. Claude Code) and pair it with ` + "`apa-loop`" + ` when you want an enforced delivery loop.
+The AI will:
   1. Inventory current state (docs, tasks, tests, CI status)
   2. Loop: implement → test → fix → update docs
   3. Until all core requirements are done and tests pass
@@ -116,19 +120,22 @@ Usage:
 		"iterate.flag.root": "Project root path (default: current directory)",
 
 		// iterate prompt output
-		"iterate.prompt.intro":        "You are the primary implementation AI for this repo. Enter 'keep iterating until done' mode. Execute directly — do not just give suggestions.",
-		"iterate.prompt.project-info": "Project Info",
-		"iterate.prompt.root-label":   "Project root:",
-		"iterate.prompt.name-label":   "Name:",
-		"iterate.prompt.idea-label":   "Idea:",
-		"iterate.prompt.stack-label":  "Tech stack:",
-		"iterate.prompt.no-context":   "(apa init has not been run — .architect/context.json not found)",
-		"iterate.prompt.docs-status":  "Design Doc Status",
-		"iterate.prompt.exists":       "FOUND",
-		"iterate.prompt.missing":      "MISSING",
-		"iterate.prompt.no-docs":      "(Run apa init to create a full project with design docs)",
-		"iterate.prompt.tasks":        "Task Queue",
-		"iterate.prompt.workflow":     "Workflow (loop until DONE)",
+		"iterate.prompt.intro":                "You are the primary implementation AI for this repo. Enter 'keep iterating until done' mode. Execute directly — do not just give suggestions.",
+		"iterate.prompt.project-info":         "Project Info",
+		"iterate.prompt.root-label":           "Project root:",
+		"iterate.prompt.name-label":           "Name:",
+		"iterate.prompt.idea-label":           "Idea:",
+		"iterate.prompt.stack-label":          "Tech stack:",
+		"iterate.prompt.no-context":           "(apa init has not been run — .architect/context.json not found)",
+		"iterate.prompt.docs-status":          "Design Doc Status",
+		"iterate.prompt.exists":               "FOUND",
+		"iterate.prompt.missing":              "MISSING",
+		"iterate.prompt.no-docs":              "(Run apa init to create a full project with design docs)",
+		"iterate.prompt.phase-warning":        "Phase Rewrite Required",
+		"iterate.prompt.phase-warning-items":  "The following existing docs are not written in priority-aligned `Phase 0`, `Phase 1`, ... format:",
+		"iterate.prompt.phase-warning-action": "Call the `apa-docs` skill first and rewrite those docs into aligned phases before continuing implementation.",
+		"iterate.prompt.tasks":                "Task Queue",
+		"iterate.prompt.workflow":             "Workflow (loop until DONE)",
 		"iterate.prompt.workflow-steps": `  1. Start with an inventory: read docs, tasks, tests, CI status. List incomplete items and risks.
   2. Each round: tackle 1–3 highest-priority tasks (measure by verifiable outcomes).
   3. After implementation, run required checks (at minimum: tests; run lint if available).
@@ -145,8 +152,9 @@ Usage:
 		"iterate.prompt.constraints-items": `  - Do not delete or revert content I have not asked to remove.
   - Each round: small commits of working results first, then expand next round.
   - For major trade-offs, present "options + recommendation + impact" first; otherwise just do it.`,
-		"iterate.prompt.start":       "Begin now. First output:",
-		"iterate.prompt.start-items": "  A. Current inventory\n  B. The 1–3 tasks for round one\nThen enter the implementation loop until DONE.",
+		"iterate.prompt.start":             "Begin now. First output:",
+		"iterate.prompt.start-items":       "  A. Current inventory\n  B. The 1–3 tasks for round one\nThen enter the implementation loop until DONE.",
+		"iterate.prompt.start-items.phase": "  A. Use the `apa-docs` skill to rewrite these docs into aligned phases: %s\n  B. Current inventory after the doc rewrite\n  C. The 1–3 tasks for round one\nThen enter the implementation loop until DONE.",
 
 		// list-skills
 		"list-skills.short": "List available skills in the specified directory",

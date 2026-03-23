@@ -58,9 +58,10 @@ idea
 
 - Bootstraps a new project from a plain-language product idea
 - Infers a practical stack, then lets you override it with flags
-- Generates docs such as PRD, SPEC, ARCHITECTURE, API, DB schema, and implementation plan
+- Generates phase-based docs starting from `Phase 0`, including PRD, SPEC, ARCHITECTURE, API, DB schema, and implementation plan
 - Creates runnable starter code, test setup, Makefile targets, and agent config
 - Outputs an `apa iterate` prompt so an AI agent can keep working in a controlled loop
+- Pairs naturally with `apa-loop` for round-based delivery: read status, pick 1-3 tasks, verify, update status, and repeat
 
 ## Recommended Workflow
 
@@ -81,9 +82,19 @@ make test
 Core loop:
 
 1. Run `apa init` once to create the initial project.
-2. Use repo-local `apa-*` skills to guide implementation work.
-3. Run `apa iterate`, let the agent implement, then validate with `make test`.
-4. Repeat until the repo is in a shippable state.
+2. Keep docs phase-based from `Phase 0` so scope, tests, gates, and reports stay aligned across PRD/API/SPEC.
+3. Use `apa-loop` with `apa-implement` as the default delivery loop for implementation work.
+4. Run `apa iterate`, let the agent implement, then validate with `make test`.
+5. Repeat until the repo is in a shippable state.
+
+## Delivery Loop State
+
+Generated repos should keep `docs/IMPLEMENTATION_STATUS.md` or `TASKS.md` updated.
+Use `apa-loop` with `apa-implement` so the agent keeps cycling through implementation, testing, fixes, and doc updates until the completion gate is met.
+`apa-loop` is the repo-local skill that enforces the round-based delivery loop: read the status file, pick 1-3 verifiable tasks, run tests/checks, update status, and repeat until the completion gate is met.
+Usage:
+`/apa-loop --max-iterations 30`
+`/cancel-apa-loop`
 
 ## Quick Example
 
@@ -131,7 +142,9 @@ Current repo-local skills:
 - `apa-devops`
 - `apa-docs`
 - `apa-feature`
+- `apa-implement`
 - `apa-integration`
+- `apa-loop`
 - `apa-review`
 - `apa-tdd`
 
@@ -193,6 +206,8 @@ agents/ skills/
 
 Use it before implementation, during development, or after regressions. It helps the agent stay aligned with the repo state, existing docs, queued tasks, and delivery constraints.
 
+It also checks whether existing docs follow aligned priority-based `Phase 0`, `Phase 1`, ... sections. If not, `apa iterate` warns the user and tells the agent to rewrite those docs with `apa-docs` before continuing implementation.
+
 ```bash
 ./apa iterate
 ./apa iterate --root ~/projects/report-platform
@@ -210,9 +225,13 @@ Current examples:
 - `apa-devops`
 - `apa-docs`
 - `apa-feature`
+- `apa-implement`
 - `apa-integration`
+- `apa-loop`
 - `apa-review`
 - `apa-tdd`
+
+`apa-docs` writes documentation in aligned priority-based phases (`Phase 0`, `Phase 1`, ...). `Phase 0` is always the highest-priority phase. Each phase must define scope, matching PRD/API/SPEC content, required tests, inspection items, completion criteria, an explicit next-phase gate, and a phase completion report.
 
 List them with:
 

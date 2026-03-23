@@ -58,9 +58,10 @@ idea
 
 - Initialise un nouveau projet à partir d'une idée produit en langage naturel
 - Déduit une stack technique pragmatique, modifiable ensuite via des flags
-- Génère PRD, SPEC, ARCHITECTURE, API, DB Schema et plan d'implémentation
+- Génère une documentation par phases à partir de `Phase 0`, incluant PRD, SPEC, ARCHITECTURE, API, DB Schema et plan d'implémentation
 - Crée un starter runnable, les tests, un Makefile et la configuration d'agent
 - Produit avec `apa iterate` un prompt structuré pour continuer la livraison avec un agent IA
+- S'associe naturellement à `apa-loop` pour une livraison par tours : lire l'état, choisir 1 à 3 tâches, vérifier, mettre à jour l'état, répéter
 
 ## Workflow recommandé
 
@@ -81,9 +82,19 @@ make test
 Boucle principale :
 
 1. Exécuter `apa init` une fois pour créer la première version du projet.
-2. Utiliser les skills repo-local `apa-*` pour guider l'implémentation.
-3. Lancer `apa iterate`, laisser l'agent travailler, puis valider avec `make test`.
-4. Répéter jusqu'à obtenir un dépôt livrable.
+2. Maintenir une documentation par phases à partir de `Phase 0` afin d'aligner périmètre, tests, gates et rapports entre PRD/API/SPEC.
+3. Utiliser par défaut `apa-loop` avec `apa-implement` comme boucle de livraison.
+4. Lancer `apa iterate`, laisser l'agent travailler, puis valider avec `make test`.
+5. Répéter jusqu'à obtenir un dépôt livrable.
+
+## État de la boucle de livraison
+
+Les dépôts générés doivent garder `docs/IMPLEMENTATION_STATUS.md` ou `TASKS.md` à jour.
+Utilise `apa-loop` avec `apa-implement` pour que l'agent continue à enchaîner implémentation, tests, corrections et mises à jour de documentation jusqu'à ce que le gate de fin soit satisfait.
+`apa-loop` est le skill repo-local qui force la boucle de livraison par tours : lire le fichier d'état, choisir 1 à 3 tâches vérifiables, exécuter les tests/contrôles, mettre à jour l'état, puis répéter jusqu'à satisfaire le gate de fin.
+Utilisation :
+`/apa-loop --max-iterations 30`
+`/cancel-apa-loop`
 
 ## Exemple rapide
 
@@ -131,7 +142,9 @@ Skills repo-local actuels :
 - `apa-devops`
 - `apa-docs`
 - `apa-feature`
+- `apa-implement`
 - `apa-integration`
+- `apa-loop`
 - `apa-review`
 - `apa-tdd`
 
@@ -193,6 +206,8 @@ agents/ skills/
 
 La commande est utile avant l'implémentation, pendant le développement ou après une régression, afin que l'agent continue à travailler en tenant compte des documents, des tâches et des contraintes du repo.
 
+La commande vérifie aussi si les documents existants utilisent des sections alignées par priorité `Phase 0`, `Phase 1`, ... Si ce n'est pas le cas, `apa iterate` avertit l'utilisateur et demande à l'agent de les réécrire avec `apa-docs` avant de continuer.
+
 ```bash
 ./apa iterate
 ./apa iterate --root ~/projects/report-platform
@@ -210,9 +225,13 @@ Exemples actuels :
 - `apa-devops`
 - `apa-docs`
 - `apa-feature`
+- `apa-implement`
 - `apa-integration`
+- `apa-loop`
 - `apa-review`
 - `apa-tdd`
+
+`apa-docs` rédige la documentation par phases alignées par priorité (`Phase 0`, `Phase 1`, ...). `Phase 0` est toujours la phase la plus prioritaire. Chaque phase doit préciser le périmètre, les contenus PRD/API/SPEC alignés, les tests requis, les points de contrôle, les critères d'achèvement, un gate explicite vers la phase suivante et un rapport de fin de phase.
 
 Liste avec :
 

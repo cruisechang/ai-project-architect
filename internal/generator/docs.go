@@ -8,6 +8,7 @@ func docsFiles(docsType string) []plannedFile {
 		{RelPath: "docs/PRD.md", TemplateName: "docs_prd_md.tmpl", Mode: 0o644},
 		{RelPath: "docs/SPEC.md", TemplateName: "docs_spec_md.tmpl", Mode: 0o644},
 		{RelPath: "docs/ARCHITECTURE.md", TemplateName: "docs_architecture_md.tmpl", Mode: 0o644},
+		{RelPath: "docs/IMPLEMENTATION_STATUS.md", TemplateName: "implementation_status_md.tmpl", Mode: 0o644},
 	}
 	if docsType == "full" {
 		return append(basic,
