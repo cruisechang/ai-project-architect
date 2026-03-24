@@ -2,6 +2,11 @@
   "agent": "claude-code",
   "version": 1,
   "memory_file": "memory.md",
+  "permissions": {
+    "allow": [
+      "Bash(bash scripts/apa-loop-setup.sh*)"
+    ]
+  },
   "hooks": {
     "Stop": [
       {

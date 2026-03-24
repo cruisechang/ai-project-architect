@@ -87,14 +87,15 @@ Kernschleife:
 4. `apa iterate` ausführen, den Agenten arbeiten lassen und mit `make test` prüfen.
 5. Wiederholen, bis das Repo lieferbar ist.
 
-## Status der Delivery-Schleife
+## Status der Delivery-Schleife und `apa-loop` Verwendung
 
 Generierte Repositories sollten `docs/IMPLEMENTATION_STATUS.md` oder `TASKS.md` fortlaufend aktualisieren.
 Nutze `apa-loop` zusammen mit `apa-implement`, damit der Agent zwischen Implementierung, Tests, Fehlerbehebung und Dokumentations-Updates weiter rotiert, bis das Abschluss-Gate erfüllt ist.
 `apa-loop` ist das repo-lokale Skill für den erzwungenen Rundenbetrieb: Statusdatei lesen, 1-3 überprüfbare Aufgaben wählen, Tests/Checks ausführen, Status aktualisieren und wiederholen, bis das Abschluss-Gate erfüllt ist.
 Verwendung:
-`/apa-loop --max-iterations 30`
-`/cancel-apa-loop`
+- Codex-Projekte: `apa iterate` ausführen und den Agenten dann explizit anweisen, `apa-loop` mit `apa-implement` zu verwenden
+- Claude-Code-Projekte: `/apa-loop --max-iterations 30`
+- Claude-Code-Projekte: `/cancel-apa-loop`
 
 ## Schnelles Beispiel
 
@@ -181,6 +182,7 @@ Wichtige Flags:
 | `--idea` | Produktidee für die Stack-Ableitung |
 | `--name` | Projektname |
 | `--path` | Übergeordnetes Zielverzeichnis |
+| `--type` | `web-app`, `ai-app`, `devops-tool`, `internal-tool` oder `platform-service` |
 | `--agent` | `codex` oder `claude-code` |
 | `--backend` | `go`, `python`, `node` oder `none` |
 | `--frontend` | `react`, `next`, `nuxt`, `vue`, `pure-typescript` oder `none` |

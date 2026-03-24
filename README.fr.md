@@ -87,14 +87,15 @@ Boucle principale :
 4. Lancer `apa iterate`, laisser l'agent travailler, puis valider avec `make test`.
 5. Répéter jusqu'à obtenir un dépôt livrable.
 
-## État de la boucle de livraison
+## État de la boucle de livraison et utilisation de `apa-loop`
 
 Les dépôts générés doivent garder `docs/IMPLEMENTATION_STATUS.md` ou `TASKS.md` à jour.
 Utilise `apa-loop` avec `apa-implement` pour que l'agent continue à enchaîner implémentation, tests, corrections et mises à jour de documentation jusqu'à ce que le gate de fin soit satisfait.
 `apa-loop` est le skill repo-local qui force la boucle de livraison par tours : lire le fichier d'état, choisir 1 à 3 tâches vérifiables, exécuter les tests/contrôles, mettre à jour l'état, puis répéter jusqu'à satisfaire le gate de fin.
 Utilisation :
-`/apa-loop --max-iterations 30`
-`/cancel-apa-loop`
+- Projets Codex : lance `apa iterate`, puis demande explicitement à l'agent d'utiliser `apa-loop` avec `apa-implement`
+- Projets Claude Code : `/apa-loop --max-iterations 30`
+- Projets Claude Code : `/cancel-apa-loop`
 
 ## Exemple rapide
 
@@ -181,6 +182,7 @@ Flags utiles :
 | `--idea` | Idée produit utilisée pour déduire la stack |
 | `--name` | Nom du projet |
 | `--path` | Répertoire parent de création |
+| `--type` | `web-app`, `ai-app`, `devops-tool`, `internal-tool` ou `platform-service` |
 | `--agent` | `codex` ou `claude-code` |
 | `--backend` | `go`, `python`, `node` ou `none` |
 | `--frontend` | `react`, `next`, `nuxt`, `vue`, `pure-typescript` ou `none` |

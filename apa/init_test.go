@@ -29,8 +29,8 @@ func TestMapContextToOpts_FillsMissingFields(t *testing.T) {
 	if opts.DockerCompose != "yes" {
 		t.Errorf("DockerCompose: want yes, got %q", opts.DockerCompose)
 	}
-	if opts.ProjectType != "web-app" {
-		t.Errorf("ProjectType: want web-app, got %q", opts.ProjectType)
+	if opts.ProjectType != "internal-tool" {
+		t.Errorf("ProjectType: want internal-tool, got %q", opts.ProjectType)
 	}
 	if opts.TechStack == "" {
 		t.Error("TechStack: want non-empty")

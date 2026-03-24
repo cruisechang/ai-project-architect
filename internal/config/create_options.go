@@ -20,6 +20,7 @@ var (
 
 type CreateOptions struct {
 	Name             string
+	Idea             string
 	ParentPath       string
 	ProjectType      string
 	AIFeature        string
@@ -64,6 +65,7 @@ func ParseSkillsCSV(raw string) []string {
 
 func (o *CreateOptions) Normalize() {
 	o.Name = strings.TrimSpace(o.Name)
+	o.Idea = strings.TrimSpace(o.Idea)
 	o.ParentPath = strings.TrimSpace(o.ParentPath)
 	o.ProjectType = strings.ToLower(strings.TrimSpace(o.ProjectType))
 	o.AIFeature = strings.ToLower(strings.TrimSpace(o.AIFeature))
@@ -119,6 +121,9 @@ func (o *CreateOptions) EnsureDefaults() {
 	}
 	if o.AIFeature == "" {
 		o.AIFeature = "none"
+	}
+	if o.ProjectType == "" {
+		o.ProjectType = "internal-tool"
 	}
 	if o.AIAgent == "" {
 		o.AIAgent = "codex"
@@ -181,7 +186,7 @@ func (o CreateOptions) MissingRequired() []string {
 }
 
 func (o CreateOptions) AnyInputProvided() bool {
-	if o.Name != "" || o.ParentPath != "" || o.ProjectType != "" || o.AIFeature != "" || o.AIAgent != "" || o.BackendType != "" || o.FrontendType != "" {
+	if o.Name != "" || o.Idea != "" || o.ParentPath != "" || o.ProjectType != "" || o.AIFeature != "" || o.AIAgent != "" || o.BackendType != "" || o.FrontendType != "" {
 		return true
 	}
 	if o.DocsType != "" || o.GlobalSkillsPath != "" || len(o.SelectedSkills) > 0 || o.PromptTitle != "" || o.Description != "" {

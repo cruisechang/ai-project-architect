@@ -38,6 +38,10 @@ echo "[TEST] interactive retry then mac"
 OUT_DIR="${TMP_DIR}/retry" DRY_RUN=1 bash "${BUILD_SCRIPT}" <<< $'9\n1\n' >/dev/null
 assert_file_exists "${TMP_DIR}/retry/apa"
 
+echo "[TEST] custom APP_NAME overrides default binary name"
+OUT_DIR="${TMP_DIR}/custom" APP_NAME=apa-custom DRY_RUN=1 bash "${BUILD_SCRIPT}" mac >/dev/null
+assert_file_exists "${TMP_DIR}/custom/apa-custom"
+
 echo "[TEST] unknown target should fail"
 set +e
 OUT_DIR="${TMP_DIR}/bad" DRY_RUN=1 bash "${BUILD_SCRIPT}" bad >/dev/null 2>&1

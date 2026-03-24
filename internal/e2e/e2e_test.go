@@ -149,6 +149,7 @@ func TestInitCommandCodexStack(t *testing.T) {
 	assertPathExists(t, filepath.Join(projectRoot, ".codex", "memory.md"))
 	assertPathExists(t, filepath.Join(projectRoot, ".codex", "cache"))
 	assertPathExists(t, filepath.Join(projectRoot, "skills", "apa-feature", "SKILL.md"))
+	assertPathExists(t, filepath.Join(projectRoot, "skills", "apa-loop", "SKILL.md"))
 	assertPathExists(t, filepath.Join(projectRoot, "skills", "planner", "SKILL.md"))
 
 	// AI/RAG scaffold
@@ -177,7 +178,41 @@ func TestInitCommandCodexStack(t *testing.T) {
 
 	assertFileContains(t, filepath.Join(projectRoot, "AGENTS.md"), "AI Agent Engineering Guidelines")
 	assertFileContains(t, filepath.Join(projectRoot, "PROMPT.md"), "AI Prompt Engineering Guidelines")
+	assertFileContains(t, filepath.Join(projectRoot, "skills", "apa-loop", "SKILL.md"), "Codex projects do not generate a `/apa-loop` slash command")
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "Usage: ask the agent to use `apa-loop` with `apa-implement` after pasting `apa iterate`")
+	assertFileContains(t, filepath.Join(projectRoot, "README.zh-TW.md"), "demo desc")
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "demo desc")
+	assertFileContains(t, filepath.Join(projectRoot, "README.zh-TW.md"), "## 🔁 `apa-loop` 使用方式")
+	assertFileContains(t, filepath.Join(projectRoot, "README.zh-TW.md"), "Codex：先執行 `apa iterate`")
+	assertFileContains(t, filepath.Join(projectRoot, "README.zh-TW.md"), "Claude Code：執行 `/apa-loop --max-iterations 30`")
 	assertContains(t, out, "=== INIT SUMMARY ===")
+}
+
+func TestInitCommandUsesIdeaAsDescriptionWhenDescriptionMissing(t *testing.T) {
+	projectParent := t.TempDir()
+	idea := "Build an AI RAG system with Go backend and Next.js frontend"
+	out, err := runProjgen(t, nil,
+		"init",
+		"--idea", idea,
+		"--name", "demo-no-description",
+		"--path", projectParent,
+		"--type", "ai-app",
+		"--ai-feature", "rag",
+		"--agent", "codex",
+		"--docs", "basic",
+		"--unit-test", "yes",
+		"--integration-test", "yes",
+		"--e2e-test", "no",
+		"--docker-compose", "yes",
+	)
+	if err != nil {
+		t.Fatalf("init command failed: %v\noutput:\n%s", err, out)
+	}
+
+	projectRoot := filepath.Join(projectParent, "demo-no-description")
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), idea)
+	assertFileContains(t, filepath.Join(projectRoot, "README.zh-TW.md"), idea)
+	assertFileNotContains(t, filepath.Join(projectRoot, "README.md"), "\nTBD\n")
 }
 
 // TestInitCommandClaudeAgent verifies claude-code agent structure and no codex artifacts.
@@ -212,10 +247,16 @@ func TestInitCommandClaudeAgent(t *testing.T) {
 	assertPathExists(t, filepath.Join(projectRoot, "docs", "ARCHITECTURE.md"))
 	assertPathExists(t, filepath.Join(projectRoot, ".claude", "settings.json"))
 	assertPathExists(t, filepath.Join(projectRoot, ".claude", "memory.md"))
+	assertPathExists(t, filepath.Join(projectRoot, ".claude", "commands", "apa-loop.md"))
 	assertPathExists(t, filepath.Join(projectRoot, ".architect", "context.json"))
 	assertPathNotExists(t, filepath.Join(projectRoot, ".codex"))
 	assertPathNotExists(t, filepath.Join(projectRoot, "PROMPT.md"))
 	assertPathNotExists(t, filepath.Join(projectRoot, "PLANS.md"))
+	assertFileContains(t, filepath.Join(projectRoot, ".claude", "settings.json"), "\"Bash(bash scripts/apa-loop-setup.sh*)\"")
+	assertFileContains(t, filepath.Join(projectRoot, "skills", "apa-loop", "SKILL.md"), "This skill is backed by a real Stop hook in `.claude/settings.json`.")
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "## 🔁 `apa-loop` Usage")
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "Codex: run `apa iterate` first")
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "Claude Code: start `/apa-loop --max-iterations 30`")
 	assertContains(t, out, "=== INIT SUMMARY ===")
 }
 
@@ -443,6 +484,17 @@ func assertFileContains(t *testing.T, path, needle string) {
 	}
 	if !strings.Contains(string(content), needle) {
 		t.Fatalf("expected file %s to contain %q\ncontent:\n%s", path, needle, string(content))
+	}
+}
+
+func assertFileNotContains(t *testing.T, path, needle string) {
+	t.Helper()
+	content, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("failed to read %s: %v", path, err)
+	}
+	if strings.Contains(string(content), needle) {
+		t.Fatalf("expected file %s NOT to contain %q\ncontent:\n%s", path, needle, string(content))
 	}
 }
 

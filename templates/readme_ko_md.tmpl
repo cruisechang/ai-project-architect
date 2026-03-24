@@ -50,7 +50,7 @@
   - `apa-implement` — 기존 문서를 읽고 테스트 우선으로 구현을 추진
   - `apa-integration` — 외부 서비스 또는 API 통합
   - `apa-loop` — 라운드 기반 전달 루프: 상태 읽기, 1-3개 작업 선택, 테스트 → 구현 → 수정 → 상태 업데이트 → 완료까지 반복
-    사용 방법: `/apa-loop --max-iterations 30`, `/cancel-apa-loop`
+    사용 방법: 먼저 `apa iterate`를 실행한 뒤 agent에게 `apa-loop`와 `apa-implement`를 명시적으로 사용하라고 지시
   - `apa-review` — pull request 또는 diff 검토
   - `apa-tdd` — TDD 준수 여부, 테스트 공백, 추가 권장 테스트를 점검
 - `.codex/` — config.json, memory.md, cache/
@@ -76,6 +76,13 @@
   - `apa-tdd` — TDD 준수 여부, 테스트 공백, 추가 권장 테스트를 점검
 - `.claude/` — settings.json, memory.md, agents/
 {{- end }}
+
+## 🔁 `apa-loop` 사용법
+
+- Codex: 먼저 `apa iterate`를 실행한 뒤 agent에게 `apa-loop`와 `apa-implement`를 명시적으로 사용하라고 지시합니다.
+- Claude Code: `/apa-loop --max-iterations 30`을 실행해 생성된 루프 명령과 Stop hook을 활성화합니다.
+- Claude Code: 활성 루프를 미리 중지해야 하면 `/cancel-apa-loop`를 실행합니다.
+- 두 경우 모두 다음 루프가 최신 상태에서 시작되도록 매 라운드마다 `docs/IMPLEMENTATION_STATUS.md`를 업데이트합니다.
 
 ## 🚀 빠른 시작
 

@@ -87,14 +87,15 @@ make test
 4. 跑 `apa iterate`，讓 agent 實作，再用 `make test` 驗證。
 5. 反覆執行直到可交付。
 
-## 交付循環狀態
+## 交付循環狀態與 `apa-loop` 使用方式
 
 產生出的 repo 應持續更新 `docs/IMPLEMENTATION_STATUS.md` 或 `TASKS.md`。
 搭配 `apa-loop` 與 `apa-implement` 使用，讓 agent 持續在實作、測試、修正與文件更新之間循環，直到完成 gate 被滿足。
 `apa-loop` 是用來強制執行每輪交付循環的 repo-local skill：先讀狀態檔、選 1-3 個可驗證工作項、跑測試或檢查、更新狀態，再持續重複直到完成 gate 被滿足。
 使用方式：
-`/apa-loop --max-iterations 30`
-`/cancel-apa-loop`
+- Codex 專案：先執行 `apa iterate`，再明確要求 agent 使用 `apa-loop` 與 `apa-implement`
+- Claude Code 專案：`/apa-loop --max-iterations 30`
+- Claude Code 專案：`/cancel-apa-loop`
 
 ## 快速範例
 
@@ -181,6 +182,7 @@ make test
 | `--idea` | 用來推論技術棧的產品 idea |
 | `--name` | 專案名稱 |
 | `--path` | 專案要建立在哪個父目錄 |
+| `--type` | `web-app`、`ai-app`、`devops-tool`、`internal-tool`、`platform-service` |
 | `--agent` | `codex` 或 `claude-code` |
 | `--backend` | `go`、`python`、`node`、`none` |
 | `--frontend` | `react`、`next`、`nuxt`、`vue`、`pure-typescript`、`none` |

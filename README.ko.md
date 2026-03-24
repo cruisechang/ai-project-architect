@@ -87,14 +87,15 @@ make test
 4. `apa iterate`를 실행하고 agent가 작업한 뒤 `make test`로 검증한다.
 5. 배포 가능한 상태가 될 때까지 반복한다.
 
-## 전달 루프 상태
+## 전달 루프 상태와 `apa-loop` 사용법
 
 생성된 repo는 `docs/IMPLEMENTATION_STATUS.md` 또는 `TASKS.md`를 계속 업데이트해야 합니다.
 `apa-loop`와 `apa-implement`를 함께 사용해서 agent가 구현, 테스트, 수정, 문서 업데이트를 계속 순환하고 완료 gate가 충족될 때까지 진행하도록 합니다.
 `apa-loop`는 상태 파일을 읽고, 검증 가능한 작업 1-3개를 고르고, 테스트/체크를 실행하고, 상태를 갱신한 뒤 완료 gate가 충족될 때까지 반복하도록 강제하는 repo-local skill입니다.
 사용 방법:
-`/apa-loop --max-iterations 30`
-`/cancel-apa-loop`
+- Codex 프로젝트: `apa iterate`를 실행한 뒤 agent에게 `apa-loop`와 `apa-implement`를 명시적으로 사용하라고 지시
+- Claude Code 프로젝트: `/apa-loop --max-iterations 30`
+- Claude Code 프로젝트: `/cancel-apa-loop`
 
 ## 빠른 예시
 
@@ -181,6 +182,7 @@ make test
 | `--idea` | 기술 스택 추론에 사용할 제품 idea |
 | `--name` | 프로젝트 이름 |
 | `--path` | 프로젝트를 생성할 부모 디렉터리 |
+| `--type` | `web-app`, `ai-app`, `devops-tool`, `internal-tool`, `platform-service` |
 | `--agent` | `codex` 또는 `claude-code` |
 | `--backend` | `go`, `python`, `node`, `none` |
 | `--frontend` | `react`, `next`, `nuxt`, `vue`, `pure-typescript`, `none` |

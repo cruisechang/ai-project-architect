@@ -17,9 +17,9 @@ Recommended workflow
   cd ~/projects/food-platform
   apa list-skills              # list available skills
   apa iterate                  # output 'keep iterating until done' AI prompt
-                              # use apa-loop + apa-implement to enforce the round-based delivery loop
-                              # /apa-loop --max-iterations 30
-                              # /cancel-apa-loop
+                              # for Codex: tell the agent to use apa-loop + apa-implement
+                              # for Claude Code: /apa-loop --max-iterations 30
+                              # for Claude Code: /cancel-apa-loop
   make test                    # run tests (repo-native Makefile)
 
 ` + iterSep + `
@@ -69,7 +69,7 @@ Steps:
 
 Usage:
   First time (outside repo)  →  apa init
-  Inside repo                →  apa iterate → apa-loop + apa-implement guide agent → make test (repeat)
+  Inside repo                →  apa iterate → tell the agent to use apa-loop + apa-implement → make test (repeat)
 
 Output:
   .architect/context.json          inferred tech stack
@@ -105,7 +105,9 @@ Output:
 		"iterate.short": "Output a 'keep iterating until done' AI prompt (can be run at any stage)",
 		"iterate.long": `Reads current repo state and outputs a 'keep iterating until done' prompt for AI.
 
-Paste the output into an AI (e.g. Claude Code) and pair it with ` + "`apa-loop`" + ` when you want an enforced delivery loop.
+Paste the output into an AI and pair it with ` + "`apa-loop`" + ` when you want an enforced delivery loop.
+In Codex-style repos, explicitly ask the agent to use the ` + "`apa-loop`" + ` skill.
+In Claude Code repos, you can start the generated slash command instead.
 The AI will:
   1. Inventory current state (docs, tasks, tests, CI status)
   2. Loop: implement → test → fix → update docs

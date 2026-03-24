@@ -50,7 +50,7 @@
   - `apa-implement` — vorhandene Dokumentation lesen und test-first direkt umsetzen
   - `apa-integration` — externe Dienste oder APIs integrieren
   - `apa-loop` — rundenbasierte Delivery-Schleife: Status lesen, 1-3 Aufgaben wählen, testen → implementieren → korrigieren → Status aktualisieren → wiederholen bis fertig
-    Verwendung: `/apa-loop --max-iterations 30`, `/cancel-apa-loop`
+    Verwendung: zuerst `apa iterate` ausführen und den Agenten dann explizit anweisen, `apa-loop` mit `apa-implement` zu verwenden
   - `apa-review` — Pull Request oder Diff überprüfen
   - `apa-tdd` — TDD-Disziplin, Testlücken und empfohlene nächste Tests prüfen
 - `.codex/` — config.json, memory.md, cache/
@@ -76,6 +76,13 @@
   - `apa-tdd` — TDD-Disziplin, Testlücken und empfohlene nächste Tests prüfen
 - `.claude/` — settings.json, memory.md, agents/
 {{- end }}
+
+## 🔁 `apa-loop` Verwendung
+
+- Codex: zuerst `apa iterate` ausführen und den Agenten dann explizit anweisen, `apa-loop` zusammen mit `apa-implement` zu verwenden.
+- Claude Code: `/apa-loop --max-iterations 30` starten, um den generierten Loop-Befehl und den Stop-Hook zu aktivieren.
+- Claude Code: `/cancel-apa-loop` ausführen, wenn die aktive Schleife vorzeitig beendet werden soll.
+- In beiden Fällen `docs/IMPLEMENTATION_STATUS.md` in jeder Runde aktualisieren, damit die nächste Schleife mit dem neuesten Stand startet.
 
 ## 🚀 Schnellstart
 

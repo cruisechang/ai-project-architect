@@ -99,7 +99,7 @@ func CollectCreateOptions(input config.CreateOptions, _ bool) (config.CreateOpti
 	fmt.Println("--------------------------------------------------")
 	fmt.Println()
 
-	defaultProjectType := defaultFromList(opts.ProjectType, config.ProjectTypes, config.ProjectTypes[0])
+	defaultProjectType := defaultFromList(opts.ProjectType, config.ProjectTypes, "internal-tool")
 	projectType, err := askChoiceWithDescriptions(reader, "3) Project type?", config.ProjectTypes, projectTypeDescriptions(), defaultProjectType)
 	if err != nil {
 		return opts, err

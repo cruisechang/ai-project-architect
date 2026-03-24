@@ -173,6 +173,9 @@ func TestEnsureDefaults(t *testing.T) {
 	if o.AIFeature != "none" {
 		t.Errorf("AIFeature = %q, want %q", o.AIFeature, "none")
 	}
+	if o.ProjectType != "internal-tool" {
+		t.Errorf("ProjectType = %q, want %q", o.ProjectType, "internal-tool")
+	}
 	if o.AIAgent != "codex" {
 		t.Errorf("AIAgent = %q, want %q", o.AIAgent, "codex")
 	}

@@ -2,14 +2,15 @@
 
 ## Activation
 
-This skill is backed by a real Stop hook in `.claude/settings.json`.
-Claude cannot exit the session until the completion promise is output.
+This is a repo-local skill for Codex-style agents.
+Codex projects do not generate a `/apa-loop` slash command or a `.claude/settings.json` Stop hook.
 
-```
-/apa-loop --max-iterations 30 --completion-promise "COMPLETE"
-```
+Activate it by explicitly telling the agent to use the `apa-loop` skill together with `apa-implement`, usually right after pasting the output of `apa iterate`.
 
-To cancel: `/cancel-apa-loop`
+Example prompt:
+```
+Use the `apa-loop` and `apa-implement` skills. Read `docs/IMPLEMENTATION_STATUS.md`, pick the next 1-3 verifiable tasks, follow RED -> GREEN -> REFACTOR, run validation, update the status file, and continue until the completion gate is met.
+```
 
 When the Completion Gate is fully met, output exactly:
 ```

@@ -87,14 +87,15 @@ make test
 4. `apa iterate` を実行して agent に作業させ、`make test` で確認する。
 5. 出荷可能になるまで繰り返す。
 
-## デリバリーループの状態
+## デリバリーループの状態と `apa-loop` の使い方
 
 生成された repo では `docs/IMPLEMENTATION_STATUS.md` または `TASKS.md` を継続的に更新するべきです。
 `apa-loop` と `apa-implement` を組み合わせて、agent が実装、テスト、修正、ドキュメント更新を繰り返し、完了ゲートを満たすまで進み続けるようにします。
 `apa-loop` は、状態ファイルを読み、検証可能な 1-3 個の作業項目を選び、テストやチェックを実行し、状態を更新して、完了ゲートを満たすまで繰り返す repo-local skill です。
 使い方:
-`/apa-loop --max-iterations 30`
-`/cancel-apa-loop`
+- Codex プロジェクト: `apa iterate` を実行したあと、agent に `apa-loop` と `apa-implement` を使うよう明示する
+- Claude Code プロジェクト: `/apa-loop --max-iterations 30`
+- Claude Code プロジェクト: `/cancel-apa-loop`
 
 ## クイック例
 
@@ -181,6 +182,7 @@ make test
 | `--idea` | 技術スタック推論に使うプロダクト idea |
 | `--name` | プロジェクト名 |
 | `--path` | プロジェクトを作成する親ディレクトリ |
+| `--type` | `web-app`、`ai-app`、`devops-tool`、`internal-tool`、`platform-service` |
 | `--agent` | `codex` または `claude-code` |
 | `--backend` | `go`、`python`、`node`、`none` |
 | `--frontend` | `react`、`next`、`nuxt`、`vue`、`pure-typescript`、`none` |

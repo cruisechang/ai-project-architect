@@ -14,6 +14,7 @@ import (
 
 type TemplateData struct {
 	ProjectName        string
+	ProjectIdea        string
 	ProjectType        string
 	AIAgent            string
 	ProjectDescription string
@@ -46,6 +47,9 @@ func buildTemplateData(opts config.CreateOptions) TemplateData {
 	}
 	description := opts.Description
 	if description == "" {
+		description = summarizeIdea(opts.Idea)
+	}
+	if description == "" {
 		description = "TBD"
 	}
 	architecture := opts.Architecture
@@ -59,6 +63,7 @@ func buildTemplateData(opts config.CreateOptions) TemplateData {
 
 	return TemplateData{
 		ProjectName:        opts.Name,
+		ProjectIdea:        opts.Idea,
 		ProjectType:        opts.ProjectType,
 		AIAgent:            opts.AIAgent,
 		ProjectDescription: description,
@@ -82,6 +87,19 @@ func buildTemplateData(opts config.CreateOptions) TemplateData {
 		Requirements:       requirements,
 		Notes:              notes,
 	}
+}
+
+func summarizeIdea(idea string) string {
+	trimmed := strings.Join(strings.Fields(strings.TrimSpace(idea)), " ")
+	if trimmed == "" {
+		return ""
+	}
+	runes := []rune(trimmed)
+	const maxLen = 140
+	if len(runes) <= maxLen {
+		return trimmed
+	}
+	return strings.TrimSpace(string(runes[:maxLen-1])) + "..."
 }
 
 func renderTemplate(templateName string, data TemplateData) (string, error) {

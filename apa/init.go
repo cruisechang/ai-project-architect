@@ -48,6 +48,7 @@ func newInitCmd() *cobra.Command {
 				}
 				idea = value
 			}
+			opts.Idea = idea
 
 			// Infer tech stack from idea and pre-fill opts
 			hasIdea := strings.TrimSpace(idea) != ""
@@ -271,7 +272,7 @@ func mapContextToOpts(ctx model.ProjectContext, opts *config.CreateOptions) {
 		}
 	}
 	if opts.ProjectType == "" {
-		opts.ProjectType = "web-app"
+		opts.ProjectType = "internal-tool"
 	}
 }
 

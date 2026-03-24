@@ -3,10 +3,6 @@ set -euo pipefail
 
 TARGET="${1:-}"
 OUT_DIR="${OUT_DIR:-release}"
-APP_NAME_WAS_SET=0
-if [[ -n "${APP_NAME+x}" ]]; then
-  APP_NAME_WAS_SET=1
-fi
 APP_NAME="${APP_NAME:-apa}"
 DRY_RUN="${DRY_RUN:-0}"
 VERSION="${VERSION:-dev}"
@@ -64,33 +60,6 @@ choose_target_interactive() {
         ;;
     esac
   done
-}
-
-maybe_choose_app_name() {
-  local answer=""
-  local custom_name=""
-
-  if [[ "${APP_NAME_WAS_SET}" -eq 1 || ! -t 0 ]]; then
-    return 0
-  fi
-
-  read -r -p "是否要設定 binary name？(y/N): " answer
-  case "${answer,,}" in
-    y|yes)
-      while true; do
-        read -r -p "輸入 binary name [${APP_NAME}]: " custom_name
-        custom_name="${custom_name:-${APP_NAME}}"
-        if [[ "${custom_name}" =~ ^[A-Za-z0-9._-]+$ ]]; then
-          APP_NAME="${custom_name}"
-          return 0
-        fi
-        echo "binary name 只能包含英數、點、底線、減號。"
-      done
-      ;;
-    *)
-      return 0
-      ;;
-  esac
 }
 
 mkdir -p "${OUT_DIR}"
@@ -183,8 +152,6 @@ fi
 if [[ -z "${TARGET}" || "${TARGET}" == "interactive" ]]; then
   choose_target_interactive
 fi
-
-maybe_choose_app_name
 
 TARGET="$(printf '%s' "${TARGET}" | tr '[:upper:]' '[:lower:]')"
 

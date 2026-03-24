@@ -17,9 +17,9 @@ func init() {
   cd ~/projects/food-platform
   apa list-skills              # 查看可用 skills
   apa iterate                  # 產出「持續迭代直到完成」AI 提示詞
-                              # 搭配 apa-loop + apa-implement 強制執行每輪交付循環
-                              # /apa-loop --max-iterations 30
-                              # /cancel-apa-loop
+                              # Codex: 明確要求 agent 使用 apa-loop + apa-implement
+                              # Claude Code: /apa-loop --max-iterations 30
+                              # Claude Code: /cancel-apa-loop
   make test                    # 執行測試（repo 原生 Makefile）
 
 ` + iterSep + `
@@ -69,7 +69,7 @@ apa init — 首次 bootstrap（核心指令）
 
 使用場景：
   專案外首次建立  →  apa init
-  進入 repo 後    →  apa iterate → apa-loop + apa-implement 指導 agent 實作 → make test（循環）
+  進入 repo 後    →  apa iterate → 明確要求 agent 使用 apa-loop + apa-implement → make test（循環）
 
 產物：
   .architect/context.json          推論出的技術棧
@@ -105,7 +105,9 @@ apa init — 首次 bootstrap（核心指令）
 		"iterate.short": "輸出「持續迭代直到完成」AI 提示詞（任何時段皆可執行）",
 		"iterate.long": `讀取當前 repo 狀態，輸出給 AI 的「持續迭代直到完成」指令。
 
-將輸出複製並貼到 AI（如 Claude Code）後，建議搭配 ` + "`apa-loop`" + ` 使用，以強制進入交付循環。
+將輸出複製並貼到 AI 後，建議搭配 ` + "`apa-loop`" + ` 使用，以強制進入交付循環。
+若是 Codex 專案，請明確要求 agent 使用 ` + "`apa-loop`" + ` skill。
+若是 Claude Code 專案，則可直接使用產生出的 slash command。
 AI 會自動：
   1. 盤點現況（docs、tasks、測試、CI 狀態）
   2. 循環實作 → 測試 → 修復 → 更新文件

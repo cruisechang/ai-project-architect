@@ -87,14 +87,15 @@ Bucle principal:
 4. Ejecutar `apa iterate`, dejar trabajar al agente y validar con `make test`.
 5. Repetir hasta que el repo esté listo para entregar.
 
-## Estado del ciclo de entrega
+## Estado del ciclo de entrega y uso de `apa-loop`
 
 Los repos generados deben mantener `docs/IMPLEMENTATION_STATUS.md` o `TASKS.md` actualizados.
 Usa `apa-loop` con `apa-implement` para que el agente siga rotando entre implementación, pruebas, correcciones y actualizaciones de documentación hasta que se cumpla el gate de finalización.
 `apa-loop` es el skill repo-local que fuerza el bucle de entrega por rondas: leer el archivo de estado, elegir 1-3 tareas verificables, ejecutar pruebas o checks, actualizar el estado y repetir hasta cumplir el gate de finalización.
 Uso:
-`/apa-loop --max-iterations 30`
-`/cancel-apa-loop`
+- Proyectos Codex: ejecuta `apa iterate` y luego pide explícitamente al agente que use `apa-loop` con `apa-implement`
+- Proyectos Claude Code: `/apa-loop --max-iterations 30`
+- Proyectos Claude Code: `/cancel-apa-loop`
 
 ## Ejemplo rápido
 
@@ -181,6 +182,7 @@ Flags comunes:
 | `--idea` | Idea de producto usada para inferir la stack |
 | `--name` | Nombre del proyecto |
 | `--path` | Directorio padre donde se crea el proyecto |
+| `--type` | `web-app`, `ai-app`, `devops-tool`, `internal-tool` o `platform-service` |
 | `--agent` | `codex` o `claude-code` |
 | `--backend` | `go`, `python`, `node` o `none` |
 | `--frontend` | `react`, `next`, `nuxt`, `vue`, `pure-typescript` o `none` |

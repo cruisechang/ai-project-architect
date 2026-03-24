@@ -50,7 +50,7 @@
   - `apa-implement` — read existing docs and drive concrete implementation with test-first changes
   - `apa-integration` — integrate with external services or APIs
   - `apa-loop` — round-based delivery loop: read status, pick 1-3 tasks, test → implement → fix → update status → repeat until done
-    Usage: `/apa-loop --max-iterations 30`, `/cancel-apa-loop`
+    Usage: ask the agent to use `apa-loop` with `apa-implement` after pasting `apa iterate`
   - `apa-review` — review a pull request or diff
   - `apa-tdd` — audit TDD discipline, test gaps, and recommended next tests
 - `.codex/` — config.json, memory.md, cache/
@@ -76,6 +76,13 @@
   - `apa-tdd` — audit TDD discipline, test gaps, and recommended next tests
 - `.claude/` — settings.json, memory.md, agents/
 {{- end }}
+
+## 🔁 `apa-loop` Usage
+
+- Codex: run `apa iterate` first, then explicitly tell the agent to use `apa-loop` with `apa-implement`.
+- Claude Code: start `/apa-loop --max-iterations 30` to activate the generated loop command and Stop hook.
+- Claude Code: run `/cancel-apa-loop` if you need to stop the active loop early.
+- In both cases, keep `docs/IMPLEMENTATION_STATUS.md` updated each round so the next loop starts from the latest state.
 
 ## 🚀 Quick Start
 

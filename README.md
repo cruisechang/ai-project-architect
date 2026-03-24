@@ -87,14 +87,15 @@ Core loop:
 4. Run `apa iterate`, let the agent implement, then validate with `make test`.
 5. Repeat until the repo is in a shippable state.
 
-## Delivery Loop State
+## Delivery Loop State and `apa-loop` Usage
 
 Generated repos should keep `docs/IMPLEMENTATION_STATUS.md` or `TASKS.md` updated.
 Use `apa-loop` with `apa-implement` so the agent keeps cycling through implementation, testing, fixes, and doc updates until the completion gate is met.
 `apa-loop` is the repo-local skill that enforces the round-based delivery loop: read the status file, pick 1-3 verifiable tasks, run tests/checks, update status, and repeat until the completion gate is met.
 Usage:
-`/apa-loop --max-iterations 30`
-`/cancel-apa-loop`
+- Codex projects: run `apa iterate`, then explicitly tell the agent to use `apa-loop` with `apa-implement`
+- Claude Code projects: `/apa-loop --max-iterations 30`
+- Claude Code projects: `/cancel-apa-loop`
 
 ## Quick Example
 
@@ -181,6 +182,7 @@ Common flags:
 | `--idea` | Product idea used for stack inference |
 | `--name` | Project name |
 | `--path` | Parent directory where the project will be created |
+| `--type` | `web-app`, `ai-app`, `devops-tool`, `internal-tool`, or `platform-service` |
 | `--agent` | `codex` or `claude-code` |
 | `--backend` | `go`, `python`, `node`, or `none` |
 | `--frontend` | `react`, `next`, `nuxt`, `vue`, `pure-typescript`, or `none` |
