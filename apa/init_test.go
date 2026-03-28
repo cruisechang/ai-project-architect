@@ -23,14 +23,14 @@ func TestMapContextToOpts_FillsMissingFields(t *testing.T) {
 	if opts.FrontendType != "react" {
 		t.Errorf("FrontendType: want react, got %q", opts.FrontendType)
 	}
-	if opts.Architecture != "frontend-backend" {
-		t.Errorf("Architecture: want frontend-backend, got %q", opts.Architecture)
+	if opts.Architecture != "web-app-server" {
+		t.Errorf("Architecture: want web-app-server, got %q", opts.Architecture)
 	}
 	if opts.DockerCompose != "yes" {
 		t.Errorf("DockerCompose: want yes, got %q", opts.DockerCompose)
 	}
-	if opts.ProjectType != "internal-tool" {
-		t.Errorf("ProjectType: want internal-tool, got %q", opts.ProjectType)
+	if opts.ProjectType != "full-stack" {
+		t.Errorf("ProjectType: want full-stack, got %q", opts.ProjectType)
 	}
 	if opts.TechStack == "" {
 		t.Error("TechStack: want non-empty")
@@ -45,14 +45,14 @@ func TestMapContextToOpts_ExplicitFlagsTakePriority(t *testing.T) {
 	}
 	opts := config.CreateOptions{
 		BackendType:  "python", // explicit flag should not be overridden
-		Architecture: "cli-tool",
+		Architecture: "cli",
 	}
 	mapContextToOpts(ctx, &opts)
 
 	if opts.BackendType != "python" {
 		t.Errorf("BackendType: explicit flag should not be overridden, got %q", opts.BackendType)
 	}
-	if opts.Architecture != "cli-tool" {
+	if opts.Architecture != "cli" {
 		t.Errorf("Architecture: explicit flag should not be overridden, got %q", opts.Architecture)
 	}
 	// FrontendType was empty, so inferred value is used
@@ -67,12 +67,12 @@ func TestInferArchitectureFromContext(t *testing.T) {
 		frontend    string
 		want        string
 	}{
-		{"backend", "", "backend-service"},
-		{"frontend", "react", "frontend-app"},
-		{"fullstack", "next", "fullstack-web-app"},
-		{"fullstack", "nuxt", "fullstack-web-app"},
-		{"fullstack", "react", "frontend-backend"},
-		{"fullstack", "vue", "frontend-backend"},
+		{"backend", "", "server"},
+		{"frontend", "react", "web-app"},
+		{"fullstack", "next", "web-app-server"},
+		{"fullstack", "nuxt", "web-app-server"},
+		{"fullstack", "react", "web-app-server"},
+		{"fullstack", "vue", "web-app-server"},
 		{"", "", ""},
 	}
 	for _, c := range cases {
@@ -95,11 +95,11 @@ func TestBuildTechStack(t *testing.T) {
 		frontend string
 		want     string
 	}{
-		{"frontend-backend", "go", "react", "frontend-backend | go | react"},
-		{"backend-service", "go", "none", "backend-service | go"},
-		{"frontend-app", "none", "react", "frontend-app | react"},
+		{"web-app-server", "go", "react", "web-app-server | go | react"},
+		{"server", "go", "none", "server | go"},
+		{"web-app", "none", "react", "web-app | react"},
 		{"", "", "", ""},
-		{"fullstack-web-app", "none", "next", "fullstack-web-app | next"},
+		{"web-app-server", "none", "next", "web-app-server | next"},
 	}
 	for _, c := range cases {
 		got := buildTechStack(c.arch, c.backend, c.frontend)

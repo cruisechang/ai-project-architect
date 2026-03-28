@@ -7,7 +7,7 @@ Pipeline (rerunnable by stage):
 idea -> planner -> prd -> spec -> architecture -> api -> database -> scaffold
 
 Layers:
-- CLI Layer: command routing (`init`, `iterate`, `list-skills`, `doctor`, `version`)
+- CLI Layer: command routing (`init`, `prompt`, `list-skills`, `doctor`, `version`)
 - Planner Layer: infer deterministic project context from idea
 - Document Generator Layer: artifact-specific generators
 - Template Layer: markdown templates for each artifact
@@ -78,7 +78,7 @@ Commands:
   - collect idea + project location
   - infer context
   - create scaffold, docs, and context file
-- `apa iterate`
+- `apa prompt`
   - inspect the current repo state
   - output a structured prompt for iterative AI implementation
 - `apa list-skills`

@@ -17,6 +17,14 @@
 [![CLI](https://img.shields.io/badge/Type-CLI-111111)](#commandes)
 [![Skills](https://img.shields.io/badge/Repo%20Skills-apa--*-2f855a)](#commands--skills)
 
+## `apa簡要說明`
+
+- 可用觸發詞：`apa簡要說明`、`apa 簡要說明`、`apa說明`、`apa 說明`
+- Démarrer la boucle d'implémentation : `apa prompt` -> coller la sortie dans l'agent -> demander `apa-loop` + `apa-implement`
+- Réviser d'abord les documents : `apa prompt --docs-only` -> coller la sortie dans l'agent -> demander uniquement `apa-doc-review`
+- Wrapper de boucle terminal : `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
+- Arrêter le wrapper : `bash scripts/apa-loop-cancel.sh`
+
 `apa` est une CLI Go qui transforme rapidement une idée produit en point de départ concret pour un projet.
 
 Elle génère le contexte du projet, les documents de conception, un scaffold exécutable et un flux d'itération IA reproductible pour accélérer le passage de l'idée à l'implémentation.
@@ -48,7 +56,7 @@ idea
   -> apa init
   -> docs + scaffold + context
   -> apa list-skills
-  -> apa iterate
+  -> apa prompt
   -> agent implements
   -> make test
   -> repeat
@@ -60,7 +68,7 @@ idea
 - Déduit une stack technique pragmatique, modifiable ensuite via des flags
 - Génère une documentation par phases à partir de `Phase 0`, incluant PRD, SPEC, ARCHITECTURE, API, DB Schema et plan d'implémentation
 - Crée un starter runnable, les tests, un Makefile et la configuration d'agent
-- Produit avec `apa iterate` un prompt structuré pour continuer la livraison avec un agent IA
+- Produit avec `apa prompt` un prompt structuré pour continuer la livraison avec un agent IA
 - S'associe naturellement à `apa-loop` pour une livraison par tours : lire l'état, choisir 1 à 3 tâches, vérifier, mettre à jour l'état, répéter
 
 ## Workflow recommandé
@@ -75,7 +83,7 @@ go build -o apa .
 # 3. Entrer dans le repo généré et itérer
 cd ~/projects/report-platform
 ./apa list-skills
-./apa iterate
+./apa prompt
 make test
 ```
 
@@ -84,7 +92,7 @@ Boucle principale :
 1. Exécuter `apa init` une fois pour créer la première version du projet.
 2. Maintenir une documentation par phases à partir de `Phase 0` afin d'aligner périmètre, tests, gates et rapports entre PRD/API/SPEC.
 3. Utiliser par défaut `apa-loop` avec `apa-implement` comme boucle de livraison.
-4. Lancer `apa iterate`, laisser l'agent travailler, puis valider avec `make test`.
+4. Lancer `apa prompt`, laisser l'agent travailler, puis valider avec `make test`.
 5. Répéter jusqu'à obtenir un dépôt livrable.
 
 ## État de la boucle de livraison et utilisation de `apa-loop`
@@ -93,9 +101,12 @@ Les dépôts générés doivent garder `docs/IMPLEMENTATION_STATUS.md` ou `TASKS
 Utilise `apa-loop` avec `apa-implement` pour que l'agent continue à enchaîner implémentation, tests, corrections et mises à jour de documentation jusqu'à ce que le gate de fin soit satisfait.
 `apa-loop` est le skill repo-local qui force la boucle de livraison par tours : lire le fichier d'état, choisir 1 à 3 tâches vérifiables, exécuter les tests/contrôles, mettre à jour l'état, puis répéter jusqu'à satisfaire le gate de fin.
 Utilisation :
-- Projets Codex : lance `apa iterate`, puis demande explicitement à l'agent d'utiliser `apa-loop` avec `apa-implement`
-- Projets Claude Code : `/apa-loop --max-iterations 30`
-- Projets Claude Code : `/cancel-apa-loop`
+- Si tu veux d'abord itérer sur les documents avant l'implémentation, lance `apa prompt --docs-only` et demande à l'agent d'utiliser uniquement `apa-doc-review`.
+- Flux principal via agent (commun à Codex et Claude Code) : lance `apa prompt`, puis demande explicitement à l'agent d'utiliser `apa-loop` avec `apa-implement`
+- Wrapper terminal optionnel (pour les environnements qui exposent un hook ou une slash command générés, comme Claude Code) : `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
+- Slash command optionnelle : `/apa-loop --max-iterations 30 --reviewer agent-self`
+- Commande d'annulation optionnelle : `/cancel-apa-loop`
+- Review policy: interactive per round. Ask which reviewer to use (`agent-self`, `apa-codex-review`, or `apa-claude-review`) before review.
 
 ## Exemple rapide
 
@@ -110,7 +121,7 @@ Utilisation :
 
 cd ~/projects/support-hub
 ./apa list-skills
-./apa iterate > prompt.md
+./apa prompt > prompt.md
 make test
 ```
 
@@ -119,7 +130,7 @@ make test
 | Commande | Rôle |
 |---|---|
 | `apa init` | Créer un nouveau projet à partir d'une idée |
-| `apa iterate` | Générer le prompt IA structuré pour la suite |
+| `apa prompt` | Générer le prompt IA structuré pour la suite |
 | `apa list-skills` | Afficher les skills repo-local disponibles |
 | `apa doctor` | Vérifier l'environnement local et le chemin des skills |
 | `apa version` | Afficher les informations de version du build |
@@ -131,7 +142,7 @@ Options complètes : `apa <command> --help`
 Commandes CLI actuelles :
 
 - `init`
-- `iterate`
+- `prompt`
 - `list-skills`
 - `doctor`
 - `version`
@@ -142,11 +153,14 @@ Skills repo-local actuels :
 - `apa-debug`
 - `apa-devops`
 - `apa-docs`
+- `apa-doc-review`
 - `apa-feature`
 - `apa-implement`
 - `apa-integration`
 - `apa-loop`
 - `apa-review`
+- `apa-codex-review`
+- `apa-claude-review`
 - `apa-tdd`
 
 ## `apa init`
@@ -167,6 +181,7 @@ Usages courants :
 ```bash
 # Mode interactif
 ./apa init
+# Lance directement le Wizard, avec Project idea comme première question.
 
 # Mode non interactif
 ./apa init --idea "Plateforme de commande de repas en ligne" --name food-platform --path ~/projects
@@ -182,10 +197,11 @@ Flags utiles :
 | `--idea` | Idée produit utilisée pour déduire la stack |
 | `--name` | Nom du projet |
 | `--path` | Répertoire parent de création |
-| `--type` | `web-app`, `ai-app`, `devops-tool`, `internal-tool` ou `platform-service` |
-| `--agent` | `codex` ou `claude-code` |
+| `--type` | `cli`, `server`, `web-app-server`, `mobile-app-server`, `web-app`, `mobile-app` |
+| `--agent` | `codex`, `claude-code` ou `universal` |
 | `--backend` | `go`, `python`, `node` ou `none` |
 | `--frontend` | `react`, `next`, `nuxt`, `vue`, `pure-typescript` ou `none` |
+| `--unit-test` `--api-test` `--integration-test` `--e2e-test` | `yes` or `no` |
 | `--skills` | Skills repo-local à copier, séparés par des virgules |
 | `--skills-path` | Répertoire source des skills, par défaut `./skills` |
 | `--force` | Sauvegarder un répertoire existant puis reconstruire |
@@ -202,18 +218,19 @@ CLAUDE.md or PROMPT.md
 agents/ skills/
 ```
 
-## `apa iterate`
+## `apa prompt`
 
-`apa iterate` lit l'état actuel du dépôt et imprime un prompt structuré pour l'agent IA.
+`apa prompt` lit l'état actuel du dépôt et imprime un prompt structuré pour l'agent IA.
 
 La commande est utile avant l'implémentation, pendant le développement ou après une régression, afin que l'agent continue à travailler en tenant compte des documents, des tâches et des contraintes du repo.
 
-La commande vérifie aussi si les documents existants utilisent des sections alignées par priorité `Phase 0`, `Phase 1`, ... Si ce n'est pas le cas, `apa iterate` avertit l'utilisateur et demande à l'agent de les réécrire avec `apa-docs` avant de continuer.
+La commande vérifie aussi si les documents existants utilisent des sections alignées par priorité `Phase 0`, `Phase 1`, ... Si ce n'est pas le cas, `apa prompt` avertit l'utilisateur et demande à l'agent de les réécrire avec `apa-docs` avant de continuer.
 
 ```bash
-./apa iterate
-./apa iterate --root ~/projects/report-platform
-./apa iterate > prompt.md
+./apa prompt
+./apa prompt --docs-only
+./apa prompt --root ~/projects/report-platform
+./apa prompt > prompt.md
 ```
 
 ## Skills repo-local
@@ -226,6 +243,7 @@ Exemples actuels :
 - `apa-debug`
 - `apa-devops`
 - `apa-docs`
+- `apa-doc-review`
 - `apa-feature`
 - `apa-implement`
 - `apa-integration`
@@ -234,6 +252,7 @@ Exemples actuels :
 - `apa-tdd`
 
 `apa-docs` rédige la documentation par phases alignées par priorité (`Phase 0`, `Phase 1`, ...). `Phase 0` est toujours la phase la plus prioritaire. Chaque phase doit préciser le périmètre, les contenus PRD/API/SPEC alignés, les tests requis, les points de contrôle, les critères d'achèvement, un gate explicite vers la phase suivante et un rapport de fin de phase.
+`apa-doc-review` sert à une boucle de révision documentaire avec l'utilisateur : ne modifier que les docs, s'arrêter après chaque révision pour recueillir un retour, et ne lancer l'implémentation qu'après approbation explicite des documents.
 
 Liste avec :
 

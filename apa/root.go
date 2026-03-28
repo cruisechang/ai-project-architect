@@ -25,7 +25,7 @@ func Execute() error {
 	root.SetHelpCommand(&cobra.Command{Hidden: true})
 
 	root.AddCommand(newInitCmd())
-	root.AddCommand(newIterateCmd())
+	root.AddCommand(newPromptCmd())
 	root.AddCommand(newListSkillsCmd())
 	root.AddCommand(newDoctorCmd())
 	root.AddCommand(newVersionCmd())

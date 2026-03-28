@@ -18,6 +18,7 @@ FRONTMATTER=$(sed -n '/^---$/,/^---$/{ /^---$/d; p; }' "$STATE_FILE")
 ITERATION=$(echo "$FRONTMATTER" | grep '^iteration:' | sed 's/iteration: *//' || true)
 MAX_ITERATIONS=$(echo "$FRONTMATTER" | grep '^max_iterations:' | sed 's/max_iterations: *//' || true)
 COMPLETION_PROMISE=$(echo "$FRONTMATTER" | grep '^completion_promise:' | sed 's/completion_promise: *//' | sed 's/^"\(.*\)"$/\1/' || true)
+REVIEWER=$(echo "$FRONTMATTER" | grep '^reviewer:' | sed 's/reviewer: *//' | sed 's/^"\(.*\)"$/\1/' || true)
 
 if [[ ! "$ITERATION" =~ ^[0-9]+$ ]]; then
   echo "⚠️  apa-loop: state file corrupted (iteration invalid)" >&2
@@ -30,6 +31,15 @@ if [[ ! "$MAX_ITERATIONS" =~ ^[0-9]+$ ]]; then
   rm "$STATE_FILE"
   exit 0
 fi
+
+case "$REVIEWER" in
+  ""|null) REVIEWER="agent-self" ;;
+  agent-self|apa-codex-review|apa-claude-review) ;;
+  *)
+    echo "⚠️  apa-loop: state file corrupted (reviewer invalid), fallback to agent-self" >&2
+    REVIEWER="agent-self"
+    ;;
+esac
 
 if [[ $MAX_ITERATIONS -gt 0 ]] && [[ $ITERATION -ge $MAX_ITERATIONS ]]; then
   echo "🛑 apa-loop: max iterations ($MAX_ITERATIONS) reached."
@@ -97,6 +107,12 @@ ${STATUS_CONTENT}
 ---
 
 Keep iterating until the Completion Gate conditions are all met.
+Before the review step in this round, ask the user which reviewer to use:
+- agent-self
+- apa-codex-review
+- apa-claude-review
+If the user does not specify, default to: ${REVIEWER}
+
 When genuinely complete, output: <promise>${COMPLETION_PROMISE}</promise>
 Do NOT output the promise unless it is completely and unequivocally true."
 
@@ -107,7 +123,7 @@ fi
 
 jq -n \
   --arg prompt "$NEXT_PROMPT" \
-  --arg msg "🔄 apa-loop iteration ${ITER_DISPLAY} | complete with <promise>${COMPLETION_PROMISE}</promise>" \
+  --arg msg "🔄 apa-loop iteration ${ITER_DISPLAY} | reviewer default ${REVIEWER} | complete with <promise>${COMPLETION_PROMISE}</promise>" \
   '{
     "decision": "block",
     "reason": $prompt,

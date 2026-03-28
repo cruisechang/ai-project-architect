@@ -26,3 +26,14 @@
 - Prefer small, verifiable changes.
 - Any change must also update README and relevant `--help` text.
 - README and `--help` must describe what each command or feature produces (output artifacts).
+
+## Shortcut Reply
+- If the user says any of these, return only this short usage block:
+- `apa簡要說明`
+- `apa 簡要說明`
+- `apa說明`
+- `apa 說明`
+- 開始實作循環：`apa prompt` -> 把輸出貼給 agent -> 明確要求使用 `apa-loop` + `apa-implement`
+- 先交互修改文件：`apa prompt --docs-only` -> 把輸出貼給 agent -> 明確要求只使用 `apa-doc-review`
+- Terminal loop wrapper：`bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
+- 停止 wrapper：`bash scripts/apa-loop-cancel.sh`

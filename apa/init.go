@@ -1,7 +1,6 @@
 package apa
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
 	"os"
@@ -36,53 +35,16 @@ func newInitCmd() *cobra.Command {
 			if idea, err = resolveIdea(idea, ideaFile); err != nil {
 				return err
 			}
+			opts.Idea = idea
 
 			interactive := isInteractive()
 
-			// Prompt for idea (optional — double Enter or Ctrl+D to skip)
-			if strings.TrimSpace(idea) == "" && interactive {
-				reader := bufio.NewReader(os.Stdin)
-				value, err := promptMultilineText(reader, "1) Project idea")
-				if err != nil {
-					return err
-				}
-				idea = value
-			}
-			opts.Idea = idea
-
 			// Infer tech stack from idea and pre-fill opts
-			hasIdea := strings.TrimSpace(idea) != ""
+			hasIdea := strings.TrimSpace(opts.Idea) != ""
 			var inferredCtx model.ProjectContext
 			if hasIdea {
-				inferredCtx = planner.New().Infer(idea, opts.Name)
+				inferredCtx = planner.New().Infer(opts.Idea, opts.Name)
 				mapContextToOpts(inferredCtx, &opts)
-			}
-
-			// Prompt for name (with inferred default)
-			if strings.TrimSpace(opts.Name) == "" && interactive {
-				reader := bufio.NewReader(os.Stdin)
-				defaultName := ""
-				if hasIdea {
-					defaultName = inferredCtx.ProjectName
-				}
-				value, err := promptText(reader, "2) Project name", defaultName)
-				if err != nil {
-					return err
-				}
-				opts.Name = value
-			}
-			if hasIdea && strings.TrimSpace(opts.Name) == "" {
-				opts.Name = inferredCtx.ProjectName
-			}
-
-			// Prompt for path
-			if strings.TrimSpace(opts.ParentPath) == "" && interactive {
-				reader := bufio.NewReader(os.Stdin)
-				value, err := promptText(reader, "3) Project directory path", ".")
-				if err != nil {
-					return err
-				}
-				opts.ParentPath = value
 			}
 
 			opts.SelectedSkills = config.ParseSkillsCSV(skillsRaw)
@@ -99,9 +61,14 @@ func newInitCmd() *cobra.Command {
 				return err
 			}
 
-			// Run wizard for any remaining missing fields
+			// Run wizard for missing required fields, and also ensure --type/--agent
+			// are part of the interactive flow when not explicitly provided.
 			missing := opts.MissingRequired()
-			if len(missing) > 0 {
+			runWizard := len(missing) > 0
+			if interactive && (!cmd.Flags().Changed("type") || !cmd.Flags().Changed("agent")) {
+				runWizard = true
+			}
+			if runWizard {
 				if !interactive {
 					return fmt.Errorf("missing required options: %v (provide via flags or run interactively)", missing)
 				}
@@ -114,6 +81,11 @@ func newInitCmd() *cobra.Command {
 					return err
 				}
 				opts = filled
+			}
+
+			hasIdea = strings.TrimSpace(opts.Idea) != ""
+			if hasIdea {
+				inferredCtx = planner.New().Infer(opts.Idea, opts.Name)
 			}
 
 			opts.EnsureDefaults()
@@ -215,7 +187,7 @@ func newInitCmd() *cobra.Command {
 			fmt.Println("Next steps:")
 			fmt.Printf("  cd %s\n", result.ProjectRoot)
 			fmt.Println("  make test     # start TDD: red → green → refactor")
-			fmt.Println("  apa iterate   # generate AI prompt for continuous iteration")
+			fmt.Println("  apa prompt   # generate AI prompt for continuous iteration")
 			return nil
 		},
 	}
@@ -224,15 +196,15 @@ func newInitCmd() *cobra.Command {
 	cmd.Flags().StringVar(&ideaFile, "idea-file", "", i18n.T("init.flag.idea-file"))
 	cmd.Flags().StringVar(&opts.Name, "name", "", i18n.T("init.flag.name"))
 	cmd.Flags().StringVar(&opts.ParentPath, "path", "", i18n.T("init.flag.path"))
-	cmd.Flags().StringVar(&opts.ProjectType, "type", "", i18n.T("init.flag.type"))
 	cmd.Flags().StringVar(&opts.AIFeature, "ai-feature", "", i18n.T("init.flag.ai-feature"))
 	cmd.Flags().StringVar(&opts.AIAgent, "agent", "", i18n.T("init.flag.agent"))
 	cmd.Flags().StringVar(&opts.BackendType, "backend", "", i18n.T("init.flag.backend"))
 	cmd.Flags().StringVar(&opts.FrontendType, "frontend", "", i18n.T("init.flag.frontend"))
-	cmd.Flags().StringVar(&opts.Architecture, "architecture", "", i18n.T("init.flag.architecture"))
+	cmd.Flags().StringVar(&opts.Architecture, "type", "", i18n.T("init.flag.type"))
 	cmd.Flags().StringVar(&opts.TechStack, "stack", "", i18n.T("init.flag.stack"))
 	cmd.Flags().StringVar(&opts.DocsType, "docs", "", i18n.T("init.flag.docs"))
 	cmd.Flags().StringVar(&opts.UnitTest, "unit-test", "", i18n.T("init.flag.unit-test"))
+	cmd.Flags().StringVar(&opts.APITest, "api-test", "", i18n.T("init.flag.api-test"))
 	cmd.Flags().StringVar(&opts.IntegrationTest, "integration-test", "", i18n.T("init.flag.integration-test"))
 	cmd.Flags().StringVar(&opts.E2ETest, "e2e-test", "", i18n.T("init.flag.e2e-test"))
 	cmd.Flags().StringVar(&opts.DockerCompose, "docker-compose", "", i18n.T("init.flag.docker-compose"))
@@ -272,7 +244,7 @@ func mapContextToOpts(ctx model.ProjectContext, opts *config.CreateOptions) {
 		}
 	}
 	if opts.ProjectType == "" {
-		opts.ProjectType = "internal-tool"
+		opts.ProjectType = config.InferProjectTypeFromArchitecture(opts.Architecture)
 	}
 }
 
@@ -280,14 +252,17 @@ func inferArchitectureFromContext(ctx model.ProjectContext) string {
 	frontend := strings.ToLower(ctx.FrontendFramework)
 	switch ctx.ProjectType {
 	case "backend":
-		return "backend-service"
+		return "server"
 	case "frontend":
-		return "frontend-app"
-	case "fullstack":
-		if frontend == "next" || frontend == "nuxt" {
-			return "fullstack-web-app"
+		if frontend == "react-native" || frontend == "flutter" || frontend == "swiftui" || frontend == "kotlin" || frontend == "android" || frontend == "ios" {
+			return "mobile-app"
 		}
-		return "frontend-backend"
+		return "web-app"
+	case "fullstack":
+		if frontend == "react-native" || frontend == "flutter" || frontend == "swiftui" || frontend == "kotlin" || frontend == "android" || frontend == "ios" {
+			return "mobile-app-server"
+		}
+		return "web-app-server"
 	}
 	return ""
 }

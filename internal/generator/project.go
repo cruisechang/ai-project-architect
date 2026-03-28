@@ -213,6 +213,8 @@ func buildArtifacts(opts config.CreateOptions) ([]string, []plannedFile) {
 	if agent == "" {
 		agent = "codex"
 	}
+	includeCodex := agent == "codex" || agent == "universal"
+	includeClaude := agent == "claude-code" || agent == "universal"
 	aiFeatureEnabled := strings.TrimSpace(strings.ToLower(opts.AIFeature)) != "" && strings.TrimSpace(strings.ToLower(opts.AIFeature)) != "none"
 	agentsTemplate := "agents_md.tmpl"
 	if aiFeatureEnabled {
@@ -244,8 +246,7 @@ func buildArtifacts(opts config.CreateOptions) ([]string, []plannedFile) {
 	files = append(files, backendFiles(opts.BackendType)...)
 	files = append(files, frontendFiles(opts.FrontendType)...)
 
-	switch agent {
-	case "claude-code":
+	if includeClaude {
 		dirs = append(dirs,
 			".claude",
 			".claude/agents",
@@ -255,11 +256,13 @@ func buildArtifacts(opts config.CreateOptions) ([]string, []plannedFile) {
 			"skills/apa-debug",
 			"skills/apa-devops",
 			"skills/apa-docs",
+			"skills/apa-doc-review",
 			"skills/apa-feature",
 			"skills/apa-implement",
 			"skills/apa-integration",
 			"skills/apa-loop",
 			"skills/apa-review",
+			"skills/apa-codex-review",
 			"skills/apa-tdd",
 		)
 		files = append(files,
@@ -275,14 +278,18 @@ func buildArtifacts(opts config.CreateOptions) ([]string, []plannedFile) {
 			plannedFile{RelPath: "skills/apa-debug/SKILL.md", TemplateName: "apa_debug_skill_md.tmpl", Mode: 0o644},
 			plannedFile{RelPath: "skills/apa-devops/SKILL.md", TemplateName: "apa_devops_skill_md.tmpl", Mode: 0o644},
 			plannedFile{RelPath: "skills/apa-docs/SKILL.md", TemplateName: "apa_docs_skill_md.tmpl", Mode: 0o644},
+			plannedFile{RelPath: "skills/apa-doc-review/SKILL.md", TemplateName: "apa_doc_review_skill_md.tmpl", Mode: 0o644},
 			plannedFile{RelPath: "skills/apa-feature/SKILL.md", TemplateName: "feature_development_skill_md.tmpl", Mode: 0o644},
 			plannedFile{RelPath: "skills/apa-implement/SKILL.md", TemplateName: "apa_implement_skill_md.tmpl", Mode: 0o644},
 			plannedFile{RelPath: "skills/apa-integration/SKILL.md", TemplateName: "apa_integration_skill_md.tmpl", Mode: 0o644},
 			plannedFile{RelPath: "skills/apa-loop/SKILL.md", TemplateName: "apa_loop_skill_md.tmpl", Mode: 0o644},
 			plannedFile{RelPath: "skills/apa-review/SKILL.md", TemplateName: "apa_review_skill_md.tmpl", Mode: 0o644},
+			plannedFile{RelPath: "skills/apa-codex-review/SKILL.md", TemplateName: "apa_codex_review_skill_md.tmpl", Mode: 0o644},
 			plannedFile{RelPath: "skills/apa-tdd/SKILL.md", TemplateName: "apa_tdd_skill_md.tmpl", Mode: 0o644},
 		)
-	default:
+	}
+
+	if includeCodex {
 		promptTemplate := "prompt_md.tmpl"
 		if aiFeatureEnabled {
 			promptTemplate = "prompt_ai_md.tmpl"
@@ -295,11 +302,13 @@ func buildArtifacts(opts config.CreateOptions) ([]string, []plannedFile) {
 			"skills/apa-debug",
 			"skills/apa-devops",
 			"skills/apa-docs",
+			"skills/apa-doc-review",
 			"skills/apa-feature",
 			"skills/apa-implement",
 			"skills/apa-integration",
 			"skills/apa-loop",
 			"skills/apa-review",
+			"skills/apa-claude-review",
 			"skills/apa-tdd",
 		)
 		files = append(files,
@@ -311,11 +320,13 @@ func buildArtifacts(opts config.CreateOptions) ([]string, []plannedFile) {
 			plannedFile{RelPath: "skills/apa-debug/SKILL.md", TemplateName: "apa_debug_skill_md.tmpl", Mode: 0o644},
 			plannedFile{RelPath: "skills/apa-devops/SKILL.md", TemplateName: "apa_devops_skill_md.tmpl", Mode: 0o644},
 			plannedFile{RelPath: "skills/apa-docs/SKILL.md", TemplateName: "apa_docs_skill_md.tmpl", Mode: 0o644},
+			plannedFile{RelPath: "skills/apa-doc-review/SKILL.md", TemplateName: "apa_doc_review_skill_md.tmpl", Mode: 0o644},
 			plannedFile{RelPath: "skills/apa-feature/SKILL.md", TemplateName: "feature_development_skill_md.tmpl", Mode: 0o644},
 			plannedFile{RelPath: "skills/apa-implement/SKILL.md", TemplateName: "apa_implement_skill_md.tmpl", Mode: 0o644},
 			plannedFile{RelPath: "skills/apa-integration/SKILL.md", TemplateName: "apa_integration_skill_md.tmpl", Mode: 0o644},
 			plannedFile{RelPath: "skills/apa-loop/SKILL.md", TemplateName: "apa_loop_skill_md.tmpl", Mode: 0o644},
 			plannedFile{RelPath: "skills/apa-review/SKILL.md", TemplateName: "apa_review_skill_md.tmpl", Mode: 0o644},
+			plannedFile{RelPath: "skills/apa-claude-review/SKILL.md", TemplateName: "apa_claude_review_skill_md.tmpl", Mode: 0o644},
 			plannedFile{RelPath: "skills/apa-tdd/SKILL.md", TemplateName: "apa_tdd_skill_md.tmpl", Mode: 0o644},
 		)
 	}

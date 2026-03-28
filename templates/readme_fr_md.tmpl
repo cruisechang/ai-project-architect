@@ -29,12 +29,22 @@
 
 {{ .ProjectDescription }}
 
+## `apa簡要說明`
+
+- Démarrer la boucle d'implémentation : `apa prompt` -> coller la sortie dans l'agent -> demander `apa-loop` + `apa-implement`
+- Réviser d'abord les documents : `apa prompt --docs-only` -> coller la sortie dans l'agent -> demander uniquement `apa-doc-review`
+- Wrapper de boucle terminal : `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
+- Arrêter le wrapper : `bash scripts/apa-loop-cancel.sh`
+
 ## 📂 Structure
 
-{{- if eq .AIAgent "codex" }}
+{{- if or (eq .AIAgent "codex") (eq .AIAgent "universal") }}
 - `AGENTS.md` — Configuration de l'agent Codex
 - `PROMPT.md` — Guide d'ingénierie des prompts
 - `PLANS.md` — Plans d'implémentation
+{{- if eq .AIAgent "universal" }}
+- `CLAUDE.md` — Configuration Claude Code
+{{- end }}
 - `docs/` — PRD, SPEC, API, ARCHITECTURE et DEPLOYMENT structurés par phases à partir de `Phase 0`
 - `src/` — Code source
 - `tests/` — Suites de tests (unitaires + intégration)
@@ -46,14 +56,22 @@
   - `apa-debug` — diagnostiquer et corriger les bugs
   - `apa-devops` — déploiement, CI/CD, conteneurisation
   - `apa-docs` — générer ou mettre à jour une documentation par priorité à partir de la Phase 0, avec PRD/API/SPEC alignés, tests, contrôles, gates de phase suivants et rapports de fin
+  - `apa-doc-review` — réviser les documents avec l'utilisateur tour par tour, s'arrêter après chaque révision pour recueillir un retour, et ne pas lancer l'implémentation avant approbation
   - `apa-feature` — implémenter une nouvelle fonctionnalité de bout en bout
   - `apa-implement` — lire la documentation existante et piloter une implémentation test-first
   - `apa-integration` — intégrer des services externes ou des API
   - `apa-loop` — boucle de livraison par tours : lire l'état, choisir 1-3 tâches, tester → implémenter → corriger → mettre à jour l'état → répéter jusqu'à la fin
-    Utilisation : lancer d'abord `apa iterate`, puis demander explicitement à l'agent d'utiliser `apa-loop` avec `apa-implement`
+    Utilisation : lancer d'abord `apa prompt`, puis demander explicitement à l'agent d'utiliser `apa-loop` avec `apa-implement`
   - `apa-review` — revoir une pull request ou un diff
+  - `apa-claude-review` — Codex alias for code review using the same checklist as `apa-review`
+{{- if eq .AIAgent "universal" }}
+  - `apa-codex-review` — Claude alias for code review using the same checklist as `apa-review`
+{{- end }}
   - `apa-tdd` — auditer la discipline TDD, les trous de tests et les prochains tests recommandés
 - `.codex/` — config.json, memory.md, cache/
+{{- if eq .AIAgent "universal" }}
+- `.claude/` — settings.json, memory.md, commands/
+{{- end }}
 {{- else }}
 - `CLAUDE.md` — Configuration Claude Code
 - `AGENTS.md` — Configuration des agents
@@ -67,21 +85,26 @@
   - `apa-debug` — diagnostiquer et corriger les bugs
   - `apa-devops` — déploiement, CI/CD, conteneurisation
   - `apa-docs` — générer ou mettre à jour une documentation par priorité à partir de la Phase 0, avec PRD/API/SPEC alignés, tests, contrôles, gates de phase suivants et rapports de fin
+  - `apa-doc-review` — réviser les documents avec l'utilisateur tour par tour, s'arrêter après chaque révision pour recueillir un retour, et ne pas lancer l'implémentation avant approbation
   - `apa-feature` — implémenter une nouvelle fonctionnalité de bout en bout
   - `apa-implement` — lire la documentation existante et piloter une implémentation test-first
   - `apa-integration` — intégrer des services externes ou des API
   - `apa-loop` — boucle de livraison par tours : lire l'état, choisir 1-3 tâches, tester → implémenter → corriger → mettre à jour l'état → répéter jusqu'à la fin
-    Utilisation : `/apa-loop --max-iterations 30`, `/cancel-apa-loop`
+    Utilisation : lancer d'abord `apa prompt`, puis demander explicitement à l'agent d'utiliser `apa-loop` avec `apa-implement`
   - `apa-review` — revoir une pull request ou un diff
+  - `apa-codex-review` — Claude alias for code review using the same checklist as `apa-review`
   - `apa-tdd` — auditer la discipline TDD, les trous de tests et les prochains tests recommandés
-- `.claude/` — settings.json, memory.md, agents/
+- `.claude/` — settings.json, memory.md, commands/
 {{- end }}
 
 ## 🔁 Utilisation de `apa-loop`
 
-- Codex : lance d'abord `apa iterate`, puis demande explicitement à l'agent d'utiliser `apa-loop` avec `apa-implement`.
-- Claude Code : lance `/apa-loop --max-iterations 30` pour activer la commande de boucle générée et le Stop hook.
-- Claude Code : lance `/cancel-apa-loop` si tu dois arrêter la boucle active plus tôt.
+- Si tu veux d'abord itérer sur les documents avant l'implémentation, lance `apa prompt --docs-only` et demande à l'agent d'utiliser uniquement `apa-doc-review`.
+- Flux principal via agent (commun à Codex et Claude Code) : lance `apa prompt`, puis demande explicitement à l'agent d'utiliser `apa-loop` avec `apa-implement`.
+- Wrapper terminal optionnel (pour les environnements qui exposent un hook ou une slash command générés, comme Claude Code) : `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
+- Slash command optionnelle : `/apa-loop --max-iterations 30 --reviewer agent-self`
+- Commande d'annulation optionnelle : `/cancel-apa-loop`
+- Review policy: interactive per round. Ask which reviewer to use (`agent-self`, `apa-codex-review`, or `apa-claude-review`) before review.
 - Dans les deux cas, mets à jour `docs/IMPLEMENTATION_STATUS.md` à chaque tour pour que la boucle suivante reparte du dernier état.
 
 ## 🚀 Démarrage rapide

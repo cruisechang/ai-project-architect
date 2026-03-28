@@ -59,7 +59,7 @@ func TestNormalize(t *testing.T) {
 			name: "lowercases type fields",
 			opts: CreateOptions{ProjectType: " Web-App ", BackendType: "GO", FrontendType: "REACT"},
 			check: func(t *testing.T, o CreateOptions) {
-				if o.ProjectType != "web-app" {
+				if o.ProjectType != "full-stack" {
 					t.Errorf("ProjectType = %q", o.ProjectType)
 				}
 				if o.BackendType != "go" {
@@ -110,7 +110,7 @@ func TestNormalize(t *testing.T) {
 			name: "normalizes architecture aliases",
 			opts: CreateOptions{Architecture: "microservices"},
 			check: func(t *testing.T, o CreateOptions) {
-				if o.Architecture != "backend-service" {
+				if o.Architecture != "server" {
 					t.Errorf("Architecture = %q", o.Architecture)
 				}
 			},
@@ -119,7 +119,7 @@ func TestNormalize(t *testing.T) {
 			name: "normalizes architecture cli",
 			opts: CreateOptions{Architecture: "cli"},
 			check: func(t *testing.T, o CreateOptions) {
-				if o.Architecture != "cli-tool" {
+				if o.Architecture != "cli" {
 					t.Errorf("Architecture = %q", o.Architecture)
 				}
 			},
@@ -128,7 +128,7 @@ func TestNormalize(t *testing.T) {
 			name: "normalizes architecture fe-be",
 			opts: CreateOptions{Architecture: "fe-be"},
 			check: func(t *testing.T, o CreateOptions) {
-				if o.Architecture != "frontend-backend" {
+				if o.Architecture != "web-app-server" {
 					t.Errorf("Architecture = %q", o.Architecture)
 				}
 			},
@@ -138,6 +138,15 @@ func TestNormalize(t *testing.T) {
 			opts: CreateOptions{AIAgent: " Claude Code "},
 			check: func(t *testing.T, o CreateOptions) {
 				if o.AIAgent != "claude-code" {
+					t.Errorf("AIAgent = %q", o.AIAgent)
+				}
+			},
+		},
+		{
+			name: "normalizes universal aliases",
+			opts: CreateOptions{AIAgent: " both "},
+			check: func(t *testing.T, o CreateOptions) {
+				if o.AIAgent != "universal" {
 					t.Errorf("AIAgent = %q", o.AIAgent)
 				}
 			},
@@ -173,8 +182,11 @@ func TestEnsureDefaults(t *testing.T) {
 	if o.AIFeature != "none" {
 		t.Errorf("AIFeature = %q, want %q", o.AIFeature, "none")
 	}
-	if o.ProjectType != "internal-tool" {
-		t.Errorf("ProjectType = %q, want %q", o.ProjectType, "internal-tool")
+	if o.ProjectType != "full-stack" {
+		t.Errorf("ProjectType = %q, want %q", o.ProjectType, "full-stack")
+	}
+	if o.Architecture != "web-app-server" {
+		t.Errorf("Architecture = %q, want %q", o.Architecture, "web-app-server")
 	}
 	if o.AIAgent != "codex" {
 		t.Errorf("AIAgent = %q, want %q", o.AIAgent, "codex")
@@ -202,13 +214,13 @@ func TestMissingRequired(t *testing.T) {
 		{
 			name:    "all missing",
 			opts:    CreateOptions{},
-			wantLen: 7,
+			wantLen: 2,
 		},
 		{
 			name: "none missing",
 			opts: CreateOptions{
-				Name: "x", ProjectType: "web-app", BackendType: "go",
-				FrontendType: "react", Architecture: "fullstack-web-app",
+				Name: "x", ProjectType: "full-stack", BackendType: "go",
+				FrontendType: "react", Architecture: "web-app-server",
 				TechStack: "go+react", DockerCompose: "yes",
 			},
 			wantLen: 0,
@@ -216,7 +228,7 @@ func TestMissingRequired(t *testing.T) {
 		{
 			name:    "whitespace only counts as missing",
 			opts:    CreateOptions{Name: "  ", ProjectType: "web-app"},
-			wantLen: 6,
+			wantLen: 5,
 		},
 	}
 	for _, tt := range tests {
@@ -236,16 +248,17 @@ func TestValidateKnownValues(t *testing.T) {
 		wantErr string
 	}{
 		{"valid empty", CreateOptions{}, ""},
-		{"valid project type", CreateOptions{ProjectType: "web-app"}, ""},
+		{"valid project type", CreateOptions{ProjectType: "full-stack"}, ""},
 		{"invalid project type", CreateOptions{ProjectType: "invalid"}, "invalid --type"},
 		{"invalid ai feature", CreateOptions{AIFeature: "bad"}, "invalid --ai-feature"},
 		{"invalid agent", CreateOptions{AIAgent: "bad"}, "invalid --agent"},
 		{"invalid backend", CreateOptions{BackendType: "rust"}, "invalid --backend"},
 		{"invalid frontend", CreateOptions{FrontendType: "svelte"}, "invalid --frontend"},
-		{"invalid architecture", CreateOptions{Architecture: "bad"}, "invalid --architecture"},
+		{"invalid architecture", CreateOptions{Architecture: "bad"}, "invalid --type"},
 		{"invalid docs", CreateOptions{DocsType: "bad"}, "invalid --docs"},
 		{"invalid unit test", CreateOptions{UnitTest: "maybe"}, "invalid --unit-test"},
-		{"valid yes/no", CreateOptions{UnitTest: "yes", E2ETest: "no"}, ""},
+		{"invalid api test", CreateOptions{APITest: "maybe"}, "invalid --api-test"},
+		{"valid yes/no", CreateOptions{UnitTest: "yes", APITest: "yes", E2ETest: "no"}, ""},
 		{"invalid docker compose", CreateOptions{DockerCompose: "bad"}, "invalid --docker-compose"},
 	}
 	for _, tt := range tests {
@@ -268,8 +281,8 @@ func TestValidateKnownValues(t *testing.T) {
 
 func TestValidateForCreate(t *testing.T) {
 	valid := CreateOptions{
-		Name: "my-project", ProjectType: "web-app", BackendType: "go",
-		FrontendType: "react", Architecture: "fullstack-web-app",
+		Name: "my-project", ProjectType: "full-stack", BackendType: "go",
+		FrontendType: "react", Architecture: "web-app-server",
 		TechStack: "go+react", ParentPath: "/tmp", DockerCompose: "yes",
 	}
 
@@ -315,5 +328,8 @@ func TestAnyInputProvided(t *testing.T) {
 	}
 	if !(CreateOptions{UATTest: "yes"}).AnyInputProvided() {
 		t.Error("UATTest set should return true")
+	}
+	if !(CreateOptions{APITest: "yes"}).AnyInputProvided() {
+		t.Error("APITest set should return true")
 	}
 }

@@ -17,6 +17,8 @@ type TemplateData struct {
 	ProjectIdea        string
 	ProjectType        string
 	AIAgent            string
+	IncludeCodex       bool
+	IncludeClaude      bool
 	ProjectDescription string
 	BackendType        string
 	FrontendType       string
@@ -24,6 +26,7 @@ type TemplateData struct {
 	Architecture       string
 	TechStack          string
 	UnitTest           string
+	APITest            string
 	IntegrationTest    string
 	E2ETest            string
 	PerformanceTest    string
@@ -66,6 +69,8 @@ func buildTemplateData(opts config.CreateOptions) TemplateData {
 		ProjectIdea:        opts.Idea,
 		ProjectType:        opts.ProjectType,
 		AIAgent:            opts.AIAgent,
+		IncludeCodex:       opts.AIAgent == "codex" || opts.AIAgent == "universal",
+		IncludeClaude:      opts.AIAgent == "claude-code" || opts.AIAgent == "universal",
 		ProjectDescription: description,
 		BackendType:        opts.BackendType,
 		FrontendType:       opts.FrontendType,
@@ -73,6 +78,7 @@ func buildTemplateData(opts config.CreateOptions) TemplateData {
 		Architecture:       architecture,
 		TechStack:          techStack,
 		UnitTest:           yesNoLabel(opts.UnitTest),
+		APITest:            yesNoLabel(opts.APITest),
 		IntegrationTest:    yesNoLabel(opts.IntegrationTest),
 		E2ETest:            yesNoLabel(opts.E2ETest),
 		PerformanceTest:    yesNoLabel(opts.PerformanceTest),
@@ -122,69 +128,45 @@ func renderTemplate(templateName string, data TemplateData) (string, error) {
 
 func defaultsByProjectType(projectType string) ([]string, []string, []string) {
 	switch projectType {
-	case "ai-app":
+	case "frontend-only":
 		return []string{
-				"Build a reliable AI app with strong prompt design and model quality.",
-				"Keep agent workflow and knowledge retrieval explicit and measurable.",
-			}, []string{
-				"Define prompt design guidelines and prompt versioning strategy.",
-				"Select model(s) with clear tradeoffs for quality, latency, and reliability.",
-				"Design an evaluation framework with baseline and regression checks.",
-				"Define agent workflow and tool boundaries for each task step.",
-				"Define RAG strategy (indexing, retrieval quality, and grounding).",
-				"Set cost control rules (token budget, usage tracking, and optimization).",
-			}, []string{
-				"Track evaluation scores and cost trends for each release.",
-			}
-	case "web-app":
-		return []string{
-				"Deliver a web product with coherent UI, API, and secure authentication.",
-				"Keep critical user flows and frontend architecture explicit from day one.",
+				"Deliver a polished frontend product with coherent UX and maintainable client architecture.",
+				"Keep critical user journeys explicit, testable, and observable from day one.",
 			}, []string{
 				"Define UI scope and key screens for the first release.",
-				"Define API contracts and integration boundaries.",
+				"Define component boundaries and state/data flow strategy.",
+				"Define routing, error handling, and loading states.",
+				"Define frontend test strategy (unit/component/e2e).",
+				"Define asset/build pipeline and deployment considerations.",
+			}, []string{
+				"Prioritize responsive behavior and production performance budgets.",
+			}
+	case "backend-only":
+		return []string{
+				"Ship a reliable backend with clear contracts, operational safety, and maintainable architecture.",
+				"Keep service boundaries and failure handling explicit and testable.",
+			}, []string{
+				"Define API/service contracts and versioning policy.",
+				"Define data model and persistence strategy.",
 				"Define authentication and authorization approach.",
-				"Document critical user flows and edge paths.",
-				"Define frontend architecture and state/data flow strategy.",
+				"Define background jobs/async processing where needed.",
+				"Define observability (logs/metrics/traces) and SLOs.",
+				"Define rollback and incident response workflow.",
 			}, []string{
-				"Validate product behavior end-to-end across UI/API/Auth.",
+				"Prefer stable interfaces and explicit error semantics.",
 			}
-	case "devops-tool":
+	case "full-stack", "ai-app", "web-app", "devops-tool", "internal-tool", "platform-service":
 		return []string{
-				"Provide safe DevOps automation for delivery and operations.",
-				"Make deployment and recovery steps repeatable.",
+				"Deliver a complete product experience across frontend and backend.",
+				"Keep integration boundaries clear while preserving fast delivery cycles.",
 			}, []string{
-				"Define CI/CD pipeline stages and quality gates.",
-				"Define deployment process and environment promotion flow.",
-				"Define rollback strategy with clear trigger criteria.",
-				"Define infrastructure operation procedures and ownership.",
-				"Automate repetitive operations with observable logs and alerts.",
+				"Define UI scope, user journeys, and API contracts together.",
+				"Define authentication/session model end-to-end.",
+				"Define backend service boundaries and data ownership.",
+				"Define integration and e2e test coverage for critical flows.",
+				"Define deployment topology and release/rollback strategy.",
 			}, []string{
-				"Treat failures as actionable diagnostics with fast rollback paths.",
-			}
-	case "internal-tool":
-		return []string{
-				"Ship maintainable internal tooling that improves team workflow efficiency.",
-				"Provide visibility and control for daily operations.",
-			}, []string{
-				"Define target workflow and automation opportunities.",
-				"Define data management model, ownership, and quality checks.",
-				"Document onboarding flow for new users and operators.",
-				"Define operation dashboard scope and key metrics.",
-			}, []string{
-				"Prefer straightforward architecture and fast operator feedback loops.",
-			}
-	case "platform-service":
-		return []string{
-				"Provide shared infrastructure capabilities as internal platform services.",
-				"Enable developer teams through stable platform abstractions.",
-			}, []string{
-				"Define shared infrastructure capabilities and boundaries.",
-				"Define internal platform interfaces and team responsibilities.",
-				"Define developer platform experience and self-service workflows.",
-				"Define service layer contracts, versioning, and compatibility policy.",
-			}, []string{
-				"Treat platform contracts as long-term interfaces with strong backward compatibility.",
+				"Validate behavior across UI/API/Data boundaries before each release.",
 			}
 	default:
 		return []string{"Define clear project outcomes."}, []string{"Document technical decisions."}, []string{"Keep scope focused."}

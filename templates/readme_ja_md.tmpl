@@ -29,12 +29,22 @@
 
 {{ .ProjectDescription }}
 
+## `apa簡要說明`
+
+- 実装ループを始める: `apa prompt` -> 出力を agent に貼る -> `apa-loop` + `apa-implement` を使うよう指示
+- 先にドキュメントを詰める: `apa prompt --docs-only` -> 出力を agent に貼る -> `apa-doc-review` のみ使うよう指示
+- Terminal loop wrapper: `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
+- wrapper を止める: `bash scripts/apa-loop-cancel.sh`
+
 ## 📂 構造
 
-{{- if eq .AIAgent "codex" }}
+{{- if or (eq .AIAgent "codex") (eq .AIAgent "universal") }}
 - `AGENTS.md` — Codex エージェント設定
 - `PROMPT.md` — プロンプトエンジニアリングガイド
 - `PLANS.md` — 実装計画
+{{- if eq .AIAgent "universal" }}
+- `CLAUDE.md` — Claude Code 設定
+{{- end }}
 - `docs/` — `Phase 0` から始まるフェーズ型の PRD、SPEC、API、ARCHITECTURE、DEPLOYMENT
 - `src/` — ソースコード
 - `tests/` — テストスイート（ユニット + 統合）
@@ -46,14 +56,22 @@
   - `apa-debug` — バグの診断と修正
   - `apa-devops` — デプロイ、CI/CD、コンテナ化
   - `apa-docs` — Phase 0 から始まる優先度ベースの PRD/API/SPEC・テスト・確認項目・次フェーズゲート・完了レポート付きドキュメントを生成または更新
+  - `apa-doc-review` — ユーザーとラウンドごとに文書を詰め、各修正後に止まってフィードバックを待ち、文書承認前は実装を始めない
   - `apa-feature` — 新機能のエンドツーエンド実装
   - `apa-implement` — 既存ドキュメントを読んでテスト先行で実装を推進
   - `apa-integration` — 外部サービスや API の統合
   - `apa-loop` — ラウンド型デリバリーループ：状態を読み、1-3 個のタスクを選び、テスト → 実装 → 修正 → 状態更新 → 完了まで繰り返す
-    使い方: まず `apa iterate` を実行し、その後 agent に `apa-loop` と `apa-implement` を使うよう明示する
+    使い方: まず `apa prompt` を実行し、その後 agent に `apa-loop` と `apa-implement` を使うよう明示する
   - `apa-review` — プルリクエストや差分のレビュー
+  - `apa-claude-review` — Codex alias for code review using the same checklist as `apa-review`
+{{- if eq .AIAgent "universal" }}
+  - `apa-codex-review` — Claude alias for code review using the same checklist as `apa-review`
+{{- end }}
   - `apa-tdd` — TDD 準拠、テスト不足、追加すべきテスト候補を監査する
 - `.codex/` — config.json, memory.md, cache/
+{{- if eq .AIAgent "universal" }}
+- `.claude/` — settings.json, memory.md, commands/
+{{- end }}
 {{- else }}
 - `CLAUDE.md` — Claude Code 設定
 - `AGENTS.md` — エージェント設定
@@ -67,21 +85,26 @@
   - `apa-debug` — バグの診断と修正
   - `apa-devops` — デプロイ、CI/CD、コンテナ化
   - `apa-docs` — Phase 0 から始まる優先度ベースの PRD/API/SPEC・テスト・確認項目・次フェーズゲート・完了レポート付きドキュメントを生成または更新
+  - `apa-doc-review` — ユーザーとラウンドごとに文書を詰め、各修正後に止まってフィードバックを待ち、文書承認前は実装を始めない
   - `apa-feature` — 新機能のエンドツーエンド実装
   - `apa-implement` — 既存ドキュメントを読んでテスト先行で実装を推進
   - `apa-integration` — 外部サービスや API の統合
   - `apa-loop` — ラウンド型デリバリーループ：状態を読み、1-3 個のタスクを選び、テスト → 実装 → 修正 → 状態更新 → 完了まで繰り返す
-    使い方: `/apa-loop --max-iterations 30`、`/cancel-apa-loop`
+    使い方: まず `apa prompt` を実行し、その後 agent に `apa-loop` と `apa-implement` を使うよう明示する
   - `apa-review` — プルリクエストや差分のレビュー
+  - `apa-codex-review` — Claude alias for code review using the same checklist as `apa-review`
   - `apa-tdd` — TDD 準拠、テスト不足、追加すべきテスト候補を監査する
-- `.claude/` — settings.json, memory.md, agents/
+- `.claude/` — settings.json, memory.md, commands/
 {{- end }}
 
 ## 🔁 `apa-loop` の使い方
 
-- Codex: まず `apa iterate` を実行し、その後 agent に `apa-loop` と `apa-implement` を使うよう明示します。
-- Claude Code: `/apa-loop --max-iterations 30` を実行して、生成されたループコマンドと Stop hook を有効にします。
-- Claude Code: 実行中のループを早めに止めたい場合は `/cancel-apa-loop` を実行します。
+- 実装前に文書を往復で詰めたい場合は、先に `apa prompt --docs-only` を実行し、agent へ `apa-doc-review` のみを使うよう明示する。
+- Agent の主運用（Codex と Claude Code 共通）: `apa prompt` を実行したあと、agent に `apa-loop` と `apa-implement` を使うよう明示する
+- 任意の terminal ラッパー（生成済み hook や slash command がある環境、たとえば Claude Code 向け）: `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
+- 任意の slash command: `/apa-loop --max-iterations 30 --reviewer agent-self`
+- 任意のキャンセルコマンド: `/cancel-apa-loop`
+- Review policy: interactive per round. Ask which reviewer to use (`agent-self`, `apa-codex-review`, or `apa-claude-review`) before review.
 - どちらの場合も、次のループが最新状態から始まるよう各ラウンドで `docs/IMPLEMENTATION_STATUS.md` を更新します。
 
 ## 🚀 クイックスタート

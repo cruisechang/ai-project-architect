@@ -17,6 +17,14 @@
 [![CLI](https://img.shields.io/badge/Type-CLI-111111)](#commands)
 [![Skills](https://img.shields.io/badge/Repo%20Skills-apa--*-2f855a)](#commands--skills)
 
+## `apa簡要說明`
+
+- 可用觸發詞：`apa簡要說明`、`apa 簡要說明`、`apa說明`、`apa 說明`
+- Start implementation loop: `apa prompt` -> paste output to agent -> tell it to use `apa-loop` + `apa-implement`
+- Review docs first: `apa prompt --docs-only` -> paste output to agent -> tell it to use `apa-doc-review` only
+- Terminal loop wrapper: `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
+- Stop wrapper: `bash scripts/apa-loop-cancel.sh`
+
 `apa` is a Go CLI that turns a product idea into a working project starter.
 
 It generates project context, design docs, runnable scaffolding, and a repeatable AI iteration workflow so you can go from idea to implementation faster.
@@ -48,7 +56,7 @@ idea
   -> apa init
   -> docs + scaffold + context
   -> apa list-skills
-  -> apa iterate
+  -> apa prompt
   -> agent implements
   -> make test
   -> repeat
@@ -60,7 +68,7 @@ idea
 - Infers a practical stack, then lets you override it with flags
 - Generates phase-based docs starting from `Phase 0`, including PRD, SPEC, ARCHITECTURE, API, DB schema, and implementation plan
 - Creates runnable starter code, test setup, Makefile targets, and agent config
-- Outputs an `apa iterate` prompt so an AI agent can keep working in a controlled loop
+- Outputs a structured prompt via `apa prompt` so an AI agent can keep working in a controlled loop
 - Pairs naturally with `apa-loop` for round-based delivery: read status, pick 1-3 tasks, verify, update status, and repeat
 
 ## Recommended Workflow
@@ -72,10 +80,10 @@ go build -o apa .
 # 2. Create a new project outside the target repo
 ./apa init --idea "SaaS reporting platform" --name report-platform --path ~/projects
 
-# 3. Enter the generated repo and iterate
+# 3. Enter the generated repo and generate the agent prompt
 cd ~/projects/report-platform
 ./apa list-skills
-./apa iterate
+./apa prompt
 make test
 ```
 
@@ -84,7 +92,7 @@ Core loop:
 1. Run `apa init` once to create the initial project.
 2. Keep docs phase-based from `Phase 0` so scope, tests, gates, and reports stay aligned across PRD/API/SPEC.
 3. Use `apa-loop` with `apa-implement` as the default delivery loop for implementation work.
-4. Run `apa iterate`, let the agent implement, then validate with `make test`.
+4. Run `apa prompt`, let the agent implement, then validate with `make test`.
 5. Repeat until the repo is in a shippable state.
 
 ## Delivery Loop State and `apa-loop` Usage
@@ -92,10 +100,20 @@ Core loop:
 Generated repos should keep `docs/IMPLEMENTATION_STATUS.md` or `TASKS.md` updated.
 Use `apa-loop` with `apa-implement` so the agent keeps cycling through implementation, testing, fixes, and doc updates until the completion gate is met.
 `apa-loop` is the repo-local skill that enforces the round-based delivery loop: read the status file, pick 1-3 verifiable tasks, run tests/checks, update status, and repeat until the completion gate is met.
-Usage:
-- Codex projects: run `apa iterate`, then explicitly tell the agent to use `apa-loop` with `apa-implement`
-- Claude Code projects: `/apa-loop --max-iterations 30`
-- Claude Code projects: `/cancel-apa-loop`
+
+**Agent** (recommended for both Codex and Claude Code):
+- Before implementation, you can run `apa prompt --docs-only` and tell the agent to use `apa-doc-review` only.
+- Run `apa prompt`, then explicitly tell the agent to use `apa-loop` with `apa-implement`
+
+**Optional terminal wrapper** (for environments that expose the generated hook or slash command, such as Claude Code):
+
+```bash
+bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self
+```
+
+- Optional slash wrapper: `/apa-loop --max-iterations 30 --reviewer agent-self`
+- Optional cancel command: `/cancel-apa-loop`
+- Review policy: interactive per round. Ask which reviewer to use (`agent-self`, `apa-codex-review`, or `apa-claude-review`) before review.
 
 ## Quick Example
 
@@ -110,7 +128,7 @@ Usage:
 
 cd ~/projects/support-hub
 ./apa list-skills
-./apa iterate > prompt.md
+./apa prompt > prompt.md
 make test
 ```
 
@@ -119,7 +137,7 @@ make test
 | Command | Purpose |
 |---|---|
 | `apa init` | Create a new project from an idea |
-| `apa iterate` | Generate the structured AI prompt for continued delivery |
+| `apa prompt` | Generate the structured AI prompt for continued delivery |
 | `apa list-skills` | Show available repo-local skills |
 | `apa doctor` | Check local environment and skills path |
 | `apa version` | Print build version info |
@@ -131,7 +149,7 @@ Run `apa <command> --help` for full options.
 Current CLI commands:
 
 - `init`
-- `iterate`
+- `prompt`
 - `list-skills`
 - `doctor`
 - `version`
@@ -142,11 +160,14 @@ Current repo-local skills:
 - `apa-debug`
 - `apa-devops`
 - `apa-docs`
+- `apa-doc-review`
 - `apa-feature`
 - `apa-implement`
 - `apa-integration`
 - `apa-loop`
 - `apa-review`
+- `apa-codex-review`
+- `apa-claude-review`
 - `apa-tdd`
 
 ## `apa init`
@@ -167,6 +188,7 @@ Example usages:
 ```bash
 # Interactive mode
 ./apa init
+# Starts directly in the wizard; the first question is Project idea.
 
 # Non-interactive mode
 ./apa init --idea "Online food ordering platform" --name food-platform --path ~/projects
@@ -182,10 +204,11 @@ Common flags:
 | `--idea` | Product idea used for stack inference |
 | `--name` | Project name |
 | `--path` | Parent directory where the project will be created |
-| `--type` | `web-app`, `ai-app`, `devops-tool`, `internal-tool`, or `platform-service` |
-| `--agent` | `codex` or `claude-code` |
+| `--type` | `cli`, `server`, `web-app-server`, `mobile-app-server`, `web-app`, `mobile-app` |
+| `--agent` | `codex`, `claude-code`, or `universal` |
 | `--backend` | `go`, `python`, `node`, or `none` |
 | `--frontend` | `react`, `next`, `nuxt`, `vue`, `pure-typescript`, or `none` |
+| `--unit-test` `--api-test` `--integration-test` `--e2e-test` | `yes` or `no` |
 | `--skills` | Comma-separated repo-local skills to copy into the generated project |
 | `--skills-path` | Source directory for skills, defaults to this repo's `./skills` |
 | `--force` | Back up an existing directory and rebuild |
@@ -202,18 +225,19 @@ CLAUDE.md or PROMPT.md
 agents/ skills/
 ```
 
-## `apa iterate`
+## `apa prompt`
 
-`apa iterate` reads the current repository and prints a structured prompt for the AI agent.
+`apa prompt` reads the current repository and prints a structured prompt for the AI agent.
 
 Use it before implementation, during development, or after regressions. It helps the agent stay aligned with the repo state, existing docs, queued tasks, and delivery constraints.
 
-It also checks whether existing docs follow aligned priority-based `Phase 0`, `Phase 1`, ... sections. If not, `apa iterate` warns the user and tells the agent to rewrite those docs with `apa-docs` before continuing implementation.
+It also checks whether existing docs follow aligned priority-based `Phase 0`, `Phase 1`, ... sections. If not, `apa prompt` warns the user and tells the agent to rewrite those docs with `apa-docs` before continuing implementation.
 
 ```bash
-./apa iterate
-./apa iterate --root ~/projects/report-platform
-./apa iterate > prompt.md
+./apa prompt
+./apa prompt --docs-only
+./apa prompt --root ~/projects/report-platform
+./apa prompt > prompt.md
 ```
 
 ## Repo-Local Skills
@@ -226,6 +250,7 @@ Current examples:
 - `apa-debug`
 - `apa-devops`
 - `apa-docs`
+- `apa-doc-review`
 - `apa-feature`
 - `apa-implement`
 - `apa-integration`
@@ -234,6 +259,7 @@ Current examples:
 - `apa-tdd`
 
 `apa-docs` writes documentation in aligned priority-based phases (`Phase 0`, `Phase 1`, ...). `Phase 0` is always the highest-priority phase. Each phase must define scope, matching PRD/API/SPEC content, required tests, inspection items, completion criteria, an explicit next-phase gate, and a phase completion report.
+`apa-doc-review` is for doc-only collaboration: revise documents round by round with the user, stop after each revision for feedback, and do not start implementation until the docs are explicitly approved.
 
 List them with:
 

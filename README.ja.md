@@ -17,6 +17,14 @@
 [![CLI](https://img.shields.io/badge/Type-CLI-111111)](#コマンド一覧)
 [![Skills](https://img.shields.io/badge/Repo%20Skills-apa--*-2f855a)](#commands--skills)
 
+## `apa簡要說明`
+
+- 可用觸發詞：`apa簡要說明`、`apa 簡要說明`、`apa說明`、`apa 說明`
+- 実装ループを始める: `apa prompt` -> 出力を agent に貼る -> `apa-loop` + `apa-implement` を使うよう指示
+- 先にドキュメントを詰める: `apa prompt --docs-only` -> 出力を agent に貼る -> `apa-doc-review` のみ使うよう指示
+- Terminal loop wrapper: `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
+- wrapper を止める: `bash scripts/apa-loop-cancel.sh`
+
 `apa` は、プロダクトの idea をすばやく開発開始可能なプロジェクトの土台に変える Go 製 CLI です。
 
 プロジェクトの context、設計ドキュメント、実行可能な scaffold、そして継続的に回せる AI 反復フローを生成し、アイデアから実装までの距離を短くします。
@@ -48,7 +56,7 @@ idea
   -> apa init
   -> docs + scaffold + context
   -> apa list-skills
-  -> apa iterate
+  -> apa prompt
   -> agent implements
   -> make test
   -> repeat
@@ -60,7 +68,7 @@ idea
 - 実用的な技術スタックを推論し、必要なら flags で上書き可能
 - `Phase 0` から始まるフェーズ型ドキュメントとして、PRD、SPEC、ARCHITECTURE、API、DB Schema、実装計画を生成
 - 実行可能なスターターコード、テスト構成、Makefile、agent 設定を作成
-- `apa iterate` で、AI agent が継続実装しやすい構造化プロンプトを出力
+- `apa prompt` で、AI agent が継続実装しやすい構造化プロンプトを出力
 - `apa-loop` と自然に組み合わせられ、状態を読み、1-3 個の作業を選び、検証し、状態更新して繰り返すラウンド型デリバリーを進められる
 
 ## 推奨ワークフロー
@@ -75,7 +83,7 @@ go build -o apa .
 # 3. 生成された repo に入り反復開始
 cd ~/projects/report-platform
 ./apa list-skills
-./apa iterate
+./apa prompt
 make test
 ```
 
@@ -84,7 +92,7 @@ make test
 1. `apa init` を 1 回実行して初期プロジェクトを作る。
 2. `Phase 0` から始まるフェーズ型ドキュメントを維持し、PRD/API/SPEC の範囲、テスト、ゲート、レポートを揃える。
 3. 標準のデリバリーループとして `apa-loop` と `apa-implement` を使う。
-4. `apa iterate` を実行して agent に作業させ、`make test` で確認する。
+4. `apa prompt` を実行して agent に作業させ、`make test` で確認する。
 5. 出荷可能になるまで繰り返す。
 
 ## デリバリーループの状態と `apa-loop` の使い方
@@ -93,9 +101,12 @@ make test
 `apa-loop` と `apa-implement` を組み合わせて、agent が実装、テスト、修正、ドキュメント更新を繰り返し、完了ゲートを満たすまで進み続けるようにします。
 `apa-loop` は、状態ファイルを読み、検証可能な 1-3 個の作業項目を選び、テストやチェックを実行し、状態を更新して、完了ゲートを満たすまで繰り返す repo-local skill です。
 使い方:
-- Codex プロジェクト: `apa iterate` を実行したあと、agent に `apa-loop` と `apa-implement` を使うよう明示する
-- Claude Code プロジェクト: `/apa-loop --max-iterations 30`
-- Claude Code プロジェクト: `/cancel-apa-loop`
+- 実装前に文書を往復で詰めたい場合は、先に `apa prompt --docs-only` を実行し、agent へ `apa-doc-review` のみを使うよう明示する。
+- Agent の主運用（Codex と Claude Code 共通）: `apa prompt` を実行したあと、agent に `apa-loop` と `apa-implement` を使うよう明示する
+- 任意の terminal ラッパー（生成済み hook や slash command がある環境、たとえば Claude Code 向け）: `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
+- 任意の slash command: `/apa-loop --max-iterations 30 --reviewer agent-self`
+- 任意のキャンセルコマンド: `/cancel-apa-loop`
+- Review policy: interactive per round. Ask which reviewer to use (`agent-self`, `apa-codex-review`, or `apa-claude-review`) before review.
 
 ## クイック例
 
@@ -110,7 +121,7 @@ make test
 
 cd ~/projects/support-hub
 ./apa list-skills
-./apa iterate > prompt.md
+./apa prompt > prompt.md
 make test
 ```
 
@@ -119,7 +130,7 @@ make test
 | コマンド | 用途 |
 |---|---|
 | `apa init` | idea から新しいプロジェクトを作成 |
-| `apa iterate` | 継続実装向けの構造化 AI プロンプトを生成 |
+| `apa prompt` | 継続実装向けの構造化 AI プロンプトを生成 |
 | `apa list-skills` | 利用可能な repo-local skills を表示 |
 | `apa doctor` | ローカル環境と skills path を確認 |
 | `apa version` | ビルド版情報を表示 |
@@ -131,7 +142,7 @@ make test
 現在の CLI コマンド:
 
 - `init`
-- `iterate`
+- `prompt`
 - `list-skills`
 - `doctor`
 - `version`
@@ -142,11 +153,14 @@ make test
 - `apa-debug`
 - `apa-devops`
 - `apa-docs`
+- `apa-doc-review`
 - `apa-feature`
 - `apa-implement`
 - `apa-integration`
 - `apa-loop`
 - `apa-review`
+- `apa-codex-review`
+- `apa-claude-review`
 - `apa-tdd`
 
 ## `apa init`
@@ -167,6 +181,7 @@ make test
 ```bash
 # 対話モード
 ./apa init
+# Wizard に直接入り、最初の質問は Project idea です。
 
 # 非対話モード
 ./apa init --idea "オンライン料理注文プラットフォーム" --name food-platform --path ~/projects
@@ -182,10 +197,11 @@ make test
 | `--idea` | 技術スタック推論に使うプロダクト idea |
 | `--name` | プロジェクト名 |
 | `--path` | プロジェクトを作成する親ディレクトリ |
-| `--type` | `web-app`、`ai-app`、`devops-tool`、`internal-tool`、`platform-service` |
-| `--agent` | `codex` または `claude-code` |
+| `--type` | `cli`, `server`, `web-app-server`, `mobile-app-server`, `web-app`, `mobile-app` |
+| `--agent` | `codex`、`claude-code`、または `universal` |
 | `--backend` | `go`、`python`、`node`、`none` |
 | `--frontend` | `react`、`next`、`nuxt`、`vue`、`pure-typescript`、`none` |
+| `--unit-test` `--api-test` `--integration-test` `--e2e-test` | `yes` or `no` |
 | `--skills` | コピーする repo-local skills。カンマ区切り |
 | `--skills-path` | skills のソースディレクトリ。既定は `./skills` |
 | `--force` | 既存ディレクトリを退避して再構築 |
@@ -202,18 +218,19 @@ CLAUDE.md or PROMPT.md
 agents/ skills/
 ```
 
-## `apa iterate`
+## `apa prompt`
 
-`apa iterate` は現在の repo 状態を読み取り、AI agent 向けの構造化プロンプトを出力します。
+`apa prompt` は現在の repo 状態を読み取り、AI agent 向けの構造化プロンプトを出力します。
 
 実装前、開発中、回帰修正後のいずれでも使え、既存ドキュメント、タスク、制約に沿って agent が継続作業しやすくなります。
 
-さらに `apa iterate` は既存ドキュメントが優先度順に揃った `Phase 0`, `Phase 1`, ... の段階構成になっているか確認します。そうでない場合は警告を出し、実装前に `apa-docs` で書き直すよう agent に指示します。
+さらに `apa prompt` は既存ドキュメントが優先度順に揃った `Phase 0`, `Phase 1`, ... の段階構成になっているか確認します。そうでない場合は警告を出し、実装前に `apa-docs` で書き直すよう agent に指示します。
 
 ```bash
-./apa iterate
-./apa iterate --root ~/projects/report-platform
-./apa iterate > prompt.md
+./apa prompt
+./apa prompt --docs-only
+./apa prompt --root ~/projects/report-platform
+./apa prompt > prompt.md
 ```
 
 ## Repo-local Skills
@@ -226,6 +243,7 @@ agents/ skills/
 - `apa-debug`
 - `apa-devops`
 - `apa-docs`
+- `apa-doc-review`
 - `apa-feature`
 - `apa-implement`
 - `apa-integration`
@@ -234,6 +252,7 @@ agents/ skills/
 - `apa-tdd`
 
 `apa-docs` は文書を優先度順の段階（`Phase 0`, `Phase 1`, ...）で作成します。`Phase 0` は常に最優先フェーズです。各フェーズには、範囲、対応する PRD/API/SPEC 内容、必要なテスト、確認項目、完了条件、明確な次フェーズ移行ゲート、フェーズ完了レポートを必ず含めます。
+`apa-doc-review` は文書をユーザーとラウンドごとに詰めるための skill です。各修正後に止まってフィードバックを待ち、`docs approved` が出るまでは実装を始めません。
 
 一覧表示:
 

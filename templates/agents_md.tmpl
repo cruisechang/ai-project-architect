@@ -6,6 +6,22 @@
 
 ---
 
+# `apa簡要說明` 快捷回覆
+
+當使用者輸入以下任一觸發詞時，請只回覆以下四行短版用法，不要擴寫成其他文件摘要：
+
+- `apa簡要說明`
+- `apa 簡要說明`
+- `apa說明`
+- `apa 說明`
+
+- 開始實作循環：`apa prompt` -> 把輸出貼給 agent -> 明確要求使用 `apa-loop` + `apa-implement`
+- 先交互修改文件：`apa prompt --docs-only` -> 把輸出貼給 agent -> 明確要求只使用 `apa-doc-review`
+- Terminal loop wrapper：`bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
+- 停止 wrapper：`bash scripts/apa-loop-cancel.sh`
+
+---
+
 # 專案結構
 project/
 │
@@ -29,6 +45,7 @@ project/
 ├─ skills/
 │   ├─ apa-feature/
 │   ├─ apa-docs/
+│   ├─ apa-doc-review/
 │   ├─ apa-debug/
 │   └─ apa-devops/
 │
@@ -346,6 +363,7 @@ AI agent 可以在以下情況使用 skill：
 skills/
 ├─ apa-feature/
 ├─ apa-docs/
+├─ apa-doc-review/
 ├─ apa-debug/
 └─ apa-devops/
 使用 skill 時應：

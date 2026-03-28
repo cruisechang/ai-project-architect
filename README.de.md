@@ -17,6 +17,14 @@
 [![CLI](https://img.shields.io/badge/Type-CLI-111111)](#befehle)
 [![Skills](https://img.shields.io/badge/Repo%20Skills-apa--*-2f855a)](#commands--skills)
 
+## `apa簡要說明`
+
+- 可用觸發詞：`apa簡要說明`、`apa 簡要說明`、`apa說明`、`apa 說明`
+- Implementierungs-Loop starten: `apa prompt` -> Ausgabe an den Agenten geben -> `apa-loop` + `apa-implement` anweisen
+- Erst Dokumente iterativ schärfen: `apa prompt --docs-only` -> Ausgabe an den Agenten geben -> nur `apa-doc-review` anweisen
+- Terminal-Loop-Wrapper: `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
+- Wrapper stoppen: `bash scripts/apa-loop-cancel.sh`
+
 `apa` ist ein Go-CLI, das eine Produktidee schnell in einen brauchbaren Projektstart verwandelt.
 
 Es erzeugt Projektkontext, Designdokumente, lauffähige Scaffolds und einen wiederholbaren KI-Iterationsablauf, damit der Weg von der Idee zur Umsetzung kürzer wird.
@@ -48,7 +56,7 @@ idea
   -> apa init
   -> docs + scaffold + context
   -> apa list-skills
-  -> apa iterate
+  -> apa prompt
   -> agent implements
   -> make test
   -> repeat
@@ -60,7 +68,7 @@ idea
 - Leitet einen sinnvollen Tech-Stack ab, den du per Flags überschreiben kannst
 - Generiert phasenbasierte Dokumente ab `Phase 0`, darunter PRD, SPEC, ARCHITECTURE, API, DB Schema und Implementierungsplan
 - Erstellt lauffähigen Startcode, Teststruktur, Makefile-Ziele und Agent-Konfiguration
-- Gibt mit `apa iterate` einen strukturierten KI-Prompt für die weitere Lieferung aus
+- Gibt mit `apa prompt` einen strukturierten KI-Prompt für die weitere Lieferung aus
 - Lässt sich natürlich mit `apa-loop` koppeln, um die Lieferung rundenbasiert voranzutreiben: Status lesen, 1-3 Aufgaben wählen, prüfen, Status aktualisieren, wiederholen
 
 ## Empfohlener Ablauf
@@ -75,7 +83,7 @@ go build -o apa .
 # 3. Ins erzeugte Repo wechseln und iterieren
 cd ~/projects/report-platform
 ./apa list-skills
-./apa iterate
+./apa prompt
 make test
 ```
 
@@ -84,7 +92,7 @@ Kernschleife:
 1. Mit `apa init` das erste Projektgerüst erzeugen.
 2. Phasenbasierte Dokumente ab `Phase 0` pflegen, damit Umfang, Tests, Gates und Berichte in PRD/API/SPEC ausgerichtet bleiben.
 3. Standardmäßig `apa-loop` mit `apa-implement` als Delivery-Schleife verwenden.
-4. `apa iterate` ausführen, den Agenten arbeiten lassen und mit `make test` prüfen.
+4. `apa prompt` ausführen, den Agenten arbeiten lassen und mit `make test` prüfen.
 5. Wiederholen, bis das Repo lieferbar ist.
 
 ## Status der Delivery-Schleife und `apa-loop` Verwendung
@@ -93,9 +101,12 @@ Generierte Repositories sollten `docs/IMPLEMENTATION_STATUS.md` oder `TASKS.md` 
 Nutze `apa-loop` zusammen mit `apa-implement`, damit der Agent zwischen Implementierung, Tests, Fehlerbehebung und Dokumentations-Updates weiter rotiert, bis das Abschluss-Gate erfüllt ist.
 `apa-loop` ist das repo-lokale Skill für den erzwungenen Rundenbetrieb: Statusdatei lesen, 1-3 überprüfbare Aufgaben wählen, Tests/Checks ausführen, Status aktualisieren und wiederholen, bis das Abschluss-Gate erfüllt ist.
 Verwendung:
-- Codex-Projekte: `apa iterate` ausführen und den Agenten dann explizit anweisen, `apa-loop` mit `apa-implement` zu verwenden
-- Claude-Code-Projekte: `/apa-loop --max-iterations 30`
-- Claude-Code-Projekte: `/cancel-apa-loop`
+- Wenn du die Dokumente vor der Implementierung iterativ schärfen willst, starte mit `apa prompt --docs-only` und weise den Agenten an, nur `apa-doc-review` zu verwenden.
+- Primärer Agent-Workflow (für Codex und Claude Code): `apa prompt` ausführen und den Agenten dann explizit anweisen, `apa-loop` mit `apa-implement` zu verwenden
+- Optionaler Terminal-Wrapper (für Umgebungen mit generiertem Hook oder Slash-Command, z. B. Claude Code): `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
+- Optionaler Slash-Command: `/apa-loop --max-iterations 30 --reviewer agent-self`
+- Optionaler Abbruchbefehl: `/cancel-apa-loop`
+- Review policy: interactive per round. Ask which reviewer to use (`agent-self`, `apa-codex-review`, or `apa-claude-review`) before review.
 
 ## Schnelles Beispiel
 
@@ -110,7 +121,7 @@ Verwendung:
 
 cd ~/projects/support-hub
 ./apa list-skills
-./apa iterate > prompt.md
+./apa prompt > prompt.md
 make test
 ```
 
@@ -119,7 +130,7 @@ make test
 | Befehl | Zweck |
 |---|---|
 | `apa init` | Neues Projekt aus einer Idee erstellen |
-| `apa iterate` | Strukturierten KI-Prompt für die weitere Lieferung erzeugen |
+| `apa prompt` | Strukturierten KI-Prompt für die weitere Lieferung erzeugen |
 | `apa list-skills` | Verfügbare repo-lokale Skills anzeigen |
 | `apa doctor` | Lokale Umgebung und Skills-Pfad prüfen |
 | `apa version` | Build-Versionsinfo ausgeben |
@@ -131,7 +142,7 @@ Vollständige Optionen: `apa <command> --help`
 Aktuelle CLI-Befehle:
 
 - `init`
-- `iterate`
+- `prompt`
 - `list-skills`
 - `doctor`
 - `version`
@@ -142,11 +153,14 @@ Aktuelle repo-lokale Skills:
 - `apa-debug`
 - `apa-devops`
 - `apa-docs`
+- `apa-doc-review`
 - `apa-feature`
 - `apa-implement`
 - `apa-integration`
 - `apa-loop`
 - `apa-review`
+- `apa-codex-review`
+- `apa-claude-review`
 - `apa-tdd`
 
 ## `apa init`
@@ -167,6 +181,7 @@ Typische Nutzung:
 ```bash
 # Interaktiv
 ./apa init
+# Startet direkt im Wizard; die erste Frage ist Project idea.
 
 # Nicht interaktiv
 ./apa init --idea "Online-Essensbestellplattform" --name food-platform --path ~/projects
@@ -182,10 +197,11 @@ Wichtige Flags:
 | `--idea` | Produktidee für die Stack-Ableitung |
 | `--name` | Projektname |
 | `--path` | Übergeordnetes Zielverzeichnis |
-| `--type` | `web-app`, `ai-app`, `devops-tool`, `internal-tool` oder `platform-service` |
-| `--agent` | `codex` oder `claude-code` |
+| `--type` | `cli`, `server`, `web-app-server`, `mobile-app-server`, `web-app`, `mobile-app` |
+| `--agent` | `codex`, `claude-code` oder `universal` |
 | `--backend` | `go`, `python`, `node` oder `none` |
 | `--frontend` | `react`, `next`, `nuxt`, `vue`, `pure-typescript` oder `none` |
+| `--unit-test` `--api-test` `--integration-test` `--e2e-test` | `yes` or `no` |
 | `--skills` | Kommagetrennte repo-lokale Skills zum Kopieren |
 | `--skills-path` | Quellverzeichnis der Skills, standardmäßig `./skills` |
 | `--force` | Vorhandenes Verzeichnis sichern und neu aufbauen |
@@ -202,18 +218,19 @@ CLAUDE.md or PROMPT.md
 agents/ skills/
 ```
 
-## `apa iterate`
+## `apa prompt`
 
-`apa iterate` liest den aktuellen Zustand des Repos und erzeugt einen strukturierten Prompt für den KI-Agenten.
+`apa prompt` liest den aktuellen Zustand des Repos und erzeugt einen strukturierten Prompt für den KI-Agenten.
 
 Das ist vor der Implementierung, während der Entwicklung oder nach Regressionen nützlich, damit der Agent im Einklang mit Dokumenten, Aufgaben und Randbedingungen weiterarbeitet.
 
-Der Befehl prüft außerdem, ob bestehende Dokumente prioritätsbasiert ausgerichtete Abschnitte `Phase 0`, `Phase 1`, ... verwenden. Falls nicht, warnt `apa iterate` und fordert den Agenten auf, diese Dokumente zuerst mit `apa-docs` umzuschreiben.
+Der Befehl prüft außerdem, ob bestehende Dokumente prioritätsbasiert ausgerichtete Abschnitte `Phase 0`, `Phase 1`, ... verwenden. Falls nicht, warnt `apa prompt` und fordert den Agenten auf, diese Dokumente zuerst mit `apa-docs` umzuschreiben.
 
 ```bash
-./apa iterate
-./apa iterate --root ~/projects/report-platform
-./apa iterate > prompt.md
+./apa prompt
+./apa prompt --docs-only
+./apa prompt --root ~/projects/report-platform
+./apa prompt > prompt.md
 ```
 
 ## Repo-lokale Skills
@@ -226,6 +243,7 @@ Aktuelle Beispiele:
 - `apa-debug`
 - `apa-devops`
 - `apa-docs`
+- `apa-doc-review`
 - `apa-feature`
 - `apa-implement`
 - `apa-integration`
@@ -234,6 +252,7 @@ Aktuelle Beispiele:
 - `apa-tdd`
 
 `apa-docs` schreibt Dokumentation in prioritätsbasierten Phasen (`Phase 0`, `Phase 1`, ...). `Phase 0` ist immer die Phase mit der höchsten Priorität. Jede Phase muss Umfang, abgestimmte PRD/API/SPEC-Inhalte, erforderliche Tests, Prüfpunkte, Abschlusskriterien, ein explizites Next-Phase-Gate und einen Phasenbericht enthalten.
+`apa-doc-review` ist für eine dokumentzentrierte Review-Schleife mit dem Nutzer: pro Runde nur Doku ändern, dann auf Feedback warten, und erst nach expliziter Freigabe der Doku mit der Implementierung beginnen.
 
 Anzeigen mit:
 

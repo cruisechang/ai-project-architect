@@ -1,6 +1,6 @@
 ---
 description: "Start apa delivery loop in current repo"
-argument-hint: "[--max-iterations N] [--completion-promise TEXT]"
+argument-hint: "[--max-iterations N] [--completion-promise TEXT] [--reviewer agent-self|apa-codex-review|apa-claude-review]"
 allowed-tools: ["Bash(scripts/apa-loop-setup.sh:*)"]
 ---
 
@@ -10,6 +10,6 @@ allowed-tools: ["Bash(scripts/apa-loop-setup.sh:*)"]
 bash scripts/apa-loop-setup.sh $ARGUMENTS
 ```
 
-Please work on the task. When you try to exit, the apa-loop Stop hook feeds back a fresh prompt built from `skills/apa-loop/SKILL.md` and `docs/IMPLEMENTATION_STATUS.md`.
+Please work on the task. When you try to exit, the apa-loop Stop hook feeds back a fresh prompt built from `skills/apa-loop/SKILL.md` and `docs/IMPLEMENTATION_STATUS.md`, and requires interactive reviewer selection each round.
 
 CRITICAL: Only output `<promise>COMPLETE</promise>` when the Completion Gate in `skills/apa-loop/SKILL.md` is genuinely and completely met. Do not output it to escape the loop.

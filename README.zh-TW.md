@@ -17,6 +17,14 @@
 [![CLI](https://img.shields.io/badge/Type-CLI-111111)](#指令總覽)
 [![Skills](https://img.shields.io/badge/Repo%20Skills-apa--*-2f855a)](#commands--skills)
 
+## `apa簡要說明`
+
+- 可用觸發詞：`apa簡要說明`、`apa 簡要說明`、`apa說明`、`apa 說明`
+- 開始實作循環：`apa prompt` -> 把輸出貼給 agent -> 明確要求使用 `apa-loop` + `apa-implement`
+- 先交互修改文件：`apa prompt --docs-only` -> 把輸出貼給 agent -> 明確要求只使用 `apa-doc-review`
+- Terminal loop wrapper：`bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
+- 停止 wrapper：`bash scripts/apa-loop-cancel.sh`
+
 `apa` 是一個 Go CLI，目標是把產品 idea 快速變成可開發的專案起點。
 
 它會產出專案 context、設計文件、可執行骨架，以及後續可持續迭代的 AI 工作流程，讓你從想法到實作更快落地。
@@ -48,7 +56,7 @@ idea
   -> apa init
   -> docs + scaffold + context
   -> apa list-skills
-  -> apa iterate
+  -> apa prompt
   -> agent implements
   -> make test
   -> repeat
@@ -60,7 +68,7 @@ idea
 - 先自動推論技術棧，再允許你用 flags 覆蓋
 - 產生從 `Phase 0` 開始的分階段文件，包括 PRD、SPEC、ARCHITECTURE、API、DB Schema、實作計畫
 - 建立可執行的起始程式碼、測試結構、Makefile 與 agent 設定
-- 透過 `apa iterate` 產出結構化提示詞，讓 AI agent 持續在可控流程內工作
+- 透過 `apa prompt` 產出結構化提示詞，讓 AI agent 持續在可控流程內工作
 - 可自然搭配 `apa-loop`，用分輪交付方式推進：讀取狀態、選 1-3 項任務、驗證、更新狀態、再重複
 
 ## 建議工作流程
@@ -75,7 +83,7 @@ go build -o apa .
 # 3. 進入產生出的 repo 開始迭代
 cd ~/projects/report-platform
 ./apa list-skills
-./apa iterate
+./apa prompt
 make test
 ```
 
@@ -84,7 +92,7 @@ make test
 1. 用 `apa init` 建立第一版專案。
 2. 維持從 `Phase 0` 開始的分階段文件，讓 PRD/API/SPEC 的範圍、測試、gate 與報告保持對齊。
 3. 預設以 `apa-loop` 搭配 `apa-implement` 推進每一輪交付。
-4. 跑 `apa iterate`，讓 agent 實作，再用 `make test` 驗證。
+4. 跑 `apa prompt`，讓 agent 實作，再用 `make test` 驗證。
 5. 反覆執行直到可交付。
 
 ## 交付循環狀態與 `apa-loop` 使用方式
@@ -93,9 +101,12 @@ make test
 搭配 `apa-loop` 與 `apa-implement` 使用，讓 agent 持續在實作、測試、修正與文件更新之間循環，直到完成 gate 被滿足。
 `apa-loop` 是用來強制執行每輪交付循環的 repo-local skill：先讀狀態檔、選 1-3 個可驗證工作項、跑測試或檢查、更新狀態，再持續重複直到完成 gate 被滿足。
 使用方式：
-- Codex 專案：先執行 `apa iterate`，再明確要求 agent 使用 `apa-loop` 與 `apa-implement`
-- Claude Code 專案：`/apa-loop --max-iterations 30`
-- Claude Code 專案：`/cancel-apa-loop`
+- 若要在實作前先來回修文件，可先執行 `apa prompt --docs-only`，並明確要求 agent 只使用 `apa-doc-review`
+- Agent 主用法（Codex 與 Claude Code 通用）：先執行 `apa prompt`，再明確要求 agent 使用 `apa-loop` 與 `apa-implement`
+- 可選 terminal 包裝（適用於有產生 hook 或 slash command 的環境，例如 Claude Code）：`bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
+- 可選 slash command：`/apa-loop --max-iterations 30 --reviewer agent-self`
+- 可選取消指令：`/cancel-apa-loop`
+- Review policy: interactive per round. Ask which reviewer to use (`agent-self`, `apa-codex-review`, or `apa-claude-review`) before review.
 
 ## 快速範例
 
@@ -110,7 +121,7 @@ make test
 
 cd ~/projects/support-hub
 ./apa list-skills
-./apa iterate > prompt.md
+./apa prompt > prompt.md
 make test
 ```
 
@@ -119,7 +130,7 @@ make test
 | 指令 | 用途 |
 |---|---|
 | `apa init` | 從 idea 建立新專案 |
-| `apa iterate` | 產生後續持續交付用的 AI 提示詞 |
+| `apa prompt` | 產生後續持續交付用的 AI 提示詞 |
 | `apa list-skills` | 列出可用的 repo-local skills |
 | `apa doctor` | 檢查本機環境與 skills 路徑 |
 | `apa version` | 顯示建置版本資訊 |
@@ -131,7 +142,7 @@ make test
 目前 CLI 指令：
 
 - `init`
-- `iterate`
+- `prompt`
 - `list-skills`
 - `doctor`
 - `version`
@@ -142,11 +153,14 @@ make test
 - `apa-debug`
 - `apa-devops`
 - `apa-docs`
+- `apa-doc-review`
 - `apa-feature`
 - `apa-implement`
 - `apa-integration`
 - `apa-loop`
 - `apa-review`
+- `apa-codex-review`
+- `apa-claude-review`
 - `apa-tdd`
 
 ## `apa init`
@@ -167,6 +181,7 @@ make test
 ```bash
 # 互動模式
 ./apa init
+# 會直接進入 Wizard，第一題是 Project idea。
 
 # 非互動模式
 ./apa init --idea "線上訂餐平台" --name food-platform --path ~/projects
@@ -182,10 +197,11 @@ make test
 | `--idea` | 用來推論技術棧的產品 idea |
 | `--name` | 專案名稱 |
 | `--path` | 專案要建立在哪個父目錄 |
-| `--type` | `web-app`、`ai-app`、`devops-tool`、`internal-tool`、`platform-service` |
-| `--agent` | `codex` 或 `claude-code` |
+| `--type` | `cli`, `server`, `web-app-server`, `mobile-app-server`, `web-app`, `mobile-app` |
+| `--agent` | `codex`、`claude-code`、或 `universal` |
 | `--backend` | `go`、`python`、`node`、`none` |
 | `--frontend` | `react`、`next`、`nuxt`、`vue`、`pure-typescript`、`none` |
+| `--unit-test` `--api-test` `--integration-test` `--e2e-test` | `yes` or `no` |
 | `--skills` | 要複製進新專案的 repo-local skills，逗號分隔 |
 | `--skills-path` | skills 來源目錄，預設為本 repo 的 `./skills` |
 | `--force` | 備份既有目錄後重建 |
@@ -202,18 +218,19 @@ CLAUDE.md or PROMPT.md
 agents/ skills/
 ```
 
-## `apa iterate`
+## `apa prompt`
 
-`apa iterate` 會讀取目前 repo 狀態，輸出一段給 AI agent 的結構化提示詞。
+`apa prompt` 會讀取目前 repo 狀態，輸出一段給 AI agent 的結構化提示詞。
 
 它可以在實作前、開發中、或修回歸問題後使用，協助 agent 依照現有文件、任務與限制持續往交付推進。
 
-它也會檢查既有文件是否採用依優先度對齊的 `Phase 0`、`Phase 1`... 段落；如果不是，`apa iterate` 會提醒使用者，並要求 agent 先用 `apa-docs` 重寫文件，再繼續實作。
+它也會檢查既有文件是否採用依優先度對齊的 `Phase 0`、`Phase 1`... 段落；如果不是，`apa prompt` 會提醒使用者，並要求 agent 先用 `apa-docs` 重寫文件，再繼續實作。
 
 ```bash
-./apa iterate
-./apa iterate --root ~/projects/report-platform
-./apa iterate > prompt.md
+./apa prompt
+./apa prompt --docs-only
+./apa prompt --root ~/projects/report-platform
+./apa prompt > prompt.md
 ```
 
 ## Repo-Local Skills
@@ -226,6 +243,7 @@ agents/ skills/
 - `apa-debug`
 - `apa-devops`
 - `apa-docs`
+- `apa-doc-review`
 - `apa-feature`
 - `apa-implement`
 - `apa-integration`
@@ -234,6 +252,7 @@ agents/ skills/
 - `apa-tdd`
 
 `apa-docs` 會用依優先度對齊的階段方式寫文件（`Phase 0`、`Phase 1`...），其中 `Phase 0` 永遠是最高優先。每個階段都必須寫出範圍、對應的 PRD/API/SPEC 內容、所需測試、檢測項目、完成標準、明確的下一階段 gate，以及階段完成報告。
+`apa-doc-review` 用於文件先行的互動修訂：每輪只改文件、改完就停下等回饋，在你明確說 `docs approved` 之前不得開始實作。
 
 可用以下指令查看：
 

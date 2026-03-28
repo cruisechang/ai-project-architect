@@ -114,7 +114,6 @@ func TestInitCommandCodexStack(t *testing.T) {
 		"--idea", "Build an AI RAG system with Go backend and Next.js frontend",
 		"--name", "demo-project",
 		"--path", projectParent,
-		"--type", "ai-app",
 		"--ai-feature", "rag",
 		"--agent", "codex",
 		"--docs", "full",
@@ -122,6 +121,7 @@ func TestInitCommandCodexStack(t *testing.T) {
 		"--skills", "planner",
 		"--description", "demo desc",
 		"--unit-test", "yes",
+		"--api-test", "yes",
 		"--integration-test", "yes",
 		"--e2e-test", "yes",
 		"--docker-compose", "yes",
@@ -149,6 +149,8 @@ func TestInitCommandCodexStack(t *testing.T) {
 	assertPathExists(t, filepath.Join(projectRoot, ".codex", "memory.md"))
 	assertPathExists(t, filepath.Join(projectRoot, ".codex", "cache"))
 	assertPathExists(t, filepath.Join(projectRoot, "skills", "apa-feature", "SKILL.md"))
+	assertPathExists(t, filepath.Join(projectRoot, "skills", "apa-doc-review", "SKILL.md"))
+	assertPathExists(t, filepath.Join(projectRoot, "skills", "apa-claude-review", "SKILL.md"))
 	assertPathExists(t, filepath.Join(projectRoot, "skills", "apa-loop", "SKILL.md"))
 	assertPathExists(t, filepath.Join(projectRoot, "skills", "planner", "SKILL.md"))
 
@@ -173,18 +175,25 @@ func TestInitCommandCodexStack(t *testing.T) {
 	assertFileContains(t, filepath.Join(projectRoot, "docs", "SPEC.md"), "Phase 0")
 	assertFileContains(t, filepath.Join(projectRoot, "docs", "API.md"), "Phase 0")
 
-	// Context for apa iterate
+	// Context for apa prompt
 	assertPathExists(t, filepath.Join(projectRoot, ".architect", "context.json"))
 
 	assertFileContains(t, filepath.Join(projectRoot, "AGENTS.md"), "AI Agent Engineering Guidelines")
+	assertFileContains(t, filepath.Join(projectRoot, "AGENTS.md"), "apa 簡要說明")
+	assertFileContains(t, filepath.Join(projectRoot, "AGENTS.md"), "apa說明")
 	assertFileContains(t, filepath.Join(projectRoot, "PROMPT.md"), "AI Prompt Engineering Guidelines")
-	assertFileContains(t, filepath.Join(projectRoot, "skills", "apa-loop", "SKILL.md"), "Codex projects do not generate a `/apa-loop` slash command")
-	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "Usage: ask the agent to use `apa-loop` with `apa-implement` after pasting `apa iterate`")
+	assertFileContains(t, filepath.Join(projectRoot, "PROMPT.md"), "apa說明")
+	assertFileContains(t, filepath.Join(projectRoot, "skills", "apa-loop", "SKILL.md"), "This is a repo-local skill for Codex and Claude-style agents.")
+	assertFileContains(t, filepath.Join(projectRoot, "skills", "apa-doc-review", "SKILL.md"), "Do not implement code")
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "Primary agent workflow for both Codex and Claude Code")
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "apa簡要說明")
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "- `apa-doc-review`")
 	assertFileContains(t, filepath.Join(projectRoot, "README.zh-TW.md"), "demo desc")
 	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "demo desc")
 	assertFileContains(t, filepath.Join(projectRoot, "README.zh-TW.md"), "## 🔁 `apa-loop` 使用方式")
-	assertFileContains(t, filepath.Join(projectRoot, "README.zh-TW.md"), "Codex：先執行 `apa iterate`")
-	assertFileContains(t, filepath.Join(projectRoot, "README.zh-TW.md"), "Claude Code：執行 `/apa-loop --max-iterations 30`")
+	assertFileContains(t, filepath.Join(projectRoot, "README.zh-TW.md"), "Agent 主用法（Codex 與 Claude Code 通用）")
+	assertFileContains(t, filepath.Join(projectRoot, "README.zh-TW.md"), "可選 slash command：`/apa-loop --max-iterations 30 --reviewer agent-self`")
+	assertFileContains(t, filepath.Join(projectRoot, "README.zh-TW.md"), "- `apa-doc-review`")
 	assertContains(t, out, "=== INIT SUMMARY ===")
 }
 
@@ -196,11 +205,11 @@ func TestInitCommandUsesIdeaAsDescriptionWhenDescriptionMissing(t *testing.T) {
 		"--idea", idea,
 		"--name", "demo-no-description",
 		"--path", projectParent,
-		"--type", "ai-app",
 		"--ai-feature", "rag",
 		"--agent", "codex",
 		"--docs", "basic",
 		"--unit-test", "yes",
+		"--api-test", "yes",
 		"--integration-test", "yes",
 		"--e2e-test", "no",
 		"--docker-compose", "yes",
@@ -223,14 +232,14 @@ func TestInitCommandClaudeAgent(t *testing.T) {
 		"--idea", "Internal tool for managing deployments with Python backend",
 		"--name", "demo-claude",
 		"--path", projectParent,
-		"--type", "internal-tool",
 		"--ai-feature", "prompt-workflow",
 		"--agent", "claude-code",
 		"--backend", "python",
 		"--frontend", "none",
 		"--docs", "basic",
-		"--architecture", "backend-service",
+		"--type", "server",
 		"--unit-test", "yes",
+		"--api-test", "yes",
 		"--integration-test", "yes",
 		"--e2e-test", "no",
 		"--docker-compose", "no",
@@ -249,14 +258,70 @@ func TestInitCommandClaudeAgent(t *testing.T) {
 	assertPathExists(t, filepath.Join(projectRoot, ".claude", "memory.md"))
 	assertPathExists(t, filepath.Join(projectRoot, ".claude", "commands", "apa-loop.md"))
 	assertPathExists(t, filepath.Join(projectRoot, ".architect", "context.json"))
+	assertPathExists(t, filepath.Join(projectRoot, "skills", "apa-doc-review", "SKILL.md"))
+	assertPathExists(t, filepath.Join(projectRoot, "skills", "apa-codex-review", "SKILL.md"))
 	assertPathNotExists(t, filepath.Join(projectRoot, ".codex"))
 	assertPathNotExists(t, filepath.Join(projectRoot, "PROMPT.md"))
 	assertPathNotExists(t, filepath.Join(projectRoot, "PLANS.md"))
 	assertFileContains(t, filepath.Join(projectRoot, ".claude", "settings.json"), "\"Bash(bash scripts/apa-loop-setup.sh*)\"")
-	assertFileContains(t, filepath.Join(projectRoot, "skills", "apa-loop", "SKILL.md"), "This skill is backed by a real Stop hook in `.claude/settings.json`.")
+	assertFileContains(t, filepath.Join(projectRoot, "AGENTS.md"), "apa 簡要說明")
+	assertFileContains(t, filepath.Join(projectRoot, "AGENTS.md"), "apa說明")
+	assertFileContains(t, filepath.Join(projectRoot, "skills", "apa-loop", "SKILL.md"), "This is a repo-local skill for Codex and Claude-style agents.")
+	assertFileContains(t, filepath.Join(projectRoot, "skills", "apa-doc-review", "SKILL.md"), "Do not implement code")
+	assertFileContains(t, filepath.Join(projectRoot, "skills", "apa-codex-review", "SKILL.md"), "Codex Review Skill")
 	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "## 🔁 `apa-loop` Usage")
-	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "Codex: run `apa iterate` first")
-	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "Claude Code: start `/apa-loop --max-iterations 30`")
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "apa簡要說明")
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "Primary agent workflow for both Codex and Claude Code")
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "Optional slash command: `/apa-loop --max-iterations 30 --reviewer agent-self`")
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "- `apa-doc-review`")
+	assertContains(t, out, "=== INIT SUMMARY ===")
+}
+
+func TestInitCommandUniversalAgent(t *testing.T) {
+	projectParent := t.TempDir()
+	out, err := runProjgen(t, nil,
+		"init",
+		"--idea", "Internal platform with shared docs and wrappers for both Codex and Claude Code",
+		"--name", "demo-universal",
+		"--path", projectParent,
+		"--ai-feature", "prompt-workflow",
+		"--agent", "universal",
+		"--backend", "go",
+		"--frontend", "next",
+		"--docs", "basic",
+		"--type", "web-app-server",
+		"--unit-test", "yes",
+		"--api-test", "yes",
+		"--integration-test", "yes",
+		"--e2e-test", "no",
+		"--docker-compose", "yes",
+	)
+	if err != nil {
+		t.Fatalf("init command failed: %v\noutput:\n%s", err, out)
+	}
+
+	projectRoot := filepath.Join(projectParent, "demo-universal")
+	assertPathExists(t, filepath.Join(projectRoot, "AGENTS.md"))
+	assertPathExists(t, filepath.Join(projectRoot, "PROMPT.md"))
+	assertPathExists(t, filepath.Join(projectRoot, "PLANS.md"))
+	assertPathExists(t, filepath.Join(projectRoot, "CLAUDE.md"))
+	assertPathExists(t, filepath.Join(projectRoot, ".codex", "config.json"))
+	assertPathExists(t, filepath.Join(projectRoot, ".codex", "memory.md"))
+	assertPathExists(t, filepath.Join(projectRoot, ".claude", "settings.json"))
+	assertPathExists(t, filepath.Join(projectRoot, ".claude", "memory.md"))
+	assertPathExists(t, filepath.Join(projectRoot, ".claude", "commands", "apa-loop.md"))
+	assertPathExists(t, filepath.Join(projectRoot, "skills", "apa-doc-review", "SKILL.md"))
+	assertPathExists(t, filepath.Join(projectRoot, "skills", "apa-codex-review", "SKILL.md"))
+	assertPathExists(t, filepath.Join(projectRoot, "skills", "apa-claude-review", "SKILL.md"))
+	assertPathExists(t, filepath.Join(projectRoot, ".architect", "context.json"))
+
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "Primary agent workflow for both Codex and Claude Code")
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "`PROMPT.md`")
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "`CLAUDE.md`")
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "`.codex/`")
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "`.claude/`")
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "`apa-codex-review`")
+	assertFileContains(t, filepath.Join(projectRoot, "README.md"), "`apa-claude-review`")
 	assertContains(t, out, "=== INIT SUMMARY ===")
 }
 
@@ -274,14 +339,14 @@ func TestInitCommandSkillFailureIsGraceful(t *testing.T) {
 		"--idea", "Simple web app",
 		"--name", "demo-fail-skill",
 		"--path", projectParent,
-		"--type", "web-app",
 		"--agent", "codex",
 		"--backend", "go",
 		"--frontend", "react",
-		"--architecture", "frontend-backend",
+		"--type", "web-app-server",
 		"--skills-path", globalSkills,
 		"--skills", "planner,missing-skill",
 		"--unit-test", "yes",
+		"--api-test", "yes",
 		"--integration-test", "yes",
 		"--e2e-test", "no",
 		"--docker-compose", "no",
@@ -358,12 +423,12 @@ func TestInitCommandIdeaFile(t *testing.T) {
 	assertContains(t, out, "INIT SUMMARY")
 }
 
-// TestIterateCommandNoContext verifies apa iterate works without a context.json.
-func TestIterateCommandNoContext(t *testing.T) {
+// TestPromptCommandNoContext verifies apa prompt works without a context.json.
+func TestPromptCommandNoContext(t *testing.T) {
 	dir := t.TempDir()
-	out, err := runProjgen(t, nil, "iterate", "--root", dir)
+	out, err := runProjgen(t, nil, "prompt", "--root", dir)
 	if err != nil {
-		t.Fatalf("iterate command failed: %v\noutput:\n%s", err, out)
+		t.Fatalf("prompt command failed: %v\noutput:\n%s", err, out)
 	}
 	assertContains(t, out, "keep iterating until done")
 	assertContains(t, out, "Workflow")
@@ -372,10 +437,10 @@ func TestIterateCommandNoContext(t *testing.T) {
 	assertContains(t, out, "context.json")
 }
 
-// TestIterateCommandWithContext verifies apa iterate embeds project info when context exists.
-func TestIterateCommandWithContext(t *testing.T) {
+// TestPromptCommandWithContext verifies apa prompt embeds project info when context exists.
+func TestPromptCommandWithContext(t *testing.T) {
 	parent := t.TempDir()
-	projectName := "iterate-ctx-demo"
+	projectName := "prompt-ctx-demo"
 
 	// Bootstrap a project so context.json exists
 	_, err := runProjgen(t, nil,
@@ -389,9 +454,9 @@ func TestIterateCommandWithContext(t *testing.T) {
 	}
 
 	projectRoot := filepath.Join(parent, projectName)
-	out, iterErr := runProjgen(t, nil, "iterate", "--root", projectRoot)
+	out, iterErr := runProjgen(t, nil, "prompt", "--root", projectRoot)
 	if iterErr != nil {
-		t.Fatalf("iterate command failed: %v\noutput:\n%s", iterErr, out)
+		t.Fatalf("prompt command failed: %v\noutput:\n%s", iterErr, out)
 	}
 	assertContains(t, out, "keep iterating until done")
 	assertContains(t, out, "Workflow")
@@ -399,28 +464,40 @@ func TestIterateCommandWithContext(t *testing.T) {
 	assertContains(t, out, projectName)
 }
 
-func TestIterateWarnsWhenDocsAreNotPhaseBased(t *testing.T) {
+func TestPromptCommandDocsOnly(t *testing.T) {
+	dir := t.TempDir()
+	out, err := runProjgen(t, nil, "prompt", "--root", dir, "--docs-only")
+	if err != nil {
+		t.Fatalf("prompt --docs-only command failed: %v\noutput:\n%s", err, out)
+	}
+	assertContains(t, out, "Use the `apa-doc-review` skill only")
+	assertContains(t, out, "Stop and wait for my feedback after every round")
+	assertContains(t, out, "Do not start `apa-loop`")
+	assertNotContains(t, out, "The 1–3 tasks for round one")
+}
+
+func TestPromptWarnsWhenDocsAreNotPhaseBased(t *testing.T) {
 	dir := t.TempDir()
 	mustMkdirAll(t, filepath.Join(dir, "docs"))
 	mustWriteFile(t, filepath.Join(dir, "docs", "PRD.md"), "# PRD\n\n## Goals\n- old format\n")
 
-	out, err := runProjgen(t, nil, "iterate", "--root", dir)
+	out, err := runProjgen(t, nil, "prompt", "--root", dir)
 	if err != nil {
-		t.Fatalf("iterate command failed: %v\noutput:\n%s", err, out)
+		t.Fatalf("prompt command failed: %v\noutput:\n%s", err, out)
 	}
 	assertContains(t, out, "Phase Rewrite Required")
 	assertContains(t, out, "docs/PRD.md")
 	assertContains(t, out, "apa-docs")
 }
 
-func TestIterateSkipsPhaseWarningWhenDocsArePhaseBased(t *testing.T) {
+func TestPromptSkipsPhaseWarningWhenDocsArePhaseBased(t *testing.T) {
 	dir := t.TempDir()
 	mustMkdirAll(t, filepath.Join(dir, "docs"))
 	mustWriteFile(t, filepath.Join(dir, "docs", "PRD.md"), "# PRD\n\n## Phase 0\n\n### Objective\n- first phase\n")
 
-	out, err := runProjgen(t, nil, "iterate", "--root", dir)
+	out, err := runProjgen(t, nil, "prompt", "--root", dir)
 	if err != nil {
-		t.Fatalf("iterate command failed: %v\noutput:\n%s", err, out)
+		t.Fatalf("prompt command failed: %v\noutput:\n%s", err, out)
 	}
 	assertNotContains(t, out, "Phase Rewrite Required")
 }
