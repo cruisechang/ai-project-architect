@@ -56,7 +56,7 @@ USAGE:
 OPTIONS:
   --max-iterations <n>        Stop after N iterations (default: unlimited)
   --completion-promise <text> Exact phrase Claude must output to exit (default: COMPLETE)
-  --reviewer <name>           Default reviewer (agent-self | apa-codex-review | apa-claude-review)
+  --reviewer <name>           Reviewer to persist for the whole loop (agent-self | apa-codex-review | apa-claude-review)
   -h, --help                  Show this help
 
 STOPPING:
@@ -74,7 +74,7 @@ done
 
 if [[ -z "$REVIEWER" ]]; then
   if [[ -t 0 && -t 1 ]]; then
-    echo "Select default reviewer for apa-loop:"
+    echo "Select reviewer for apa-loop (persist for the whole loop):"
     echo "  1) agent-self"
     echo "  2) apa-codex-review"
     echo "  3) apa-claude-review"
@@ -91,7 +91,7 @@ if [[ -z "$REVIEWER" ]]; then
     esac
   else
     REVIEWER="agent-self"
-    echo "ℹ️  non-interactive shell detected, default reviewer: ${REVIEWER}"
+    echo "ℹ️  non-interactive shell detected, reviewer persisted as: ${REVIEWER}"
   fi
 fi
 
@@ -116,7 +116,7 @@ echo "   Reviewer        : ${REVIEWER}"
 echo ""
 echo "The stop hook is now active. Each time you exit, apa-loop feeds back a"
 echo "fresh prompt built from skills/apa-loop/SKILL.md and docs/IMPLEMENTATION_STATUS.md."
-echo "It also requires interactive reviewer selection each round."
+echo "The configured reviewer will be reused in later rounds unless you change it."
 echo ""
 echo "Begin: read skills/apa-loop/SKILL.md and docs/IMPLEMENTATION_STATUS.md,"
 echo "then start the first implementation round."

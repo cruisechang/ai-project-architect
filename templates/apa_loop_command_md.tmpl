@@ -10,6 +10,6 @@ allowed-tools: ["Bash(scripts/apa-loop-setup.sh:*)"]
 bash scripts/apa-loop-setup.sh $ARGUMENTS
 ```
 
-Please work on the task. When you try to exit, the apa-loop Stop hook feeds back a fresh prompt built from `skills/apa-loop/SKILL.md` and `docs/IMPLEMENTATION_STATUS.md`, and requires interactive reviewer selection each round.
+Please work on the task. When you try to exit, the apa-loop Stop hook feeds back a fresh prompt built from `skills/apa-loop/SKILL.md` and `docs/IMPLEMENTATION_STATUS.md`, and reuses the configured reviewer in later rounds.
 
 CRITICAL: Only output `<promise>COMPLETE</promise>` when the Completion Gate in `skills/apa-loop/SKILL.md` is genuinely and completely met. Do not output it to escape the loop.

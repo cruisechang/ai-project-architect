@@ -20,7 +20,7 @@
 ## `apa簡要說明`
 
 - 可用觸發詞：`apa簡要說明`、`apa 簡要說明`、`apa說明`、`apa 說明`
-- Start implementation loop: `apa prompt` -> paste output to agent -> tell it to use `apa-loop` + `apa-implement`
+- Start implementation loop: `apa prompt --reviewer agent-self` -> paste output to agent -> tell it to use `apa-loop` + `apa-implement`
 - Review docs first: `apa prompt --docs-only` -> paste output to agent -> tell it to use `apa-doc-review` only
 - Terminal loop wrapper: `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - Stop wrapper: `bash scripts/apa-loop-cancel.sh`
@@ -83,7 +83,7 @@ go build -o apa .
 # 3. Enter the generated repo and generate the agent prompt
 cd ~/projects/report-platform
 ./apa list-skills
-./apa prompt
+./apa prompt --reviewer agent-self
 make test
 ```
 
@@ -92,7 +92,7 @@ Core loop:
 1. Run `apa init` once to create the initial project.
 2. Keep docs phase-based from `Phase 0` so scope, tests, gates, and reports stay aligned across PRD/API/SPEC.
 3. Use `apa-loop` with `apa-implement` as the default delivery loop for implementation work.
-4. Run `apa prompt`, let the agent implement, then validate with `make test`.
+4. Run `apa prompt --reviewer agent-self`, let the agent implement, then validate with `make test`.
 5. Repeat until the repo is in a shippable state.
 
 ## Delivery Loop State and `apa-loop` Usage
@@ -103,7 +103,7 @@ Use `apa-loop` with `apa-implement` so the agent keeps cycling through implement
 
 **Agent** (recommended for both Codex and Claude Code):
 - Before implementation, you can run `apa prompt --docs-only` and tell the agent to use `apa-doc-review` only.
-- Run `apa prompt`, then explicitly tell the agent to use `apa-loop` with `apa-implement`
+- Run `apa prompt --reviewer agent-self`, or run `apa prompt` and choose the reviewer interactively, then explicitly tell the agent to use `apa-loop` with `apa-implement`
 
 **Optional terminal wrapper** (for environments that expose the generated hook or slash command, such as Claude Code):
 
@@ -113,7 +113,7 @@ bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self
 
 - Optional slash wrapper: `/apa-loop --max-iterations 30 --reviewer agent-self`
 - Optional cancel command: `/cancel-apa-loop`
-- Review policy: interactive per round. Ask which reviewer to use (`agent-self`, `apa-codex-review`, or `apa-claude-review`) before review.
+- Review policy: specify the reviewer once with `--reviewer` or in the first instruction, then reuse it in later rounds unless you explicitly switch (`agent-self`, `apa-codex-review`, or `apa-claude-review`).
 
 ## Quick Example
 
@@ -128,7 +128,7 @@ bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self
 
 cd ~/projects/support-hub
 ./apa list-skills
-./apa prompt > prompt.md
+./apa prompt --reviewer agent-self > prompt.md
 make test
 ```
 
@@ -235,6 +235,7 @@ It also checks whether existing docs follow aligned priority-based `Phase 0`, `P
 
 ```bash
 ./apa prompt
+./apa prompt --reviewer agent-self
 ./apa prompt --docs-only
 ./apa prompt --root ~/projects/report-platform
 ./apa prompt > prompt.md

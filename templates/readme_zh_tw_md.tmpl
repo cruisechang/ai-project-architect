@@ -31,7 +31,7 @@
 
 ## `apa簡要說明`
 
-- 開始實作循環：`apa prompt` -> 把輸出貼給 agent -> 明確要求使用 `apa-loop` + `apa-implement`
+- 開始實作循環：`apa prompt --reviewer agent-self` -> 把輸出貼給 agent -> 明確要求使用 `apa-loop` + `apa-implement`
 - 先交互修改文件：`apa prompt --docs-only` -> 把輸出貼給 agent -> 明確要求只使用 `apa-doc-review`
 - Terminal loop wrapper：`bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - 停止 wrapper：`bash scripts/apa-loop-cancel.sh`
@@ -100,11 +100,11 @@
 ## 🔁 `apa-loop` 使用方式
 
 - 若要在實作前先來回修文件，可先執行 `apa prompt --docs-only`，並明確要求 agent 只使用 `apa-doc-review`。
-- Agent 主用法（Codex 與 Claude Code 通用）：先執行 `apa prompt`，再明確要求 agent 使用 `apa-loop` 與 `apa-implement`。
+- Agent 主用法（Codex 與 Claude Code 通用）：先執行 `apa prompt --reviewer agent-self`，或直接執行 `apa prompt` 後以互動方式選 reviewer，再明確要求 agent 使用 `apa-loop` 與 `apa-implement`。
 - 可選 terminal 包裝（適用於有產生 hook 或 slash command 的環境，例如 Claude Code）：`bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - 可選 slash command：`/apa-loop --max-iterations 30 --reviewer agent-self`
 - 可選取消指令：`/cancel-apa-loop`
-- Review policy: interactive per round. Ask which reviewer to use (`agent-self`, `apa-codex-review`, or `apa-claude-review`) before review.
+- Review policy: 可在 `--reviewer` 或第一輪指令先指定 reviewer，後續各輪沿用；只有明確要求切換時才更換（`agent-self`、`apa-codex-review`、`apa-claude-review`）。
 - 兩種情況都要在每一輪更新 `docs/IMPLEMENTATION_STATUS.md`，讓下一輪能從最新狀態接續。
 
 ## 🚀 快速開始

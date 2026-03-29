@@ -20,7 +20,7 @@
 ## `apa簡要說明`
 
 - 可用觸發詞：`apa簡要說明`、`apa 簡要說明`、`apa說明`、`apa 說明`
-- 구현 루프 시작: `apa prompt` -> 출력을 agent에 붙여넣기 -> `apa-loop` + `apa-implement` 사용 지시
+- 구현 루프 시작: `apa prompt --reviewer agent-self` -> 출력을 agent에 붙여넣기 -> `apa-loop` + `apa-implement` 사용 지시
 - 먼저 문서 반복 수정: `apa prompt --docs-only` -> 출력을 agent에 붙여넣기 -> `apa-doc-review`만 사용 지시
 - Terminal loop wrapper: `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - wrapper 중지: `bash scripts/apa-loop-cancel.sh`
@@ -83,7 +83,7 @@ go build -o apa .
 # 3. 생성된 repo로 이동해서 반복 작업 시작
 cd ~/projects/report-platform
 ./apa list-skills
-./apa prompt
+./apa prompt --reviewer agent-self
 make test
 ```
 
@@ -92,7 +92,7 @@ make test
 1. `apa init`으로 첫 프로젝트를 만든다.
 2. `Phase 0`부터 시작하는 단계형 문서를 유지해 PRD/API/SPEC의 범위, 테스트, gate, 보고서를 정렬한다.
 3. 기본 전달 루프로 `apa-loop`와 `apa-implement`를 사용한다.
-4. `apa prompt`를 실행하고 agent가 작업한 뒤 `make test`로 검증한다.
+4. `apa prompt --reviewer agent-self`를 실행하고 agent가 작업한 뒤 `make test`로 검증한다.
 5. 배포 가능한 상태가 될 때까지 반복한다.
 
 ## 전달 루프 상태와 `apa-loop` 사용법
@@ -102,11 +102,11 @@ make test
 `apa-loop`는 상태 파일을 읽고, 검증 가능한 작업 1-3개를 고르고, 테스트/체크를 실행하고, 상태를 갱신한 뒤 완료 gate가 충족될 때까지 반복하도록 강제하는 repo-local skill입니다.
 사용 방법:
 - 구현 전에 문서를 먼저 반복해서 다듬고 싶다면 `apa prompt --docs-only`를 실행하고 agent에게 `apa-doc-review`만 사용하라고 명시한다.
-- 기본 agent 사용 흐름(Codex 와 Claude Code 공통): `apa prompt`를 실행한 뒤 agent에게 `apa-loop`와 `apa-implement`를 명시적으로 사용하라고 지시
+- 기본 agent 사용 흐름(Codex 와 Claude Code 공통): `apa prompt --reviewer agent-self`를 실행하거나 `apa prompt` 실행 후 reviewer 를 대화형으로 선택한 다음, agent에게 `apa-loop`와 `apa-implement`를 명시적으로 사용하라고 지시
 - 선택 가능한 terminal 래퍼(생성된 hook 또는 slash command 가 있는 환경, 예: Claude Code): `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - 선택 가능한 slash command: `/apa-loop --max-iterations 30 --reviewer agent-self`
 - 선택 가능한 취소 명령: `/cancel-apa-loop`
-- Review policy: interactive per round. Ask which reviewer to use (`agent-self`, `apa-codex-review`, or `apa-claude-review`) before review.
+- Review policy: `--reviewer` 또는 첫 지시에서 reviewer 를 한 번 지정하고 이후 라운드에서는 계속 재사용합니다. 명시적으로 바꿔 달라고 할 때만 변경합니다 (`agent-self`, `apa-codex-review`, `apa-claude-review`).
 
 ## 빠른 예시
 
@@ -121,7 +121,7 @@ make test
 
 cd ~/projects/support-hub
 ./apa list-skills
-./apa prompt > prompt.md
+./apa prompt --reviewer agent-self > prompt.md
 make test
 ```
 
@@ -228,6 +228,7 @@ agents/ skills/
 
 ```bash
 ./apa prompt
+./apa prompt --reviewer agent-self
 ./apa prompt --docs-only
 ./apa prompt --root ~/projects/report-platform
 ./apa prompt > prompt.md

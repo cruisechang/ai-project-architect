@@ -120,20 +120,26 @@ AI 會自動：
 使用方式：
   apa prompt                        # 在當前 repo 目錄執行
   apa prompt --docs-only            # 在實作前產出文件審閱提示詞
+  apa prompt --reviewer agent-self  # 產出已指定 reviewer 的實作提示詞
   apa prompt --root ~/projects/foo  # 指定專案目錄
   apa prompt | pbcopy               # 複製到剪貼簿（macOS）
   apa prompt > prompt.md            # 輸出到檔案`,
 
-		"prompt.flag.root": "專案根目錄路徑（預設為當前目錄）",
-		"prompt.flag.docs-only": "產出只使用 `apa-doc-review`、且禁止開始實作的文件審閱提示詞",
-		"prompt.mode.label": "提示詞模式？（implementation/docs-only）",
-		"prompt.mode.default": "implementation",
-		"prompt.mode.invalid": "無效的提示詞模式 %q（請使用 implementation 或 docs-only）",
+		"prompt.flag.root":        "專案根目錄路徑（預設為當前目錄）",
+		"prompt.flag.docs-only":   "產出只使用 `apa-doc-review`、且禁止開始實作的文件審閱提示詞",
+		"prompt.flag.reviewer":    "在實作提示詞中持續沿用的 reviewer：agent-self | apa-codex-review | apa-claude-review",
+		"prompt.mode.label":       "提示詞模式？（implementation/docs-only）",
+		"prompt.mode.default":     "implementation",
+		"prompt.mode.invalid":     "無效的提示詞模式 %q（請使用 implementation 或 docs-only）",
+		"prompt.reviewer.label":   "Reviewer？（agent-self/apa-codex-review/apa-claude-review）",
+		"prompt.reviewer.default": "agent-self",
+		"prompt.reviewer.invalid": "無效的 reviewer %q（請使用 agent-self、apa-codex-review、或 apa-claude-review）",
 
 		// prompt output
 		"prompt.output.intro":                "你現在是本 repo 的主責實作 AI，請進入「持續迭代直到完成」模式。使用 `apa-loop` 與 `apa-implement` skills，直接執行，不要只給建議。",
 		"prompt.output.project-info":         "專案資訊",
 		"prompt.output.root-label":           "專案根目錄：",
+		"prompt.output.reviewer-label":       "Reviewer：",
 		"prompt.output.name-label":           "名稱：",
 		"prompt.output.idea-label":           "Idea：",
 		"prompt.output.stack-label":          "技術棧：",
@@ -153,7 +159,7 @@ AI 會自動：
   4. 嚴格遵守 RED → GREEN → REFACTOR，先寫失敗測試或其他可執行驗證，再補實作。
   5. 實作後必須執行必要檢查（至少含測試；有 lint 就跑 lint）。
   6. 失敗就修到通過，不可停在半成品。
-  7. review 前先詢問本輪 reviewer 要用 ` + "`agent-self`" + `、` + "`apa-codex-review`" + `、或 ` + "`apa-claude-review`" + `。
+  7. 每輪 review 一律使用 ` + "`%s`" + `，除非我明確要求切換 reviewer。
   8. 更新 repo-local 狀態檔（` + "`docs/IMPLEMENTATION_STATUS.md`" + ` 或 ` + "`TASKS.md`" + `），記錄已完成、進行中、失敗檢查、blockers、assumptions 與下一輪 1~3 項任務。
   9. 除非遇到無法安全自行決策的阻塞，否則立刻進入下一輪。`,
 		"prompt.output.done": "完成定義（DONE 必須全部滿足）",
@@ -169,8 +175,8 @@ AI 會自動：
   - 文件足夠時直接做；只有遇到無法安全假設或不可逆風險時才提問。
   - 若需要重大取捨，先提出「選項 + 建議 + 影響」，其餘情況直接做。`,
 		"prompt.output.start":             "開始執行，先輸出：",
-		"prompt.output.start-items":       "  A. 現況盤點\n  B. 第一輪要做的 1~3 個任務\n然後直接進入 apa-loop 實作循環，直到 completion gate 完整滿足。",
-		"prompt.output.start-items.phase": "  A. 使用 `apa-docs` skill，將這些文件重寫成對齊的階段式內容：%s\n  B. 文件重寫後的現況盤點\n  C. 第一輪要做的 1~3 個任務\n然後直接進入 apa-loop 實作循環，直到 completion gate 完整滿足。",
+		"prompt.output.start-items":       "  A. 現況盤點\n  B. 第一輪要做的 1~3 個任務\n  C. 確認本次 loop 使用 reviewer `%s`\n然後直接進入 apa-loop 實作循環，直到 completion gate 完整滿足。",
+		"prompt.output.start-items.phase": "  A. 使用 `apa-docs` skill，將這些文件重寫成對齊的階段式內容：%s\n  B. 文件重寫後的現況盤點\n  C. 第一輪要做的 1~3 個任務\n  D. 確認本次 loop 使用 reviewer `%s`\n然後直接進入 apa-loop 實作循環，直到 completion gate 完整滿足。",
 		"prompt.output.docs-only.intro":   "你現在是本 repo 的文件審閱 AI。只使用 `apa-doc-review` skill。不要實作程式碼，直接修改文件，並在每輪修改後停下等待回饋。",
 		"prompt.output.docs-only.workflow-steps": `  1. 先做文件盤點：讀取 README、PRD、SPEC、API、DB schema、architecture 與 implementation plan。
   2. 以 ` + "`apa-doc-review`" + ` 作為主要工作流程。

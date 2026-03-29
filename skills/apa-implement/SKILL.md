@@ -26,7 +26,7 @@
 8. 在不改變行為前提下整理程式碼，再次驗證。
 9. 更新受影響文件。
 10. 執行驗證指令，例如 `make test`、`go test ./...`。
-11. 交互式確認本輪 reviewer：先詢問使用者要用目前 agent 自審，或指定 `apa-codex-review` / `apa-claude-review`，再執行 review。
+11. 確認本輪 reviewer：若使用者或 wrapper 已指定 reviewer，就沿用該設定；若尚未指定，只在第一次詢問 `agent-self` / `apa-codex-review` / `apa-claude-review`，之後沿用，不要每輪重問。
 12. 回報完成項、未完成項、風險、阻塞點與下一步。
 
 ## TDD Cycle

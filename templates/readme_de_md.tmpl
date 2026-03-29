@@ -31,7 +31,7 @@
 
 ## `apa簡要說明`
 
-- Implementierungs-Loop starten: `apa prompt` -> Ausgabe an den Agenten geben -> `apa-loop` + `apa-implement` anweisen
+- Implementierungs-Loop starten: `apa prompt --reviewer agent-self` -> Ausgabe an den Agenten geben -> `apa-loop` + `apa-implement` anweisen
 - Erst Dokumente iterativ schärfen: `apa prompt --docs-only` -> Ausgabe an den Agenten geben -> nur `apa-doc-review` anweisen
 - Terminal-Loop-Wrapper: `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - Wrapper stoppen: `bash scripts/apa-loop-cancel.sh`
@@ -100,11 +100,11 @@
 ## 🔁 `apa-loop` Verwendung
 
 - Wenn du die Dokumente vor der Implementierung iterativ schärfen willst, starte mit `apa prompt --docs-only` und weise den Agenten an, nur `apa-doc-review` zu verwenden.
-- Primärer Agent-Workflow (für Codex und Claude Code): `apa prompt` ausführen und den Agenten dann explizit anweisen, `apa-loop` mit `apa-implement` zu verwenden.
+- Primärer Agent-Workflow (für Codex und Claude Code): `apa prompt --reviewer agent-self` ausführen oder `apa prompt` starten und den Reviewer interaktiv wählen; anschließend den Agenten explizit anweisen, `apa-loop` mit `apa-implement` zu verwenden.
 - Optionaler Terminal-Wrapper (für Umgebungen mit generiertem Hook oder Slash-Command, z. B. Claude Code): `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - Optionaler Slash-Command: `/apa-loop --max-iterations 30 --reviewer agent-self`
 - Optionaler Abbruchbefehl: `/cancel-apa-loop`
-- Review policy: interactive per round. Ask which reviewer to use (`agent-self`, `apa-codex-review`, or `apa-claude-review`) before review.
+- Review policy: Lege den Reviewer einmal per `--reviewer` oder in der ersten Anweisung fest und verwende ihn in den folgenden Runden weiter; nur bei einer ausdrücklichen Änderung wird gewechselt (`agent-self`, `apa-codex-review`, `apa-claude-review`).
 - In beiden Fällen `docs/IMPLEMENTATION_STATUS.md` in jeder Runde aktualisieren, damit die nächste Schleife mit dem neuesten Stand startet.
 
 ## 🚀 Schnellstart

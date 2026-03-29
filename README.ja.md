@@ -20,7 +20,7 @@
 ## `apa簡要說明`
 
 - 可用觸發詞：`apa簡要說明`、`apa 簡要說明`、`apa說明`、`apa 說明`
-- 実装ループを始める: `apa prompt` -> 出力を agent に貼る -> `apa-loop` + `apa-implement` を使うよう指示
+- 実装ループを始める: `apa prompt --reviewer agent-self` -> 出力を agent に貼る -> `apa-loop` + `apa-implement` を使うよう指示
 - 先にドキュメントを詰める: `apa prompt --docs-only` -> 出力を agent に貼る -> `apa-doc-review` のみ使うよう指示
 - Terminal loop wrapper: `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - wrapper を止める: `bash scripts/apa-loop-cancel.sh`
@@ -83,7 +83,7 @@ go build -o apa .
 # 3. 生成された repo に入り反復開始
 cd ~/projects/report-platform
 ./apa list-skills
-./apa prompt
+./apa prompt --reviewer agent-self
 make test
 ```
 
@@ -92,7 +92,7 @@ make test
 1. `apa init` を 1 回実行して初期プロジェクトを作る。
 2. `Phase 0` から始まるフェーズ型ドキュメントを維持し、PRD/API/SPEC の範囲、テスト、ゲート、レポートを揃える。
 3. 標準のデリバリーループとして `apa-loop` と `apa-implement` を使う。
-4. `apa prompt` を実行して agent に作業させ、`make test` で確認する。
+4. `apa prompt --reviewer agent-self` を実行して agent に作業させ、`make test` で確認する。
 5. 出荷可能になるまで繰り返す。
 
 ## デリバリーループの状態と `apa-loop` の使い方
@@ -102,11 +102,11 @@ make test
 `apa-loop` は、状態ファイルを読み、検証可能な 1-3 個の作業項目を選び、テストやチェックを実行し、状態を更新して、完了ゲートを満たすまで繰り返す repo-local skill です。
 使い方:
 - 実装前に文書を往復で詰めたい場合は、先に `apa prompt --docs-only` を実行し、agent へ `apa-doc-review` のみを使うよう明示する。
-- Agent の主運用（Codex と Claude Code 共通）: `apa prompt` を実行したあと、agent に `apa-loop` と `apa-implement` を使うよう明示する
+- Agent の主運用（Codex と Claude Code 共通）: `apa prompt --reviewer agent-self` を実行するか、`apa prompt` 実行後に対話で reviewer を選び、そのあと agent に `apa-loop` と `apa-implement` を使うよう明示する
 - 任意の terminal ラッパー（生成済み hook や slash command がある環境、たとえば Claude Code 向け）: `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - 任意の slash command: `/apa-loop --max-iterations 30 --reviewer agent-self`
 - 任意のキャンセルコマンド: `/cancel-apa-loop`
-- Review policy: interactive per round. Ask which reviewer to use (`agent-self`, `apa-codex-review`, or `apa-claude-review`) before review.
+- Review policy: `--reviewer` または最初の指示で reviewer を一度指定し、その後のラウンドでは再利用します。明示的に切り替える場合だけ変更します（`agent-self`、`apa-codex-review`、`apa-claude-review`）。
 
 ## クイック例
 
@@ -121,7 +121,7 @@ make test
 
 cd ~/projects/support-hub
 ./apa list-skills
-./apa prompt > prompt.md
+./apa prompt --reviewer agent-self > prompt.md
 make test
 ```
 
@@ -228,6 +228,7 @@ agents/ skills/
 
 ```bash
 ./apa prompt
+./apa prompt --reviewer agent-self
 ./apa prompt --docs-only
 ./apa prompt --root ~/projects/report-platform
 ./apa prompt > prompt.md

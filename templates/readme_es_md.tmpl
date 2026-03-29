@@ -31,7 +31,7 @@
 
 ## `apa簡要說明`
 
-- Iniciar el bucle de implementación: `apa prompt` -> pega la salida en el agente -> pide `apa-loop` + `apa-implement`
+- Iniciar el bucle de implementación: `apa prompt --reviewer agent-self` -> pega la salida en el agente -> pide `apa-loop` + `apa-implement`
 - Revisar primero la documentación: `apa prompt --docs-only` -> pega la salida en el agente -> pide solo `apa-doc-review`
 - Wrapper de bucle en terminal: `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - Detener el wrapper: `bash scripts/apa-loop-cancel.sh`
@@ -100,11 +100,11 @@
 ## 🔁 Uso de `apa-loop`
 
 - Si quieres iterar primero sobre la documentación antes de implementar, ejecuta `apa prompt --docs-only` y pide al agente que use solo `apa-doc-review`.
-- Flujo principal por agente (común para Codex y Claude Code): ejecuta `apa prompt` y luego pide explícitamente al agente que use `apa-loop` con `apa-implement`
+- Flujo principal por agente (común para Codex y Claude Code): ejecuta `apa prompt --reviewer agent-self`, o ejecuta `apa prompt` y elige el reviewer de forma interactiva, y luego pide explícitamente al agente que use `apa-loop` con `apa-implement`
 - Wrapper opcional en terminal (para entornos con hook o slash command generado, como Claude Code): `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - Slash command opcional: `/apa-loop --max-iterations 30 --reviewer agent-self`
 - Comando opcional de cancelación: `/cancel-apa-loop`
-- Review policy: interactive per round. Ask which reviewer to use (`agent-self`, `apa-codex-review`, or `apa-claude-review`) before review.
+- Review policy: especifica el reviewer una sola vez con `--reviewer` o en la primera instrucción y reutilízalo en las siguientes rondas; solo cámbialo si lo pides explícitamente (`agent-self`, `apa-codex-review`, `apa-claude-review`).
 - En ambos casos, actualiza `docs/IMPLEMENTATION_STATUS.md` en cada ronda para que el siguiente bucle arranque desde el último estado.
 
 ## 🚀 Inicio rápido

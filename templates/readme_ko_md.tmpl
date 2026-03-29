@@ -31,7 +31,7 @@
 
 ## `apa簡要說明`
 
-- 구현 루프 시작: `apa prompt` -> 출력을 agent에 붙여넣기 -> `apa-loop` + `apa-implement` 사용 지시
+- 구현 루프 시작: `apa prompt --reviewer agent-self` -> 출력을 agent에 붙여넣기 -> `apa-loop` + `apa-implement` 사용 지시
 - 먼저 문서 반복 수정: `apa prompt --docs-only` -> 출력을 agent에 붙여넣기 -> `apa-doc-review`만 사용 지시
 - Terminal loop wrapper: `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - wrapper 중지: `bash scripts/apa-loop-cancel.sh`
@@ -100,11 +100,11 @@
 ## 🔁 `apa-loop` 사용법
 
 - 구현 전에 문서를 먼저 반복해서 다듬고 싶다면 `apa prompt --docs-only`를 실행하고 agent에게 `apa-doc-review`만 사용하라고 명시한다.
-- 기본 agent 사용 흐름(Codex 와 Claude Code 공통): `apa prompt`를 실행한 뒤 agent에게 `apa-loop`와 `apa-implement`를 명시적으로 사용하라고 지시
+- 기본 agent 사용 흐름(Codex 와 Claude Code 공통): `apa prompt --reviewer agent-self`를 실행하거나 `apa prompt` 실행 후 reviewer 를 대화형으로 선택한 다음, agent에게 `apa-loop`와 `apa-implement`를 명시적으로 사용하라고 지시
 - 선택 가능한 terminal 래퍼(생성된 hook 또는 slash command 가 있는 환경, 예: Claude Code): `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - 선택 가능한 slash command: `/apa-loop --max-iterations 30 --reviewer agent-self`
 - 선택 가능한 취소 명령: `/cancel-apa-loop`
-- Review policy: interactive per round. Ask which reviewer to use (`agent-self`, `apa-codex-review`, or `apa-claude-review`) before review.
+- Review policy: `--reviewer` 또는 첫 지시에서 reviewer 를 한 번 지정하고 이후 라운드에서는 계속 재사용합니다. 명시적으로 바꿔 달라고 할 때만 변경합니다 (`agent-self`, `apa-codex-review`, `apa-claude-review`).
 - 두 경우 모두 다음 루프가 최신 상태에서 시작되도록 매 라운드마다 `docs/IMPLEMENTATION_STATUS.md`를 업데이트합니다.
 
 ## 🚀 빠른 시작

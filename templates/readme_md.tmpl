@@ -31,7 +31,7 @@
 
 ## `apa簡要說明`
 
-- Start implementation loop: `apa prompt` -> paste output to agent -> tell it to use `apa-loop` + `apa-implement`
+- Start implementation loop: `apa prompt --reviewer agent-self` -> paste output to agent -> tell it to use `apa-loop` + `apa-implement`
 - Review docs first: `apa prompt --docs-only` -> paste output to agent -> tell it to use `apa-doc-review` only
 - Terminal loop wrapper: `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - Stop wrapper: `bash scripts/apa-loop-cancel.sh`
@@ -81,11 +81,11 @@
 ## 🔁 `apa-loop` Usage
 
 - Before implementation, you can run `apa prompt --docs-only` and tell the agent to use `apa-doc-review` only.
-- Primary agent workflow for both Codex and Claude Code: run `apa prompt` first, then explicitly tell the agent to use `apa-loop` with `apa-implement`.
+- Primary agent workflow for both Codex and Claude Code: run `apa prompt --reviewer agent-self` first, or run `apa prompt` and choose the reviewer interactively, then explicitly tell the agent to use `apa-loop` with `apa-implement`.
 - Optional terminal wrapper for environments that expose the generated hook or slash command, such as Claude Code: `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - Optional slash command: `/apa-loop --max-iterations 30 --reviewer agent-self`
 - Optional cancel command: `/cancel-apa-loop`
-- Review policy: interactive per round. Ask which reviewer to use (`agent-self`, `apa-codex-review`, or `apa-claude-review`) before review.
+- Review policy: specify the reviewer once with `--reviewer` or in the first instruction, then reuse it in later rounds unless you explicitly switch (`agent-self`, `apa-codex-review`, or `apa-claude-review`).
 - In both cases, keep `docs/IMPLEMENTATION_STATUS.md` updated each round so the next loop starts from the latest state.
 
 ## 🚀 Quick Start

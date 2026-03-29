@@ -51,7 +51,7 @@ When the Completion Gate is fully met, output exactly:
 7. 執行測試與驗證。
 8. 修正失敗、回歸或不一致之處。
 9. 在保持行為不變的前提下重構，然後再次驗證。
-10. 交互式確認本輪 reviewer：先詢問使用者要用目前 agent 自審，或指定 `apa-codex-review` / `apa-claude-review`，再執行 review。
+10. 確認本輪 reviewer：若使用者或 wrapper 已指定 reviewer，就沿用該設定；若尚未指定，只在第一次詢問 `agent-self` / `apa-codex-review` / `apa-claude-review`，之後沿用，不要每輪重問。
 11. 更新必要文件與進度狀態檔。
 12. 根據最新結果決定下一輪工作。
 13. 重複以上流程，直到停止條件成立。
@@ -154,7 +154,7 @@ When the Completion Gate is fully met, output exactly:
 - 每輪都必須有可驗證產出。
 - 每輪都必須執行測試、檢查或其他驗證。
 - 每輪都必須先有測試或其他可執行驗證，再補實作。
-- 每輪都必須在實作與驗證後做 review，且先以交互方式確認 reviewer。
+- 每輪都必須在實作與驗證後做 review；reviewer 一旦指定就沿用，除非使用者明確要求切換。
 - 每輪都必須更新 repo-local 狀態檔，而不是只在回覆中描述進度。
 - 若文件不足但仍可安全假設，明確標示 Assumptions 並繼續。
 - 若缺口已阻止安全實作，才停止並列出阻塞。

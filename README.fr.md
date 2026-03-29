@@ -20,7 +20,7 @@
 ## `apa簡要說明`
 
 - 可用觸發詞：`apa簡要說明`、`apa 簡要說明`、`apa說明`、`apa 說明`
-- Démarrer la boucle d'implémentation : `apa prompt` -> coller la sortie dans l'agent -> demander `apa-loop` + `apa-implement`
+- Démarrer la boucle d'implémentation : `apa prompt --reviewer agent-self` -> coller la sortie dans l'agent -> demander `apa-loop` + `apa-implement`
 - Réviser d'abord les documents : `apa prompt --docs-only` -> coller la sortie dans l'agent -> demander uniquement `apa-doc-review`
 - Wrapper de boucle terminal : `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - Arrêter le wrapper : `bash scripts/apa-loop-cancel.sh`
@@ -83,7 +83,7 @@ go build -o apa .
 # 3. Entrer dans le repo généré et itérer
 cd ~/projects/report-platform
 ./apa list-skills
-./apa prompt
+./apa prompt --reviewer agent-self
 make test
 ```
 
@@ -92,7 +92,7 @@ Boucle principale :
 1. Exécuter `apa init` une fois pour créer la première version du projet.
 2. Maintenir une documentation par phases à partir de `Phase 0` afin d'aligner périmètre, tests, gates et rapports entre PRD/API/SPEC.
 3. Utiliser par défaut `apa-loop` avec `apa-implement` comme boucle de livraison.
-4. Lancer `apa prompt`, laisser l'agent travailler, puis valider avec `make test`.
+4. Lancer `apa prompt --reviewer agent-self`, laisser l'agent travailler, puis valider avec `make test`.
 5. Répéter jusqu'à obtenir un dépôt livrable.
 
 ## État de la boucle de livraison et utilisation de `apa-loop`
@@ -102,11 +102,11 @@ Utilise `apa-loop` avec `apa-implement` pour que l'agent continue à enchaîner 
 `apa-loop` est le skill repo-local qui force la boucle de livraison par tours : lire le fichier d'état, choisir 1 à 3 tâches vérifiables, exécuter les tests/contrôles, mettre à jour l'état, puis répéter jusqu'à satisfaire le gate de fin.
 Utilisation :
 - Si tu veux d'abord itérer sur les documents avant l'implémentation, lance `apa prompt --docs-only` et demande à l'agent d'utiliser uniquement `apa-doc-review`.
-- Flux principal via agent (commun à Codex et Claude Code) : lance `apa prompt`, puis demande explicitement à l'agent d'utiliser `apa-loop` avec `apa-implement`
+- Flux principal via agent (commun à Codex et Claude Code) : lance `apa prompt --reviewer agent-self`, ou lance `apa prompt` puis choisis le reviewer en interactif, puis demande explicitement à l'agent d'utiliser `apa-loop` avec `apa-implement`
 - Wrapper terminal optionnel (pour les environnements qui exposent un hook ou une slash command générés, comme Claude Code) : `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - Slash command optionnelle : `/apa-loop --max-iterations 30 --reviewer agent-self`
 - Commande d'annulation optionnelle : `/cancel-apa-loop`
-- Review policy: interactive per round. Ask which reviewer to use (`agent-self`, `apa-codex-review`, or `apa-claude-review`) before review.
+- Review policy: indique le reviewer une seule fois via `--reviewer` ou dans la première consigne, puis réutilise-le aux tours suivants sauf si tu demandes explicitement un changement (`agent-self`, `apa-codex-review`, `apa-claude-review`).
 
 ## Exemple rapide
 
@@ -121,7 +121,7 @@ Utilisation :
 
 cd ~/projects/support-hub
 ./apa list-skills
-./apa prompt > prompt.md
+./apa prompt --reviewer agent-self > prompt.md
 make test
 ```
 
@@ -228,6 +228,7 @@ La commande vérifie aussi si les documents existants utilisent des sections ali
 
 ```bash
 ./apa prompt
+./apa prompt --reviewer agent-self
 ./apa prompt --docs-only
 ./apa prompt --root ~/projects/report-platform
 ./apa prompt > prompt.md

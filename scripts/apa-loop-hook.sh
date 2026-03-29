@@ -107,11 +107,9 @@ ${STATUS_CONTENT}
 ---
 
 Keep iterating until the Completion Gate conditions are all met.
-Before the review step in this round, ask the user which reviewer to use:
-- agent-self
-- apa-codex-review
-- apa-claude-review
-If the user does not specify, default to: ${REVIEWER}
+Use the configured reviewer for this round's review: ${REVIEWER}
+Do not ask again each round.
+Only switch reviewer if the user explicitly asks to change it.
 
 When genuinely complete, output: <promise>${COMPLETION_PROMISE}</promise>
 Do NOT output the promise unless it is completely and unequivocally true."
@@ -123,7 +121,7 @@ fi
 
 jq -n \
   --arg prompt "$NEXT_PROMPT" \
-  --arg msg "🔄 apa-loop iteration ${ITER_DISPLAY} | reviewer default ${REVIEWER} | complete with <promise>${COMPLETION_PROMISE}</promise>" \
+  --arg msg "🔄 apa-loop iteration ${ITER_DISPLAY} | reviewer ${REVIEWER} | complete with <promise>${COMPLETION_PROMISE}</promise>" \
   '{
     "decision": "block",
     "reason": $prompt,

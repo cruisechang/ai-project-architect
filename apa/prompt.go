@@ -18,6 +18,7 @@ import (
 func newPromptCmd() *cobra.Command {
 	var root string
 	var docsOnly bool
+	var reviewer string
 
 	cmd := &cobra.Command{
 		Use:   "prompt",
@@ -31,23 +32,29 @@ func newPromptCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			reviewReader := bufio.NewReader(os.Stdin)
+			resolvedReviewer, err := resolvePromptReviewer(cmd.Flags().Changed("reviewer"), reviewer, resolvedDocsOnly, isInteractive(), reviewReader)
+			if err != nil {
+				return err
+			}
 			rootAbs, err := config.ExpandPath(root)
 			if err != nil {
 				return err
 			}
-			printPromptOutput(rootAbs, resolvedDocsOnly)
+			printPromptOutput(rootAbs, resolvedDocsOnly, resolvedReviewer)
 			return nil
 		},
 	}
 
 	cmd.Flags().StringVar(&root, "root", "", i18n.T("prompt.flag.root"))
 	cmd.Flags().BoolVar(&docsOnly, "docs-only", false, i18n.T("prompt.flag.docs-only"))
+	cmd.Flags().StringVar(&reviewer, "reviewer", "", i18n.T("prompt.flag.reviewer"))
 	return cmd
 }
 
 const promptSep = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-func printPromptOutput(rootAbs string, docsOnly bool) {
+func printPromptOutput(rootAbs string, docsOnly bool, reviewer string) {
 	ctx, ctxErr := architectruntime.LoadContext(rootAbs)
 	hasCtx := ctxErr == nil
 
@@ -73,6 +80,9 @@ func printPromptOutput(rootAbs string, docsOnly bool) {
 	fmt.Println(i18n.T("prompt.output.project-info"))
 	fmt.Println(promptSep)
 	fmt.Printf("%s %s\n", i18n.T("prompt.output.root-label"), rootAbs)
+	if !docsOnly && reviewer != "" {
+		fmt.Printf("%s %s\n", i18n.T("prompt.output.reviewer-label"), reviewer)
+	}
 	if hasCtx {
 		if ctx.ProjectName != "" {
 			fmt.Printf("%s %s\n", i18n.T("prompt.output.name-label"), ctx.ProjectName)
@@ -151,7 +161,12 @@ func printPromptOutput(rootAbs string, docsOnly bool) {
 	fmt.Println(promptSep)
 	fmt.Println(i18n.T("prompt.output.workflow"))
 	fmt.Println(promptSep)
-	fmt.Println(i18n.T(workflowKey))
+	if !docsOnly && reviewer != "" {
+		fmt.Printf(i18n.T(workflowKey), reviewer)
+		fmt.Println()
+	} else {
+		fmt.Println(i18n.T(workflowKey))
+	}
 	fmt.Println()
 
 	fmt.Println(promptSep)
@@ -169,10 +184,19 @@ func printPromptOutput(rootAbs string, docsOnly bool) {
 	fmt.Println(promptSep)
 	fmt.Println(i18n.T("prompt.output.start"))
 	if len(nonPhaseDocs) > 0 {
-		fmt.Printf(i18n.T(startPhaseKey), strings.Join(nonPhaseDocs, ", "))
+		if !docsOnly && reviewer != "" {
+			fmt.Printf(i18n.T(startPhaseKey), strings.Join(nonPhaseDocs, ", "), reviewer)
+		} else {
+			fmt.Printf(i18n.T(startPhaseKey), strings.Join(nonPhaseDocs, ", "))
+		}
 		fmt.Println()
 	} else {
-		fmt.Println(i18n.T(startKey))
+		if !docsOnly && reviewer != "" {
+			fmt.Printf(i18n.T(startKey), reviewer)
+			fmt.Println()
+		} else {
+			fmt.Println(i18n.T(startKey))
+		}
 	}
 	fmt.Println(promptSep)
 }
@@ -215,5 +239,35 @@ func resolvePromptDocsOnly(explicitDocsOnly bool, docsOnly bool) (bool, error) {
 		return true, nil
 	default:
 		return false, fmt.Errorf(i18n.T("prompt.mode.invalid"), value)
+	}
+}
+
+func resolvePromptReviewer(explicitReviewer bool, reviewer string, docsOnly bool, interactive bool, reader *bufio.Reader) (string, error) {
+	if docsOnly {
+		return "", nil
+	}
+	if explicitReviewer {
+		return validatePromptReviewer(reviewer)
+	}
+	if !interactive {
+		return "agent-self", nil
+	}
+	value, err := promptText(reader, i18n.T("prompt.reviewer.label"), i18n.T("prompt.reviewer.default"))
+	if err != nil {
+		return "", err
+	}
+	return validatePromptReviewer(value)
+}
+
+func validatePromptReviewer(value string) (string, error) {
+	reviewer := strings.TrimSpace(value)
+	if reviewer == "" {
+		reviewer = "agent-self"
+	}
+	switch reviewer {
+	case "agent-self", "apa-codex-review", "apa-claude-review":
+		return reviewer, nil
+	default:
+		return "", fmt.Errorf(i18n.T("prompt.reviewer.invalid"), reviewer)
 	}
 }

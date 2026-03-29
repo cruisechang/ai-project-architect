@@ -120,20 +120,26 @@ The AI will:
 Usage:
   apa prompt                        # run in current repo directory
   apa prompt --docs-only            # generate a doc-review prompt before implementation
+  apa prompt --reviewer agent-self  # generate implementation prompt with persisted reviewer
   apa prompt --root ~/projects/foo  # specify project directory
   apa prompt | pbcopy               # copy to clipboard (macOS)
   apa prompt > prompt.md            # save to file`,
 
-		"prompt.flag.root": "Project root path (default: current directory)",
-		"prompt.flag.docs-only": "Generate a doc-review prompt that uses `apa-doc-review` and blocks implementation",
-		"prompt.mode.label": "Prompt mode? (implementation/docs-only)",
-		"prompt.mode.default": "implementation",
-		"prompt.mode.invalid": "invalid prompt mode %q (use implementation or docs-only)",
+		"prompt.flag.root":        "Project root path (default: current directory)",
+		"prompt.flag.docs-only":   "Generate a doc-review prompt that uses `apa-doc-review` and blocks implementation",
+		"prompt.flag.reviewer":    "Reviewer to persist in the generated implementation prompt: agent-self | apa-codex-review | apa-claude-review",
+		"prompt.mode.label":       "Prompt mode? (implementation/docs-only)",
+		"prompt.mode.default":     "implementation",
+		"prompt.mode.invalid":     "invalid prompt mode %q (use implementation or docs-only)",
+		"prompt.reviewer.label":   "Reviewer? (agent-self/apa-codex-review/apa-claude-review)",
+		"prompt.reviewer.default": "agent-self",
+		"prompt.reviewer.invalid": "invalid reviewer %q (use agent-self, apa-codex-review, or apa-claude-review)",
 
 		// prompt output
 		"prompt.output.intro":                "You are the primary implementation AI for this repo. Enter 'keep iterating until done' mode. Use the `apa-loop` and `apa-implement` skills. Execute directly — do not just give suggestions.",
 		"prompt.output.project-info":         "Project Info",
 		"prompt.output.root-label":           "Project root:",
+		"prompt.output.reviewer-label":       "Reviewer:",
 		"prompt.output.name-label":           "Name:",
 		"prompt.output.idea-label":           "Idea:",
 		"prompt.output.stack-label":          "Tech stack:",
@@ -153,7 +159,7 @@ Usage:
   4. Follow RED → GREEN → REFACTOR. Start with a failing test or equivalent executable verification before implementation.
   5. After implementation, run required checks (at minimum: tests; run lint if available).
   6. Fix failures until they pass — never stop at half-done.
-  7. Before review, ask which reviewer to use for this round: ` + "`agent-self`" + `, ` + "`apa-codex-review`" + `, or ` + "`apa-claude-review`" + `.
+  7. Use reviewer ` + "`%s`" + ` for every round unless I explicitly switch it.
   8. Update docs and repo-local status (` + "`docs/IMPLEMENTATION_STATUS.md`" + ` or ` + "`TASKS.md`" + `) with completed work, in-progress work, failing checks, blockers, assumptions, and next 1–3 tasks.
   9. Move immediately to the next round — do not wait for my confirmation unless you hit a blocking decision.`,
 		"prompt.output.done": "Definition of Done (ALL must be satisfied)",
@@ -169,8 +175,8 @@ Usage:
   - Default to direct execution when docs are sufficient; only ask when blocked by a genuinely unsafe or irreversible decision.
   - For major trade-offs, present "options + recommendation + impact" first; otherwise just do it.`,
 		"prompt.output.start":             "Begin now. First output:",
-		"prompt.output.start-items":       "  A. Current inventory\n  B. The 1–3 tasks for round one\nThen enter the apa-loop implementation cycle and continue until the completion gate is fully met.",
-		"prompt.output.start-items.phase": "  A. Use the `apa-docs` skill to rewrite these docs into aligned phases: %s\n  B. Current inventory after the doc rewrite\n  C. The 1–3 tasks for round one\nThen enter the apa-loop implementation cycle and continue until the completion gate is fully met.",
+		"prompt.output.start-items":       "  A. Current inventory\n  B. The 1–3 tasks for round one\n  C. Confirm that reviewer `%s` is active for this loop\nThen enter the apa-loop implementation cycle and continue until the completion gate is fully met.",
+		"prompt.output.start-items.phase": "  A. Use the `apa-docs` skill to rewrite these docs into aligned phases: %s\n  B. Current inventory after the doc rewrite\n  C. The 1–3 tasks for round one\n  D. Confirm that reviewer `%s` is active for this loop\nThen enter the apa-loop implementation cycle and continue until the completion gate is fully met.",
 		"prompt.output.docs-only.intro":   "You are the documentation review AI for this repo. Use the `apa-doc-review` skill only. Do not implement code. Revise the docs directly and stop after each revision for feedback.",
 		"prompt.output.docs-only.workflow-steps": `  1. Start with a doc inventory: read README, PRD, SPEC, API, DB schema, architecture, and implementation plan.
   2. Use the ` + "`apa-doc-review`" + ` skill as the primary workflow.

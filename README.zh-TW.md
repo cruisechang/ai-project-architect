@@ -20,7 +20,7 @@
 ## `apa簡要說明`
 
 - 可用觸發詞：`apa簡要說明`、`apa 簡要說明`、`apa說明`、`apa 說明`
-- 開始實作循環：`apa prompt` -> 把輸出貼給 agent -> 明確要求使用 `apa-loop` + `apa-implement`
+- 開始實作循環：`apa prompt --reviewer agent-self` -> 把輸出貼給 agent -> 明確要求使用 `apa-loop` + `apa-implement`
 - 先交互修改文件：`apa prompt --docs-only` -> 把輸出貼給 agent -> 明確要求只使用 `apa-doc-review`
 - Terminal loop wrapper：`bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - 停止 wrapper：`bash scripts/apa-loop-cancel.sh`
@@ -83,7 +83,7 @@ go build -o apa .
 # 3. 進入產生出的 repo 開始迭代
 cd ~/projects/report-platform
 ./apa list-skills
-./apa prompt
+./apa prompt --reviewer agent-self
 make test
 ```
 
@@ -92,7 +92,7 @@ make test
 1. 用 `apa init` 建立第一版專案。
 2. 維持從 `Phase 0` 開始的分階段文件，讓 PRD/API/SPEC 的範圍、測試、gate 與報告保持對齊。
 3. 預設以 `apa-loop` 搭配 `apa-implement` 推進每一輪交付。
-4. 跑 `apa prompt`，讓 agent 實作，再用 `make test` 驗證。
+4. 跑 `apa prompt --reviewer agent-self`，讓 agent 實作，再用 `make test` 驗證。
 5. 反覆執行直到可交付。
 
 ## 交付循環狀態與 `apa-loop` 使用方式
@@ -102,11 +102,11 @@ make test
 `apa-loop` 是用來強制執行每輪交付循環的 repo-local skill：先讀狀態檔、選 1-3 個可驗證工作項、跑測試或檢查、更新狀態，再持續重複直到完成 gate 被滿足。
 使用方式：
 - 若要在實作前先來回修文件，可先執行 `apa prompt --docs-only`，並明確要求 agent 只使用 `apa-doc-review`
-- Agent 主用法（Codex 與 Claude Code 通用）：先執行 `apa prompt`，再明確要求 agent 使用 `apa-loop` 與 `apa-implement`
+- Agent 主用法（Codex 與 Claude Code 通用）：先執行 `apa prompt --reviewer agent-self`，或直接執行 `apa prompt` 後以互動方式選 reviewer，再明確要求 agent 使用 `apa-loop` 與 `apa-implement`
 - 可選 terminal 包裝（適用於有產生 hook 或 slash command 的環境，例如 Claude Code）：`bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - 可選 slash command：`/apa-loop --max-iterations 30 --reviewer agent-self`
 - 可選取消指令：`/cancel-apa-loop`
-- Review policy: interactive per round. Ask which reviewer to use (`agent-self`, `apa-codex-review`, or `apa-claude-review`) before review.
+- Review policy: 可在 `--reviewer` 或第一輪指令先指定 reviewer，後續各輪沿用；只有明確要求切換時才更換（`agent-self`、`apa-codex-review`、`apa-claude-review`）。
 
 ## 快速範例
 
@@ -121,7 +121,7 @@ make test
 
 cd ~/projects/support-hub
 ./apa list-skills
-./apa prompt > prompt.md
+./apa prompt --reviewer agent-self > prompt.md
 make test
 ```
 
@@ -228,6 +228,7 @@ agents/ skills/
 
 ```bash
 ./apa prompt
+./apa prompt --reviewer agent-self
 ./apa prompt --docs-only
 ./apa prompt --root ~/projects/report-platform
 ./apa prompt > prompt.md

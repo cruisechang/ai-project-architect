@@ -31,7 +31,7 @@
 
 ## `apa簡要說明`
 
-- Démarrer la boucle d'implémentation : `apa prompt` -> coller la sortie dans l'agent -> demander `apa-loop` + `apa-implement`
+- Démarrer la boucle d'implémentation : `apa prompt --reviewer agent-self` -> coller la sortie dans l'agent -> demander `apa-loop` + `apa-implement`
 - Réviser d'abord les documents : `apa prompt --docs-only` -> coller la sortie dans l'agent -> demander uniquement `apa-doc-review`
 - Wrapper de boucle terminal : `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - Arrêter le wrapper : `bash scripts/apa-loop-cancel.sh`
@@ -100,11 +100,11 @@
 ## 🔁 Utilisation de `apa-loop`
 
 - Si tu veux d'abord itérer sur les documents avant l'implémentation, lance `apa prompt --docs-only` et demande à l'agent d'utiliser uniquement `apa-doc-review`.
-- Flux principal via agent (commun à Codex et Claude Code) : lance `apa prompt`, puis demande explicitement à l'agent d'utiliser `apa-loop` avec `apa-implement`.
+- Flux principal via agent (commun à Codex et Claude Code) : lance `apa prompt --reviewer agent-self`, ou lance `apa prompt` puis choisis le reviewer en interactif, puis demande explicitement à l'agent d'utiliser `apa-loop` avec `apa-implement`.
 - Wrapper terminal optionnel (pour les environnements qui exposent un hook ou une slash command générés, comme Claude Code) : `bash scripts/apa-loop-setup.sh --max-iterations 30 --reviewer agent-self`
 - Slash command optionnelle : `/apa-loop --max-iterations 30 --reviewer agent-self`
 - Commande d'annulation optionnelle : `/cancel-apa-loop`
-- Review policy: interactive per round. Ask which reviewer to use (`agent-self`, `apa-codex-review`, or `apa-claude-review`) before review.
+- Review policy: indique le reviewer une seule fois via `--reviewer` ou dans la première consigne, puis réutilise-le aux tours suivants sauf si tu demandes explicitement un changement (`agent-self`, `apa-codex-review`, `apa-claude-review`).
 - Dans les deux cas, mets à jour `docs/IMPLEMENTATION_STATUS.md` à chaque tour pour que la boucle suivante reparte du dernier état.
 
 ## 🚀 Démarrage rapide
